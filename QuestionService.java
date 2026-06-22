@@ -18,7 +18,7 @@ public class QuestionService {
     private void loadSampleQuestions() {
         questions.add(new Question(1,
                 "Qual é a capital do Brasil?",
-                Arrays.asList("São Paulo", "Brasília", "Rio de Janeiro", "Salvador"),
+                Arrays.asList("São Paulo", "Brasília.", "Rio de Janeiro", "Salvador"),
                 1)); // Brasília
 
         questions.add(new Question(2,
