@@ -1,99 +1,173 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Avaliação Diagnóstica - Exemplo</title>
+  <meta charset="UTF-8">
+  <title>Classifica - Avaliação Diagnóstica</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    fieldset { border: 1px solid #ccc; padding: 10px; }
-    legend { font-weight: bold; }
-    button { padding: 8px 12px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f6fa;
+      display: flex;
+    }
+
+    /* Menu lateral */
+    .sidebar {
+      width: 220px;
+      background-color: #2f3640;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      padding: 20px 0;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+    }
+
+    .menu li {
+      padding: 12px 20px;
+      cursor: pointer;
+    }
+
+    .menu li:hover {
+      background-color: #353b48;
+    }
+
+    .profile {
+      padding: 20px;
+      border-top: 1px solid #444;
+      font-size: 14px;
+    }
+
+    /* Área principal */
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .panel {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+    }
+
+    .question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .question button {
+      background-color: #4cd137;
+      border: none;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .question button:hover {
+      background-color: #44bd32;
+    }
+
+    /* Pop-up */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    .popup h3 {
+      margin-top: 0;
+    }
+
+    .popup button {
+      background-color: #0097e6;
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .popup button:hover {
+      background-color: #0984e3;
+    }
   </style>
 </head>
 <body>
-  <h1>Avaliação Diagnóstica - Exemplo (arquivo estático de referência)</h1>
-  <p>Interface dinâmica: este HTML consome a API Java em <code>/api/questions</code> e envia para <code>/api/submit</code>.</p>
-  <div id="app">
-    <p>Carregando perguntas...</p>
+  <!-- Menu lateral -->
+  <div class="sidebar">
+    <ul class="menu">
+      <li>Dashboard</li>
+      <li>Sala de Aula</li>
+      <li>Meus Simulados</li>
+      <li>Banco de Questões</li>
+      <li>Configurações</li>
+    </ul>
+    <div class="profile">
+      <strong>Letícia Pinho</strong><br>
+      Professora
+    </div>
   </div>
 
-  <script>
-    // Busca perguntas e monta formulário dinamicamente
-    async function loadQuestions() {
-      const res = await fetch('/api/questions');
-      const questions = await res.json();
-      const app = document.getElementById('app');
-      const form = document.createElement('form');
-      form.addEventListener('submit', onSubmit);
+  <!-- Área principal -->
+  <div class="main">
+    <div class="panel">
+      <h2>Avaliação Diagnóstica</h2>
+      <div class="question">
+        <span>Questão 1</span>
+        <button>Abrir</button>
+      </div>
+      <div class="question">
+        <span>Questão 2</span>
+        <button>Abrir</button>
+      </div>
+      <div class="question">
+        <span>Questão 3</span>
+        <button>Abrir</button>
+      </div>
+      <div class="question">
+        <span>Questão 4</span>
+        <button>Abrir</button>
+      </div>
+      <div class="question">
+        <span>Questão 5</span>
+        <button>Abrir</button>
+      </div>
+      <div class="question">
+        <span>Questão 6</span>
+        <button>Abrir</button>
+      </div>
+    </div>
+  </div>
 
-      questions.forEach(q => {
-        const field = document.createElement('fieldset');
-        const legend = document.createElement('legend');
-        legend.textContent = q.text;
-        field.appendChild(legend);
-        q.options.forEach((opt, idx) => {
-          const label = document.createElement('label');
-          const input = document.createElement('input');
-          input.type = 'radio';
-          input.name = 'q' + q.id;
-          input.value = idx;
-          label.appendChild(input);
-          label.appendChild(document.createTextNode(' ' + opt));
-          field.appendChild(label);
-          field.appendChild(document.createElement('br'));
-        });
-        form.appendChild(field);
-      });
-
-      const btn = document.createElement('button');
-      btn.type = 'submit';
-      btn.textContent = 'Enviar';
-      form.appendChild(btn);
-
-      app.innerHTML = '';
-      app.appendChild(form);
-    }
-
-    // Envia respostas via form-urlencoded para /api/submit e mostra resultado
-    async function onSubmit(ev) {
-      ev.preventDefault();
-      const form = ev.target;
-      const data = new URLSearchParams(new FormData(form));
-      const res = await fetch('/api/submit', { method: 'POST', body: data });
-      const result = await res.json();
-      showResult(result);
-    }
-
-    function showResult(result) {
-      const app = document.getElementById('app');
-      const div = document.createElement('div');
-      div.innerHTML = `<h2>Resultado: ${result.score} / ${result.total}</h2>`;
-      const ul = document.createElement('ul');
-      result.details.forEach(d => {
-        const li = document.createElement('li');
-        li.innerHTML = `${escapeHtml(d.question)} — sua resposta: ${escapeHtml(d.selectedText || '(não respondida)')} ${d.correct ? '<strong>(correta)</strong>' : '<em>(incorreta)</em>'}`;
-        ul.appendChild(li);
-      });
-      div.appendChild(ul);
-      div.appendChild(document.createElement('p'));
-      const again = document.createElement('a');
-      again.href = '/';
-      again.textContent = 'Fazer novamente';
-      div.appendChild(again);
-      app.innerHTML = '';
-      app.appendChild(div);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    }
-
-    loadQuestions().catch(err => {
-      document.getElementById('app').textContent = 'Erro ao carregar perguntas.';
-      console.error(err);
-    });
-  </script>
+  <!-- Pop-up -->
+  <div class="popup">
+    <h3>Avaliação Diagnóstica</h3>
+    <p>Progresso: 0 de 15</p>
+    <button>Começar questões →</button>
+  </div>
 </body>
 </html>
+

@@ -22,7 +22,7 @@ import java.util.Map;
 public class Diagnostico {
 
 	public static void main(String[] args) throws Exception {
-		QuestionService service = new QuestionService();
+		ConexaoBD service = new ConexaoBD();
 
 		// Cria servidor embutido na porta 8000
 		HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
