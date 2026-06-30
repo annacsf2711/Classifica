@@ -1,3 +1,4 @@
+package Diagnostico;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -96,8 +97,8 @@ public class Diagnostico {
 
 		for (Questao q : questions) {
 			sb.append("<fieldset>");
-			sb.append("<legend>").append(escape(q.getText())).append("</legend>");
-			List<String> opts = q.getOptions();
+			sb.append("<legend>").append(escape(q.getTexto())).append("</legend>");
+			List<String> opts = q.getOpcoes();
 			for (int i = 0; i < opts.size(); i++) {
 				String name = "q" + q.getId();
 				String value = String.valueOf(i);
@@ -131,14 +132,14 @@ public class Diagnostico {
 				ansIndex = Integer.parseInt(answer);
 			} catch (Exception ignored) {
 			}
-			boolean isCorrect = ansIndex == q.getCorrectIndex();
+			boolean isCorrect = ansIndex == q.getGabarito();
 			if (isCorrect)
 				correct++;
 			sb.append("<li>");
-			sb.append(escape(q.getText()));
+			sb.append(escape(q.getTexto()));
 			sb.append(" - Sua resposta: ");
-			if (ansIndex >= 0 && ansIndex < q.getOptions().size()) {
-				sb.append(escape(q.getOptions().get(ansIndex)));
+			if (ansIndex >= 0 && ansIndex < q.getOpcoes().size()) {
+				sb.append(escape(q.getOpcoes().get(ansIndex)));
 			} else {
 				sb.append("(não respondida)");
 			}
@@ -164,10 +165,10 @@ public class Diagnostico {
 			firstQ = false;
 			sb.append("{");
 			sb.append("\"id\":").append(q.getId()).append(",");
-			sb.append("\"text\":\"").append(jsonEscape(q.getText())).append("\",");
+			sb.append("\"text\":\"").append(jsonEscape(q.getTexto())).append("\",");
 			sb.append("\"options\":[");
 			boolean first = true;
-			for (String o : q.getOptions()) {
+			for (String o : q.getOpcoes()) {
 				if (!first)
 					sb.append(",");
 				first = false;
@@ -194,7 +195,7 @@ public class Diagnostico {
 				ansIndex = Integer.parseInt(answer);
 			} catch (Exception ignored) {
 			}
-			boolean isCorrect = ansIndex == q.getCorrectIndex();
+			boolean isCorrect = ansIndex == q.getGabarito();
 			if (isCorrect)
 				correct++;
 			if (!first)
@@ -202,14 +203,14 @@ public class Diagnostico {
 			first = false;
 			details.append("{");
 			details.append("\"id\":").append(q.getId()).append(",");
-			details.append("\"question\":\"").append(jsonEscape(q.getText())).append("\",");
+			details.append("\"question\":\"").append(jsonEscape(q.getTexto())).append("\",");
 			details.append("\"selected\":").append(ansIndex).append(",");
 			details.append("\"selectedText\":\"");
-			if (ansIndex >= 0 && ansIndex < q.getOptions().size())
-				details.append(jsonEscape(q.getOptions().get(ansIndex)));
+			if (ansIndex >= 0 && ansIndex < q.getOpcoes().size())
+				details.append(jsonEscape(q.getOpcoes().get(ansIndex)));
 			details.append("\",");
-			details.append("\"correctIndex\":").append(q.getCorrectIndex()).append(",");
-			details.append("\"correctText\":\"").append(jsonEscape(q.getOptions().get(q.getCorrectIndex())))
+			details.append("\"correctIndex\":").append(q.getGabarito()).append(",");
+			details.append("\"correctText\":\"").append(jsonEscape(q.getOpcoes().get(q.getGabarito())))
 					.append("\",");
 			details.append("\"correct\":").append(isCorrect);
 			details.append("}");
