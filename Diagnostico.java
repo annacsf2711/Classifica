@@ -1,6 +1,8 @@
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+import BD.ConexaoBD;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,11 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Entry point: servidor HTTP simples que serve a interface HTML
- * e processa submissões de respostas. Mantido propositalmente
- * simples para facilitar evolução futura (banco de dados, templates).
- */
 public class Diagnostico {
 
 	public static void main(String[] args) throws Exception {
@@ -53,7 +50,7 @@ public class Diagnostico {
 			if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
 				String body = readStream(exchange.getRequestBody());
 				Map<String, String> params = parseForm(body);
-				String resultHtml = renderResult(service.getAll(), params);
+				String resultHtml = renderResult(service.getAll(), params); // nao sei pq nao dafdfyyuyefyfwyufyuwfyuf
 				sendResponse(exchange, 200, resultHtml);
 			} else {
 				exchange.sendResponseHeaders(405, -1);
@@ -90,14 +87,14 @@ public class Diagnostico {
 	}
 
 	// Gera HTML do formulário a partir das perguntas
-	private static String renderForm(List<Question> questions) {
+	private static String renderForm(List<Questao> questions) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<!doctype html><html><head><meta charset=\"utf-8\"><title>Avaliação Diagnóstica</title>")
 				.append("<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body>")
 				.append("<h1>Avaliação Diagnóstica - Exemplo</h1>")
 				.append("<form method=\"post\" action=\"/submit\">");
 
-		for (Question q : questions) {
+		for (Questao q : questions) {
 			sb.append("<fieldset>");
 			sb.append("<legend>").append(escape(q.getText())).append("</legend>");
 			List<String> opts = q.getOptions();
@@ -119,20 +116,24 @@ public class Diagnostico {
 	}
 
 	// Gera HTML com resultados básicos (pontuação)
-	private static String renderResult(List<Question> questions, Map<String, String> params) {
+	private static String renderResult(List<Questao> questions, Map<String, String> params) {
 		int correct = 0;
 		StringBuilder sb = new StringBuilder();
 		sb.append("<!doctype html><html><head><meta charset=\"utf-8\"><title>Resultado</title></head><body>")
 				.append("<h1>Resultado</h1>")
 				.append("<ul>");
 
-		for (Question q : questions) {
+		for (Questao q : questions) {
 			String key = "q" + q.getId();
 			String answer = params.getOrDefault(key, "");
 			int ansIndex = -1;
-			try { ansIndex = Integer.parseInt(answer); } catch (Exception ignored) {}
+			try {
+				ansIndex = Integer.parseInt(answer);
+			} catch (Exception ignored) {
+			}
 			boolean isCorrect = ansIndex == q.getCorrectIndex();
-			if (isCorrect) correct++;
+			if (isCorrect)
+				correct++;
 			sb.append("<li>");
 			sb.append(escape(q.getText()));
 			sb.append(" - Sua resposta: ");
@@ -153,12 +154,13 @@ public class Diagnostico {
 	}
 
 	// Converte lista de perguntas para JSON (não inclui índice correto)
-	private static String questionsToJson(List<Question> questions) {
+	private static String questionsToJson(List<Questao> questions) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		boolean firstQ = true;
-		for (Question q : questions) {
-			if (!firstQ) sb.append(",");
+		for (Questao q : questions) {
+			if (!firstQ)
+				sb.append(",");
 			firstQ = false;
 			sb.append("{");
 			sb.append("\"id\":").append(q.getId()).append(",");
@@ -166,7 +168,8 @@ public class Diagnostico {
 			sb.append("\"options\":[");
 			boolean first = true;
 			for (String o : q.getOptions()) {
-				if (!first) sb.append(",");
+				if (!first)
+					sb.append(",");
 				first = false;
 				sb.append("\"").append(jsonEscape(o)).append("\"");
 			}
@@ -178,29 +181,36 @@ public class Diagnostico {
 	}
 
 	// Calcula resultado com base em parâmetros (form-urlencoded) e retorna JSON
-	private static String computeResultJson(List<Question> questions, Map<String, String> params) {
+	private static String computeResultJson(List<Questao> questions, Map<String, String> params) {
 		int correct = 0;
 		StringBuilder details = new StringBuilder();
 		details.append("[");
 		boolean first = true;
-		for (Question q : questions) {
+		for (Questao q : questions) {
 			String key = "q" + q.getId();
 			String answer = params.getOrDefault(key, "");
 			int ansIndex = -1;
-			try { ansIndex = Integer.parseInt(answer); } catch (Exception ignored) {}
+			try {
+				ansIndex = Integer.parseInt(answer);
+			} catch (Exception ignored) {
+			}
 			boolean isCorrect = ansIndex == q.getCorrectIndex();
-			if (isCorrect) correct++;
-			if (!first) details.append(",");
+			if (isCorrect)
+				correct++;
+			if (!first)
+				details.append(",");
 			first = false;
 			details.append("{");
 			details.append("\"id\":").append(q.getId()).append(",");
 			details.append("\"question\":\"").append(jsonEscape(q.getText())).append("\",");
 			details.append("\"selected\":").append(ansIndex).append(",");
 			details.append("\"selectedText\":\"");
-			if (ansIndex >= 0 && ansIndex < q.getOptions().size()) details.append(jsonEscape(q.getOptions().get(ansIndex)));
+			if (ansIndex >= 0 && ansIndex < q.getOptions().size())
+				details.append(jsonEscape(q.getOptions().get(ansIndex)));
 			details.append("\",");
 			details.append("\"correctIndex\":").append(q.getCorrectIndex()).append(",");
-			details.append("\"correctText\":\"").append(jsonEscape(q.getOptions().get(q.getCorrectIndex()))).append("\",");
+			details.append("\"correctText\":\"").append(jsonEscape(q.getOptions().get(q.getCorrectIndex())))
+					.append("\",");
 			details.append("\"correct\":").append(isCorrect);
 			details.append("}");
 		}
@@ -217,7 +227,8 @@ public class Diagnostico {
 
 	// Escape para JSON simples
 	private static String jsonEscape(String s) {
-		if (s == null) return "";
+		if (s == null)
+			return "";
 		return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
 	}
 
@@ -240,7 +251,8 @@ public class Diagnostico {
 	// Parse simples de form-urlencoded (body)
 	private static Map<String, String> parseForm(String body) throws IOException {
 		Map<String, String> map = new HashMap<>();
-		if (body == null || body.isEmpty()) return map;
+		if (body == null || body.isEmpty())
+			return map;
 		String[] pairs = body.split("&");
 		for (String p : pairs) {
 			int idx = p.indexOf('=');
@@ -255,7 +267,8 @@ public class Diagnostico {
 
 	// Escapa HTML básico
 	private static String escape(String s) {
-		if (s == null) return "";
+		if (s == null)
+			return "";
 		return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 				.replace("\"", "&quot;").replace("'", "&#x27;");
 	}
