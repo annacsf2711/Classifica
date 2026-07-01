@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Classifica - Cadastro de Aluno</title>
+
+<script src="CadastroAluno.js" defer></script> <!-- Conectar ao java script -->
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -158,39 +161,41 @@
         </svg>
       </div>
 
-      <form onsubmit="event.preventDefault(); alert('Cadastro enviado!');">
+      <form id="formCadastro">
+
         <label>Nome completo</label>
-        <input type="text" placeholder="Anna Júlia Ferreira" required>
+        <input type="text" id="nome" placeholder="Anna Júlia Ferreira" required>
 
         <div class="row">
           <div>
             <label>CPF</label>
-            <input type="text" placeholder="000.000.000-00" required>
+            <input type="text" id="cpf" placeholder="000.000.000-00" required>
           </div>
           <div>
             <label>Data de Nascimento</label>
-            <input type="text" placeholder="00/00/0000" required>
+            <input type="text" id="dataNascimento" placeholder="00/00/0000" required>
           </div>
         </div>
 
         <label>Email</label>
-        <input type="email" placeholder="seu@email.com" required>
+        <input type="email" id="email"  placeholder="seu@email.com" required>
 
         <div class="row">
           <div>
             <label>CEP</label>
-            <input type="text" placeholder="00000-000" required>
+            <input type="text" id="cep" placeholder="00000-000" required>
           </div>
           <div>
             <label>Senha</label>
-            <input type="password" placeholder="Senha" required>
+            <input type="password" id="senha" placeholder="Senha" required>
           </div>
         </div>
 
         <div class="buttons">
-          <button type="submit" class="btn btn-primary">Cadastrar</button>
-          <button type="button" class="btn btn-secondary">Cancelar</button>
+          <button type="submit"  class="btn btn-primary">Cadastrar</button>
+          <button type="button"  class="btn btn-secondary">Cancelar</button>
         </div>
+
       </form>
     </div>
   </div>
