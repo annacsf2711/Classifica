@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classifica - Cadastro de Aluno</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #eef1f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    display: flex;
+    width: 900px;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    min-height: 560px;
+  }
+  /* Left panel */
+  .left {
+    flex: 1;
+    background: linear-gradient(160deg, #3aa4e8 0%, #3ec98a 100%);
+    color: #fff;
+    padding: 40px 30px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .circle {
+    position: absolute;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+  }
+  .circle.c1 { width: 130px; height: 130px; top: 40px; left: 30px; }
+  .circle.c2 { width: 90px; height: 90px; top: 180px; right: 40px; }
+  .circle.c3 { width: 160px; height: 160px; bottom: -40px; left: -40px; }
+  .badge {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    z-index: 1;
+  }
+  .left h1 { font-size: 32px; margin-bottom: 30px; z-index: 1; }
+  .left h2 { font-size: 20px; margin-bottom: 10px; z-index: 1; font-weight: 600; }
+  .left p { font-size: 14px; opacity: 0.95; z-index: 1; line-height: 1.5; }
+
+  /* Right panel */
+  .right {
+    flex: 1.2;
+    padding: 35px 40px;
+  }
+  .right h2 { font-size: 24px; color: #2c3e50; margin-bottom: 4px; }
+  .right .subtitle { color: #888; font-size: 13px; margin-bottom: 20px; }
+
+  .avatar {
+    width: 70px; height: 70px;
+    border: 2px dashed #cfd6df;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: #9aa5b1;
+  }
+
+  form label {
+    display: block;
+    font-size: 12px;
+    color: #4a5568;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  form input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dfe3e8;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #f8f9fb;
+    outline: none;
+    transition: border-color .2s;
+  }
+  form input:focus { border-color: #3aa4e8; background: #fff; }
+  form input::placeholder { color: #b5bcc6; }
+
+  .row { display: flex; gap: 14px; }
+  .row > div { flex: 1; }
+
+  .buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .1s, opacity .2s;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    color: #fff;
+  }
+  .btn-secondary {
+    background: #fff;
+    color: #4a5568;
+    border: 1px solid #dfe3e8;
+  }
+
+  @media (max-width: 700px) {
+    .container { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+      <div class="badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+          <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+        </svg>
+      </div>
+      <h1>Classifica</h1>
+      <h2>Bem-vindo ao Classifica</h2>
+      <p>Sistema para o ingresso<br>ao Ensino Técnico Federal</p>
+    </div>
+
+    <div class="right">
+      <h2>Cadastro de Aluno</h2>
+      <p class="subtitle">Preencha seus dados para criar a conta</p>
+
+      <div class="avatar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </div>
+
+      <form onsubmit="event.preventDefault(); alert('Cadastro enviado!');">
+        <label>Nome completo</label>
+        <input type="text" placeholder="Anna Júlia Ferreira" required>
+
+        <div class="row">
+          <div>
+            <label>CPF</label>
+            <input type="text" placeholder="000.000.000-00" required>
+          </div>
+          <div>
+            <label>Data de Nascimento</label>
+            <input type="text" placeholder="00/00/0000" required>
+          </div>
+        </div>
+
+        <label>Email</label>
+        <input type="email" placeholder="seu@email.com" required>
+
+        <div class="row">
+          <div>
+            <label>CEP</label>
+            <input type="text" placeholder="00000-000" required>
+          </div>
+          <div>
+            <label>Senha</label>
+            <input type="password" placeholder="Senha" required>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button type="submit" class="btn btn-primary">Cadastrar</button>
+          <button type="button" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
