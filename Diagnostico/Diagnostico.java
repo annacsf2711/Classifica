@@ -22,8 +22,8 @@ public class Diagnostico {
 	public static void main(String[] args) throws Exception {
 		ConexaoBD service = new ConexaoBD();
 
-		// Cria servidor embutido na porta 8000
-		HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+		// Cria servidor embutido na porta 5432
+		HttpServer server = HttpServer.create(new InetSocketAddress(5432), 0);
 
 		// Contexto raiz: serve o arquivo estático web/index.html se existir
 		server.createContext("/", exchange -> {
@@ -51,7 +51,7 @@ public class Diagnostico {
 			if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
 				String body = readStream(exchange.getRequestBody());
 				Map<String, String> params = parseForm(body);
-				String resultHtml = renderResult(service.getAll(), params); // nao sei pq nao dafdfyyuyefyfwyufyuwfyuf
+				String resultHtml = renderResult(service.getAll(), params);
 				sendResponse(exchange, 200, resultHtml);
 			} else {
 				exchange.sendResponseHeaders(405, -1);
