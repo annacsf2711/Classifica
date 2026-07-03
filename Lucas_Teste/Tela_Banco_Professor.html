@@ -142,6 +142,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: opacity .2s, transform .1s;
+    text-decoration: none; 
   }
   .btn:hover { opacity: 0.9; }
   .btn:active { transform: scale(0.98); }
@@ -157,9 +158,55 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     transition: transform .1s;
     color: #4a5568;
+    flex-shrink: 0;
   }
   .add-card:hover { transform: translateY(-2px); }
   .add-card svg { width: 40px; height: 40px; }
+
+  /* Linha que agrupa o botão + e o formulário */
+  .add-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* Caixa do formulário "Nome do Banco de Questões" */
+  .form-card {
+    display: none;
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    flex: 1;
+    min-width: 260px;
+  }
+  .form-card.open { display: block; }
+  .form-card label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  .form-card input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dcdfe4;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 18px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-card input[type="text"]:focus {
+    border-color: #3aa4e8;
+  }
+  .form-card .btn {
+    width: 100%;
+    text-align: center;
+  }
 
   @media (max-width: 900px) {
     .container { flex-direction: column; }
@@ -236,16 +283,48 @@
             <span><span class="dot"></span>Disciplina: Matemática</span>
           </div>
         </div>
-        <button class="btn">Abrir</button>
+        <a href="Tela_MeuBanco.html" class="btn">Abrir</a>
       </div>
 
-      <div class="add-card" title="Adicionar novo banco">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
+      <div class="add-row">
+        <div class="add-card" id="addCard" title="Adicionar novo banco" onclick="toggleForm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+
+        <div class="form-card" id="formCard">
+          <label for="nomeBanco">Nome</label>
+          <input type="text" id="nomeBanco" placeholder="Nome do Banco de Questões" />
+          <button class="btn" id="salvarBanco" onclick="salvarBanco()">Salvar</button>
+        </div>
       </div>
     </main>
   </div>
+
+  <script>
+    function toggleForm() {
+      const form = document.getElementById('formCard');
+      form.classList.toggle('open');
+      if (form.classList.contains('open')) {
+        document.getElementById('nomeBanco').focus();
+      }
+    }
+
+    function salvarBanco() {
+      const nome = document.getElementById('nomeBanco').value.trim();
+      if (!nome) {
+        alert('Digite um nome antes de salvar.');
+        return;
+      }
+      // Aqui você conecta com sua lógica real (API, banco de dados, etc.)
+      console.log('Salvando banco de questões:', nome);
+
+      // Fecha e limpa o formulário depois de salvar
+      document.getElementById('nomeBanco').value = '';
+      document.getElementById('formCard').classList.remove('open');
+    }
+  </script>
 </body>
 </html>

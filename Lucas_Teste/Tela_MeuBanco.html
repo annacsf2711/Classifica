@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classifica - Meu Banco</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #eef1f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px;
+    background: #f5f1e8;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    min-height: 90vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+    color: #fff;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .brand { text-align: center; margin-bottom: 40px; }
+  .brand .badge {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .brand h1 { font-size: 28px; font-weight: 700; }
+
+  .nav { list-style: none; }
+  .nav li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .nav li:hover { background: rgba(255,255,255,0.12); }
+  .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+  .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 30px;
+  }
+  .user .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    color: #3aa4e8;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 20px;
+  }
+  .user .info b { display: block; font-size: 15px; }
+  .user .info span { font-size: 13px; opacity: 0.9; }
+
+  /* Main */
+  .main {
+    flex: 1;
+    padding: 60px 70px;
+    position: relative;
+  }
+  .close {
+    position: absolute;
+    top: 24px; right: 28px;
+    background: none; border: none;
+    font-size: 28px; color: #4a5568;
+    cursor: pointer;
+  }
+  .main h2 {
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+  }
+  .divider {
+    height: 6px;
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    border-radius: 4px;
+    margin-bottom: 32px;
+  }
+
+  .add-wrap { display: flex; justify-content: flex-end; margin-bottom: 24px; }
+  .add-btn {
+    width: 56px; height: 56px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    color: #4a5568;
+    transition: transform .1s;
+  }
+  .add-btn:hover { transform: translateY(-2px); }
+  .add-btn svg { width: 26px; height: 26px; }
+
+  .questions { display: flex; flex-direction: column; gap: 16px; }
+  .question {
+    background: #fff;
+    border-radius: 999px;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+  }
+  .question .left {
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .question h3 {
+    font-size: 20px;
+    color: #2c3e50;
+    font-weight: 700;
+  }
+  .question .type {
+    display: flex; align-items: center; gap: 8px;
+    color: #4a5568; font-size: 15px;
+  }
+  .dot {
+    width: 10px; height: 10px;
+    background: #3ec98a;
+    border-radius: 50%;
+  }
+  .btn {
+    padding: 10px 32px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+
+  @media (max-width: 900px) {
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .main { padding: 30px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <path d="M12 2L4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z"/>
+            </svg>
+          </div>
+          <h1>Classifica</h1>
+        </div>
+
+        <ul class="nav">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            Sala de Aula
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+            Meus Simulados
+          </li>
+          <li class="active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"/></svg>
+            Banco de Questões
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Configurações
+          </li>
+        </ul>
+      </div>
+
+      <div class="user">
+        <div class="avatar">L</div>
+        <div class="info">
+          <b>Letícia Pinho</b>
+          <span>Professor(a)</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <button class="close" aria-label="Fechar">&times;</button>
+
+      <h2>Meu Banco</h2>
+      <div class="divider"></div>
+
+      <div class="add-wrap">
+        <button class="add-btn" aria-label="Adicionar questão">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
+      <div class="questions">
+        <div class="question">
+          <div class="left">
+            <h3>Questão 1</h3>
+            <span class="type"><span class="dot"></span> Tipo de questão</span>
+          </div>
+          <button class="btn">Abrir</button>
+        </div>
+        <div class="question">
+          <div class="left">
+            <h3>Questão 2</h3>
+            <span class="type"><span class="dot"></span> Tipo de questão</span>
+          </div>
+          <button class="btn">Abrir</button>
+        </div>
+        <div class="question">
+          <div class="left">
+            <h3>Questão 3</h3>
+            <span class="type"><span class="dot"></span> Tipo de questão</span>
+          </div>
+          <button class="btn">Abrir</button>
+        </div>
+        <div class="question">
+          <div class="left">
+            <h3>Questão 4</h3>
+            <span class="type"><span class="dot"></span> Tipo de questão</span>
+          </div>
+          <button class="btn">Abrir</button>
+        </div>
+        <div class="question">
+          <div class="left">
+            <h3>Questão 5</h3>
+            <span class="type"><span class="dot"></span> Tipo de questão</span>
+          </div>
+          <button class="btn">Abrir</button>
+        </div>
+        <div class="question">
+          <div class="left">
+            <h3>Questão 6</h3>
+            <span class="type"><span class="dot"></span> Tipo de questão</span>
+          </div>
+          <button class="btn">Abrir</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
