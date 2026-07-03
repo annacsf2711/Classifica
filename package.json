@@ -1,0 +1,30 @@
+{
+  "name": "tcc---classifica",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasbarrosregodev/TCC---Classifica.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lucasbarrosregodev/TCC---Classifica/issues"
+  },
+  "homepage": "https://github.com/lucasbarrosregodev/TCC---Classifica#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "pg": "^8.22.0"
+  }
+}

@@ -82,3 +82,13 @@ document.getElementById("formCadastro").addEventListener("submit", async (evento
         alert("Erro ao conectar com o servidor"); // mostra a mensagem ao usuário
     }
 });
+
+
+function conferirNome() { // Cria a função que será executada ao clicar no botão
+    let nome = document.getElementById("nome").value; // Pega o valor digitado no campo com id="nome"  (let = guarda qualquer coisa)
+    if (nome == null || nome.trim() == "") {   // Verifica se o valor é nulo ou se está vazio
+        alert("Campo nome incompleto!");  // Exibe uma mensagem informando que o campo está incompleto (alert = pequenas janelas de diálogo)
+    } 
+}
+
+

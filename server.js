@@ -17,6 +17,11 @@ const pool = new Pool({
   port: 5432
 });
 
+// iniciar servidor
+app.listen(3000, () => {
+  console.log("Servidor rodando em http://localhost:3000");
+});
+
 // ===================== CADASTRAR ALUNO =====================
 app.post('/cadastrar', async (req, res) => {
   console.log("Dados recebidos no servidor:", req.body);
@@ -66,7 +71,3 @@ app.post('/login', async (req, res) => {
 });
 
 
-// iniciar servidor
-app.listen(3000, () => {
-  console.log("Servidor rodando em http://localhost:3000");
-});
