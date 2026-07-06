@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classifica - Login Professot</title>
+
+<script src="LoginProfessor.js" defer></script>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #eef1f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px; /* Igual ao cadastro */
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    min-height: 90vh; /* Igual ao cadastro */
+  }
+  
+  /* Painel Esquerdo (Exatamente igual ao cadastro) */
+  .left {
+    flex: 1;
+    background: linear-gradient(160deg, #3aa4e8 0%, #3ec98a 100%);
+    color: #fff;
+    padding: 40px 30px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .circle {
+    position: absolute;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+  }
+  .circle.c1 { width: 130px; height: 130px; top: 40px; left: 30px; }
+  .circle.c2 { width: 90px; height: 90px; top: 180px; right: 40px; }
+  .circle.c3 { width: 160px; height: 160px; bottom: -40px; left: -40px; } /* Recuperado do cadastro */
+  
+  .badge {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    z-index: 1;
+    position: relative;
+  }
+ 
+  .left h1 { font-size: 56px; margin-bottom: 40px; z-index: 1; }
+  .left h2 { font-size: 32px; margin-bottom: 16px; z-index: 1; font-weight: 600; }
+  .left p { font-size: 20px; opacity: 0.95; z-index: 1; line-height: 1.6; }
+
+  /* Painel Direito (Com o espaçamento amplo do cadastro) */
+  .right {
+    flex: 1.2;
+    padding: 60px 80px; /* Igual ao cadastro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-box {
+    width: 100%;
+    max-width: 520px; /* Um pouco mais largo para harmonizar com a tela maior */
+  }
+  .right h2 { font-size: 36px; color: #2c3e50; margin-bottom: 6px; font-weight: 600; }
+  .right .subtitle { color: #888; font-size: 16px; margin-bottom: 30px; }
+
+  form label {
+    display: block;
+    font-size: 15px;
+    color: #4a5568;
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  form input {
+    width: 100%;
+    padding: 16px 18px; /* Igual ao cadastro */
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #f8f9fb;
+    outline: none;
+    transition: border-color .2s;
+  }
+  form input:focus { border-color: #3aa4e8; background: #fff; }
+  
+  .eye-icon {
+    position: absolute;
+    right: 18px;
+    cursor: pointer;
+    color: #a0aec0;
+    display: flex;
+    align-items: center;
+  }
+
+  .forgot-password {
+    display: block;
+    text-align: right;
+    color: #3aa4e8;
+    font-size: 14px;
+    text-decoration: none;
+    margin-top: 10px;
+  }
+  .forgot-password:hover { text-decoration: underline; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 16px 36px; /* Igual ao cadastro */
+    border-radius: 8px;
+    border: none;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 30px;
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    color: #fff;
+    transition: transform .1s, opacity .2s;
+  }
+  .btn-submit:hover { opacity: 0.9; }
+  .btn-submit:active { transform: scale(0.98); }
+
+  /* Divisor "ou" */
+  .divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #a0aec0;
+    font-size: 15px;
+    margin: 30px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #dfe3e8;
+  }
+  .divider:not(:empty)::before { margin-right: 1em; }
+  .divider:not(:empty)::after { margin-left: 1em; }
+
+  /* Botões Sociais */
+  .social-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .btn-social {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-social:hover { background: #f8f9fb; }
+
+  /* Links de rodapé */
+  .footer-links {
+    text-align: center;
+    font-size: 15px;
+    color: #4a5568;
+  }
+  .footer-links a {
+    color: #3aa4e8;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .footer-links a:hover { text-decoration: underline; }
+  
+  .prof-login {
+    display: block;
+    margin-top: 14px;
+    color: #a0aec0;
+    font-weight: 500;
+  }
+
+  @media (max-width: 850px) {
+    .container { flex-direction: column; min-height: auto; }
+    .circle { display: none; }
+    .right { padding: 40px 30px; }
+  }
+
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Painel Esquerdo -->
+    <div class="left">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+      <div class="badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1">
+          <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+        </svg>
+      </div>
+      <h1>Classifica</h1>
+      <h2>Bem-vindo ao Classifica</h2>
+      <p>Sistema para o ingresso<br>ao Ensino Técnico Federal</p>
+    </div>
+
+    <!-- Painel Direito -->
+    <div class="right">
+      <div class="login-box">
+        <h2>Login Professor</h2>
+        <p class="subtitle">Acesse sua conta para continuar</p>
+
+        <form id="formLoginProf">
+          <label>E-mail</label>
+          <input type="email" id="email" placeholder="seu@email.com" required>
+
+          <label>Senha</label>
+          <div class="input-wrapper">
+            <input type="password" id="senha" placeholder="Sua senha" required>
+          </div>
+          
+          <a href="#" class="forgot-password">Esqueceu a senha?</a>
+
+          <button type="submit" class="btn-submit">Entrar</button>
+        </form>
+
+        <div class="divider">ou</div>
+
+        <div class="social-buttons">
+          <!-- Botão Google -->
+          <button type="button" class="btn-social">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l3.258-3.133C18.42 1.996 15.62 1 12.24 1 6.033 1 12.24 1 12.24 12.24s5.033 11.24 11.24 11.24c6.478 0 10.793-4.537 10.793-10.986 0-.746-.08-1.32-.176-1.885H12.24z"/>
+            </svg>
+            Google
+          </button>
+          <!-- Botão Apple -->
+          <button type="button" class="btn-social">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z"/>
+            </svg>
+            Apple
+          </button>
+        </div>
+
+        <div class="footer-links">
+          <span>Não tem conta? <a href="../3CadastroProfessor/CadastroProfessor.html">Cadastre-se</a></span>
+          <a href="../2LoginAluno/LoginAluno.html" class="prof-login">Login Aluno</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -17,13 +17,14 @@ const pool = new Pool({
   port: 5432
 });
 
+
 // iniciar servidor
 app.listen(3000, () => {
   console.log("Servidor rodando em http://localhost:3000");
 });
 
 // ===================== CADASTRAR ALUNO =====================
-app.post('/cadastrar', async (req, res) => {
+app.post('/cadastrarAluno', async (req, res) => {
   console.log("Dados recebidos no servidor:", req.body);
   const { nome, cpf, dataNascimento, email, senha, cep } = req.body; // pega os dados
 
@@ -44,8 +45,7 @@ app.post('/cadastrar', async (req, res) => {
 
 
 // ===================== LOGIN ALUNO =====================
-
-app.post('/login', async (req, res) => {
+app.post('/loginAluno', async (req, res) => {
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
   try {
@@ -53,6 +53,51 @@ app.post('/login', async (req, res) => {
     const resultado = await pool.query(  
       `SELECT EXISTS( 
           SELECT 1 FROM classifica.estudante WHERE email = $1 AND senha = $2
+      )`,
+      [email, senha]
+    ); 
+
+    const usuarioExiste = resultado.rows[0].exists; // true ou false
+
+    if (usuarioExiste) {
+      res.send("Login realizado com sucesso!");
+    } else {
+      res.status(401).send("Email ou senha incorretos.");
+    }
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao processar o login no banco");
+  }
+});
+
+// ===================== CADASTRAR PROF =====================
+app.post('/cadastrarProf', async (req, res) => {
+  console.log("Dados recebidos no servidor:", req.body);
+  const { nome, cep, cpf, disciplina, dataNascimento, email, senha } = req.body;
+  try { // tentando executar o código
+    await pool.query( // executa o comando sql no banco
+      `INSERT INTO classifica.professor (nome, cpf, cep, data_nasc, email, senha, especialidade, ativo)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, true)`,
+      [nome, cpf, cep, dataNascimento, email, senha, disciplina]
+    );
+
+    res.send("Cadastro realizado com sucesso!");
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao salvar no banco");
+  }
+});
+
+// ===================== LOGIN ALUNO =====================
+app.post('/loginProf', async (req, res) => {
+  console.log("Dados recebidos no login", req.body);
+  const {email, senha} = req.body;
+  try {
+    // Executa a busca no banco de dados para ver se o usuário existe
+    const resultado = await pool.query(  
+      `SELECT EXISTS( 
+          SELECT 1 FROM classifica.professor WHERE email = $1 AND senha = $2
       )`,
       [email, senha]
     ); 
