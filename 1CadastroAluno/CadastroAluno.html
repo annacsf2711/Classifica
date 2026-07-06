@@ -84,7 +84,7 @@
   form label {
     display: block;
     font-size: 15px;
-    color: #4a5568;
+    color: #000000;
     margin-bottom: 6px;
     margin-top: 18px;
   }
@@ -93,11 +93,13 @@
     padding: 16px 18px;
     border: 1px solid #dfe3e8;
     border-radius: 8px;
-    font-size: 16px;
+    font-sze: 16px;
+    color: #4a5568;
     background: #f8f9fb;
     outline: none;
     transition: border-color .2s;
   }
+
   form input:focus { border-color: #3aa4e8; background: #fff; }
   form input::placeholder { color: #b5bcc6; }
 
@@ -162,10 +164,9 @@
         </svg>
       </div>
 
-      <form id="formCadastro">
-
+      <form id="formCadastroAluno" novalidate>
         <label>Nome completo</label>
-        <input type="text" id="nome" placeholder="Anna Júlia Ferreira" required>
+        <input type="text" id="nome" placeholder="Nome Completo" required>
 
         <div class="row">
           <div>
@@ -193,10 +194,9 @@
         </div>
 
         <div class="buttons">
-          <button type="submit"  class="btn btn-primary">Cadastrar</button>
-          <button type="button"  class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary" onclick="conferir(); conferirData();">Cadastrar</button>
+          <button type="button"  class="btn btn-secondary" onclick="cancelar()">Cancelar</button>
         </div>
-
       </form>
     </div>
   </div>
