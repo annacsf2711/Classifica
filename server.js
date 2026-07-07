@@ -114,5 +114,16 @@ app.post('/loginProf', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
-
+// ===================== questões do diagnostico ====================
+app.get('/questoesDiagnostico', async (req, res) => {
+  console.log("Dados da questão recebidos:", req.body);
+  const {id_questao, enunciado, alternativaA, alternativaB, alternativaC, alternativaD, alternativaCorreta, disciplina } = req.body;
+  try {
+    const resultado = await pool.query(`SELECT * FROM classifica.exercicio`);
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao buscar questões");
+  }
+});
 

@@ -327,8 +327,8 @@
   <script>
     // Estado da aplicação
     let questoes = []; //array
-    let questaoAtual = 0;
-    let alternativaSelecionada = null;
+    let questaoAtual = 0; //qual questão esta
+    let alternativaSelecionada = null; //qual a resposta selecionada
     let respostas = []; // Array para armazenar respostas do aluno
 
     // Configuração da API
@@ -366,37 +366,28 @@
 
     // Função para renderizar a questão atual
     function renderizarQuestao() {
-      if (questaoAtual >= questoes.length) {
-        mostrarResultadoFinal();
+      if (questaoAtual >= questoes.length) { // quando todas as questões acabarem
+        mostrarResultadoFinal(); // mostra o array dos resultados
         return;
       }
 
-      const questao = questoes[questaoAtual];
+      const questao = questoes[questaoAtual]; //pega o indice da questao atual e passa para essa variavel
       
       // Atualizar número da questão e progresso
-      document.getElementById('questaoNumero').textContent = 
-        `Questão ${questaoAtual + 1} de ${questoes.length}`;
+      document.getElementById('questaoNumero').textContent = // pega o conteúdo do h1 pelo id e define o que tem dentro 
+        `Questão ${questaoAtual + 1} de ${questoes.length}`; // pega  o indice da questão atual e o tanto de questões existentes 
       
-      const progresso = ((questaoAtual + 1) / questoes.length) * 100;
-      document.getElementById('barraProgresso').style.width = `${progresso}%`;
-
-      // Atualizar dificuldade
-      const dificuldadeMap = {
-        'facil': 'Fácil',
-        'medio': 'Médio',
-        'dificil': 'Difícil'
-      };
-      document.getElementById('tagDificuldade').textContent = 
-        dificuldadeMap[questao.nivel_dificuldade.toLowerCase()] || questao.nivel_dificuldade;
+      const progresso = ((questaoAtual + 1) / questoes.length) * 100; //  porcentagem de progresso
+      document.getElementById('barraProgresso').style.width = `${progresso}%`; // atualiza a largura da barra de progresso
 
       // Renderizar enunciado
-      const enunciadoBox = document.getElementById('enunciadoBox');
-      enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`;
+      const enunciadoBox = document.getElementById('enunciadoBox'); // pega o conteúdo html pelo id 
+      enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`; // insere o enunciado da questão pela api do bd 
 
       // Renderizar alternativas
-      const alternativesContainer = document.getElementById('alternativesContainer');
-      const alternativas = ['a', 'b', 'c', 'd'];
-      const letras = ['A', 'B', 'C', 'D'];
+      const alternativesContainer = document.getElementById('alternativesContainer'); // pega o conteúdo html pelo id 
+      const alternativas = ['a', 'b', 'c', 'd']; // define as alternativas
+      const letras = ['A', 'B', 'C', 'D']; // define as letras das alternativas
       
       alternativesContainer.innerHTML = alternativas.map((alt, index) => {
         const isSelected = alternativaSelecionada === alt;
