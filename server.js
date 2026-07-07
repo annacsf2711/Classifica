@@ -89,7 +89,7 @@ app.post('/cadastrarProf', async (req, res) => {
   }
 });
 
-// ===================== LOGIN ALUNO =====================
+// ===================== LOGIN PROF =====================
 app.post('/loginProf', async (req, res) => {
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
@@ -97,15 +97,13 @@ app.post('/loginProf', async (req, res) => {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(  
       `SELECT EXISTS( 
-          SELECT 1 FROM classifica.professor WHERE email = $1 AND senha = $2
+          SELECT id FROM classifica.professor WHERE email = $1 AND senha = $2
       )`,
       [email, senha]
     ); 
 
-    const usuarioExiste = resultado.rows[0].exists; // true ou false
-
-    if (usuarioExiste) {
-      res.send("Login realizado com sucesso!");
+    if (resultado.rows.length > 0) {
+      res.json({ mensagem: "Login realizado com sucesso!", professorId: resultado.rows[0].id });
     } else {
       res.status(401).send("Email ou senha incorretos.");
     }
