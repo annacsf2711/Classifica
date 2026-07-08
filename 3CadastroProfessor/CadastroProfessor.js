@@ -99,9 +99,7 @@ document.getElementById("formCadastroProf").addEventListener("submit", async (ev
     if(!conferirData()){ //if (conferirData() == false)
         alert("Data inválida"); 
         return; // a função para
-    } else {
-        alert("Data válida");
-    }
+    } 
     const dataBr = document.getElementById("dataNascimento").value;
     
     // converte de DD/MM/AAAA → AAAA-MM-DD
@@ -128,6 +126,7 @@ document.getElementById("formCadastroProf").addEventListener("submit", async (ev
         });
         const texto = await resposta.text(); // pega a respost que veio do servidor e tranforma em texto
         alert(texto); // mostra uma mensagem na tela
+        window.location.href = "../4LoginProfessor/LoginProfessor.html";        
     } 
     catch(erro){ // caso dê erro
         console.error(erro); // mostra o erro no console do navegador 

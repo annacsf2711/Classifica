@@ -21,7 +21,7 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
         if (dados.idProfessor) { // verifica se o login foi realizado com sucesso
             localStorage.setItem("idProfessor", dados.idProfessor); // salva o id do professor no navegador
             console.log("Id professor:", dados.idProfessor);
-            alert(dados.mensagem); 
+            window.location.href = "../5ConfiguracoesProf/ConfiguracoesProf.html";        
         } else { // 
             alert(dados.mensagem); 
         }
