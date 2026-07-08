@@ -1,5 +1,4 @@
 // ===================== Login =====================
-
 document.getElementById("formLoginProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
     
@@ -7,6 +6,8 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
         senha: document.getElementById("senha").value,
         email: document.getElementById("email").value,
     };
+    console.log("dados", dadosLoginProf);
+
     try{
         const resposta = await fetch("http://localhost:3000/loginProf", { // envie os dados para o servidor backend
             method: "POST", // tipo de requisiçã HTTP usada para enviar dados
@@ -15,12 +16,19 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
             },
             body: JSON.stringify(dadosLoginProf), // enviando os dados
         });
-        const texto = await resposta.text(); // pega a respost que veio do servidor e tranforma em texto
-        alert(texto); // mostra uma mensagem na tela
-    } 
-    catch(erro){ // caso dê erro
-        console.error(erro); // mostra o erro no console do navegador 
-        alert("Erro ao conectar com o servidor"); // mostra a mensagem ao usuário
+        const dados = await resposta.json(); // converte a resposta do servidor para objeto js
+
+        if (dados.idProfessor) { // verifica se o login foi realizado com sucesso
+            localStorage.setItem("idProfessor", dados.idProfessor); // salva o id do professor no navegador
+            console.log("Id professor:", dados.idProfessor);
+            alert(dados.mensagem); 
+        } else { // 
+            alert(dados.mensagem); 
+        }
+    } catch (erro) { // executa caso ocorra algum erro na requisição
+        console.error(erro); 
+        alert("Erro ao conectar com o servidor"); 
     }
 });
+
 

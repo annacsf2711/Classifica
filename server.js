@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -89,30 +89,62 @@ app.post('/cadastrarProf', async (req, res) => {
   }
 });
 
-// ===================== LOGIN ALUNO =====================
+// ===================== LOGIN PROF =====================
 app.post('/loginProf', async (req, res) => {
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
-    const resultado = await pool.query(  
-      `SELECT EXISTS( 
-          SELECT 1 FROM classifica.professor WHERE email = $1 AND senha = $2
-      )`,
+    const resultado = await pool.query(
+      `SELECT id_professor FROM classifica.professor WHERE email = $1 AND senha = $2`,
       [email, senha]
-    ); 
+    );
+    const usuarioExiste = resultado.rows.length > 0; // Verifica se retornou algo
 
-    const usuarioExiste = resultado.rows[0].exists; // true ou false
+    if (usuarioExiste) { 
+      
+      console.log("Resultado da consulta:", resultado.rows);
 
-    if (usuarioExiste) {
-      res.send("Login realizado com sucesso!");
-    } else {
-      res.status(401).send("Email ou senha incorretos.");
+      res.json({  // envia um objeto com + informações
+        usuarioExiste: true,
+        mensagem: "Login realizado com sucesso!",
+        idProfessor: resultado.rows[0].id_professor   // envia o id do professor para o LoginProfessor 
+      });
     }
-  } catch (erro) {
+    else { 
+        res.status(401).json({
+        usuarioExiste: false,
+        mensagem: "Email ou senha incorretos."
+      });
+    }
+  }
+  catch (erro) {
     console.error(erro);
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
 
+// ===================== CONFIG PROF =====================
+app.get('/professor/:id', async (req, res) => { // rota para buscar os dados de um professor pelo id
+  console.log("Rota professor carregada");
+  const {id} = req.params;   // pega o id 
 
+  try {
+    const resultado = await pool.query(     // consulta os dados do professor no banco
+
+      `SELECT id_professor, nome, cpf, cep, data_nasc, email, especialidade
+      FROM classifica.professor WHERE id = $1`,
+      [id_professor]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).send("Professor não encontrado");
+    }
+    
+    res.json(resultado.rows[0]); // pegar o primeira elemento
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao buscar professor");
+  }
+});
