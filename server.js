@@ -114,12 +114,25 @@ app.post('/loginProf', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
-// ===================== questões do diagnostico ====================
-app.get('/questoesDiagnostico', async (req, res) => {
-  console.log("Dados da questão recebidos:", req.body);
-  const {id_questao, enunciado, alternativaA, alternativaB, alternativaC, alternativaD, alternativaCorreta, disciplina } = req.body;
+// ===================== QUESTÕES DO DIAGNOSTICO ====================
+app.get('/api/questoes', async (req, res) => {
   try {
-    const resultado = await pool.query(`SELECT * FROM classifica.exercicio`);
+    const limite = parseInt(req.query.limite) || 15;
+    
+    const resultado = await pool.query(
+      `SELECT 
+        id_exercicio as id,
+        enunciado,
+        alternativa_a,
+        alternativa_b,
+        alternativa_c,
+        alternativa_d,
+        alternativa_correta
+       FROM classifica.exercicio 
+       LIMIT $1`,
+      [limite]
+    );
+    
     res.json(resultado.rows);
   } catch (erro) {
     console.error(erro);
@@ -127,3 +140,32 @@ app.get('/questoesDiagnostico', async (req, res) => {
   }
 });
 
+// ===================== VERIFICAR RESPOSTA ====================
+app.post('/api/verificar-resposta', async (req, res) => {
+  const { questaoId, respostaAluno } = req.body;
+  
+  try {
+    const resultado = await pool.query(
+      `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
+      [questaoId]
+    );
+    
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({ error: 'Questão não encontrada' });
+    }
+    
+    const questao = resultado.rows[0];
+    const alternativaCorreta = questao.alternativa_correta.toLowerCase();
+    const acertou = respostaAluno.toLowerCase() === alternativaCorreta;
+    
+    res.json({
+      acertou,
+      alternativaCorreta: alternativaCorreta.toUpperCase(),
+      mensagem: acertou ? 'Resposta correta!' : 'Resposta incorreta!'
+    });
+    
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao verificar resposta");
+  }
+});

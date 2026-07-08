@@ -327,7 +327,7 @@
   <script>
     // Estado da aplicação
     let questoes = []; //array
-    let questaoAtual = 0; //qual questão esta
+    let questaoAtual = 0; //contador de qual questão esta
     let alternativaSelecionada = null; //qual a resposta selecionada
     let respostas = []; // Array para armazenar respostas do aluno
 
@@ -389,30 +389,30 @@
       const alternativas = ['a', 'b', 'c', 'd']; // define as alternativas
       const letras = ['A', 'B', 'C', 'D']; // define as letras das alternativas
       
-      alternativesContainer.innerHTML = alternativas.map((alt, index) => {
-        const isSelected = alternativaSelecionada === alt;
+      alternativesContainer.innerHTML = alternativas.map((alt, index) => { // pega a variavel e percorre o array de alternativas
+        const isSelected = alternativaSelecionada === alt; // verifica se a alternativa atual é a que o usuario escolheu 
         return `
-          <div class="alternative-row ${isSelected ? 'selected' : ''}" 
-               onclick="selecionarAlternativa('${alt}', this)">
-            <div class="alternative-badge">${letras[index]}</div>
-            ${questao[`alternativa_${alt}`]}
+          <div class="alternative-row ${isSelected ? 'selected' : ''}" // se tiver selecionado, adiciona a classe selected para mudar a cor
+               onclick="selecionarAlternativa('${alt}', this)"> // chama a função selecionarAlternativa quando o usuario clicar na alternativa 
+            <div class="alternative-badge">${letras[index]}</div> // coloca a letra da alternativa na frente
+            ${questao[`alternativa_${alt}`]} // insere o texto da alternativa
           </div>
         `;
-      }).join('');
+      }).join(''); // mapazinho para montar o layout das alternativas
 
       // Restaurar seleção anterior se existir
-      if (respostas[questaoAtual]) {
-        alternativaSelecionada = respostas[questaoAtual];
-        const selectedRow = document.querySelector(`[onclick*="${alternativaSelecionada}"]`);
-        if (selectedRow) {
-          selectedRow.classList.add('selected');
+      if (respostas[questaoAtual]) { // pega o array de respostas e o indice é o contador (se ele existir, significa que o usuario ja respondeu aquela questão)
+        alternativaSelecionada = respostas[questaoAtual]; // armazena a resposta na variavel
+        const selectedRow = document.querySelector(`[onclick*="${alternativaSelecionada}"]`); // seleciona a linha da alternativa
+        if (selectedRow) { // se tiver selecionado
+          selectedRow.classList.add('selected'); // adiciona a classe selected
         }
-      } else {
-        alternativaSelecionada = null;
+      } else { // se não tiver selecionado
+        alternativaSelecionada = null; // reseta a variavel
       }
 
       // Atualizar botão
-      document.getElementById('submitBtn').textContent = 
+      document.getElementById('btn-enviar').textContent = 
         questaoAtual === questoes.length - 1 ? 'Finalizar avaliação' : 'Próxima questão';
     }
 
@@ -577,13 +577,13 @@
         </div>
       `;
 
-      document.getElementById('submitBtn').style.display = 'none';
+      document.getElementById('btn-enviar').style.display = 'none';
     }
 
     // Função para reiniciar avaliação
     function reiniciarAvaliacao() {
-      document.getElementById('submitBtn').style.display = 'block';
-      document.getElementById('submitBtn').textContent = 'Confirmar respostas';
+      document.getElementById('btn-enviar').style.display = 'block';
+      document.getElementById('btn-enviar').textContent = 'Confirmar respostas';
       carregarQuestoes();
     }
 
@@ -592,7 +592,7 @@
       carregarQuestoes();
       
       // Atualizar evento do botão
-      document.getElementById('submitBtn').onclick = verificarResposta;
+      document.getElementById('btn-enviar').onclick = verificarResposta;
     });
 
     // Atalho de teclado para selecionar alternativas
