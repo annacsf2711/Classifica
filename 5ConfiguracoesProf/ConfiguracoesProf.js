@@ -34,21 +34,40 @@ fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o s
 
 
 // ===================================== Modificar ===================================================
-  
-document.getElementById("btnSalvar").addEventListener("click", async () => {
-  
-    const idProfessor = localStorage.getItem("idProfessor"); // pegar o id do professor que está conectado
-    
+ 
+document.getElementById("modificar").addEventListener("click", async () => {
+
+    const idProfessor = localStorage.getItem("idProfessor");
+
     const dadosAtualizados = {
         nome: document.getElementById("nome").value,
         email: document.getElementById("email").value,
         cep: document.getElementById("cep").value,
         cpf: document.getElementById("cpf").value,
-        especialidade: document.getElementById("disciplina").value
+        especialidade: document.getElementById("disciplina").value,
+        data_nasc: document.getElementById("nascimento").value
+
     };
 
+    try {
+        const resposta = await fetch(`http://localhost:3000/professor/${idProfessor}`, {
+            method: "PUT", // ou PATCH
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dadosAtualizados)
+        });
 
+        if (!resposta.ok) {
+            const mensagem = await resposta.text();
+            throw new Error(mensagem);
+        }
+        alert("Dados atualizados com sucesso!");
+    }
+    catch (erro) {
+        console.error("Erro ao atualizar:", erro);
+        alert("Erro ao atualizar os dados.");
+    }
 });
-
 
 

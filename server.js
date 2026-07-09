@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -146,4 +146,26 @@ app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os
     console.error(erro);
     res.status(500).send("Erro ao buscar professor");
   }
+});
+
+console.log("Rota PUT carregada");
+app.put("/professor/:id_professor", async (req, res) => {
+  
+    console.log(req.params);
+    console.log(req.body);
+
+    const {id_professor} = req.params;   // pega o id 
+    const { nome, email, cep, cpf, especialidade, data_nasc } = req.body;
+    try {
+        await pool.query(
+            `UPDATE classifica.professor
+             SET nome = ?, email = ?, cep = ?, cpf = ?, especialidade = ?, data_nasc = ?
+             WHERE id_professor = ?`,
+            [nome, email, cep, cpf, especialidade, data_nasc, id_professor]
+        );
+        res.status(200).send("Professor atualizado com sucesso");
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).send("Erro ao atualizar professor");
+    }
 });
