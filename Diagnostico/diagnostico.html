@@ -28,7 +28,7 @@
     min-height: 90vh;
   }
 
-  .sidebar { /*Barra de navegação lateral esquerda*/
+  .sidebar {
     width: 280px;
     background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
     color: #fff;
@@ -38,7 +38,6 @@
     justify-content: space-between;
   }
 
-  /* Logotipo e Nome da marca no topo da sidebar */
   .brand { text-align: center; margin-bottom: 40px; }
   .brand .badge {
     width: 44px; height: 44px;
@@ -49,11 +48,10 @@
     margin-bottom: 12px;
   }
 
-  .brand h1 { font-size: 28px; font-weight: 700; }/*classifica*/
+  .brand h1 { font-size: 28px; font-weight: 700; }
 
-  .nav { list-style: none; }/*nevegação*/
+  .nav { list-style: none; }
 
-  /*intens do menu */
   .nav li {
     display: flex;
     align-items: center;
@@ -66,9 +64,9 @@
     transition: background .2s;
   }
 
-  .nav li:hover { background: rgba(255,255,255,0.12); } /*passar o mouse*/ 
-  .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; } /*efeito ativo menu*/
-  .nav li svg { width: 22px; height: 22px; flex-shrink: 0; } /*icones internos do menu*/
+  .nav li:hover { background: rgba(255,255,255,0.12); }
+  .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+  .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
 
   .user {
     display: flex;
@@ -90,16 +88,14 @@
   .user .info b { display: block; font-size: 15px; }
   .user .info span { font-size: 13px; opacity: 0.9; }
 
-  /*  alinha itens no topo como na tela de simulados */
   .main {
     flex: 1;
     padding: 60px 70px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Alinha o conteúdo no topo, sem esticar */
+    justify-content: flex-start;
   }
 
-  /* Bloco do Card Principal - Mesmos paddings e sombras dos cards originais */
   .question-card {
     background: #fff;
     border-radius: 20px;
@@ -109,14 +105,14 @@
     width: 100%;
   }
 
-  .question-header { /*numero da questao e da disciplina*/
+  .question-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 24px;
   }
 
-  .question-title { /*titulo da questão*/
+  .question-title {
     font-size: 24px;
     color: #2c3e50;
     font-weight: 700;
@@ -124,8 +120,8 @@
     align-items: center;
     gap: 15px;
   }
- 
-  .progress-container { 
+
+  .progress-container {
     width: 150px;
     height: 12px;
     background: #eef1f5;
@@ -133,10 +129,11 @@
     overflow: hidden;
   }
 
-  .progress-bar {  /* Barra de Progresso */
-    width: 35%; /*vai mudando de acordo com as questões*/
+  .progress-bar {
+    width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    background: #3aa4e8;
+    transition: width 0.3s ease;
   }
 
   .discipline-tag {
@@ -145,7 +142,6 @@
     color: #4a5568;
   }
 
-  /* Caixa interna do enunciado */
   .enunciado-box {
     border: 1px solid #dcdfe4;
     border-radius: 10px;
@@ -170,14 +166,13 @@
     margin-bottom: 6px;
   }
 
-  /* Listagem de Alternativas */
   .alternatives-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
-  .alternative-row { /* Linha individual de alternativa (Botões A, B, C, D) */
+  .alternative-row {
     display: flex;
     align-items: center;
     padding: 14px 20px;
@@ -187,7 +182,7 @@
     cursor: pointer;
     font-size: 17px;
     color: #2c3e50;
-    transition: background .2s, border-color .2s; /* Transição suave de cor ao interagir */
+    transition: background .2s, border-color .2s;
   }
 
   .alternative-row:hover {
@@ -208,7 +203,6 @@
     flex-shrink: 0;
   }
 
-  /* Estado Selecionado (Alternativa D) */
   .alternative-row.selected {
     background: #e6f7f0;
     border-color: #3ec98a;
@@ -220,7 +214,6 @@
     border: 1px solid #3ec98a;
   }
 
-  /* Rodapé do Botão - Mesma estrutura de linha dos simulados */
   .action-row {
     display: flex;
     justify-content: flex-start;
@@ -247,6 +240,12 @@
     .sidebar { width: 100%; }
     .main { padding: 30px; }
   }
+
+  #loading {
+    text-align: center;
+    padding: 50px;
+    display: block;
+  }
 </style>
 </head>
 <body>
@@ -262,7 +261,7 @@
           <h1>Classifica</h1>
         </div>
 
-        <ul class="nav"> <!--- lista lateral esquerda do menu -->
+        <ul class="nav">
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
             Dashboard
@@ -286,7 +285,7 @@
         </ul>
       </div>
 
-      <div class="user"> <!--- usuário--->
+      <div class="user">
         <div class="avatar">L</div>
         <div class="info">
           <b>Letícia Pinho</b>
@@ -295,26 +294,19 @@
       </div>
     </aside>
 
-    <main class="main"> <!----->
-        <div id="loading" style="text-align: center; padding: 50px; display: block;">
-              Carregando questões...
-            </div>
-
-            <div class="questao" id="questao" style="display: none;">
-              <!-- todo o conteúdo original permanece aqui -->
-              <div class="cabecalho-questao"> ... </div>
-        <div class="enunciado-box" id="enunciadoBox">...</div>
-        <div class="alternatives-container" id="alternativesContainer">...</div>
+    <main class="main">
+      <div id="loading">
+        Carregando questões...
       </div>
-      <div class="questao" id="questao">
-        <div class="cabecalho-questao">
-          <div class="titulo-questao">
+
+      <div class="question-card" id="questionCard" style="display: none;">
+        <div class="question-header">
+          <div class="question-title">
             <span id="questaoNumero">Questão 1 de 15</span>
-            <div class="bloco-progresso">
-              <div class="barra-progresso" id="barraProgresso"></div>
-            </div>
           </div>
-          <div class="tag-disciplina" id="tagDificuldade">Médio</div>
+          <div class="progress-container">
+            <div class="progress-bar" id="barraProgresso"></div>
+          </div>
         </div>
 
         <div class="enunciado-box" id="enunciadoBox">
@@ -326,8 +318,8 @@
         </div>
       </div>
 
-      <div class="action-row"> <!--botao de enviar respostas-->
-        <button class="btn-enviar" id="btn-enviar" onclick="verificarResposta()"> <!--- função-->
+      <div class="action-row">
+        <button class="btn-submit" id="btn-enviar">
           Confirmar respostas
         </button>
       </div>
@@ -335,22 +327,17 @@
   </div>
 
   <script>
-    // Estado da aplicação
-    let questoes = []; //array
-    let questaoAtual = 0; //contador de qual questão esta
-    let alternativaSelecionada = null; //qual a resposta selecionada
-    let respostas = []; // Array para armazenar respostas do aluno
+    let questoes = [];
+    let questaoAtual = 0;
+    let alternativaSelecionada = null;
+    let respostas = [];
 
-    // Configuração da API
-    const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
+    const API_URL = 'http://localhost:3000/api';
 
-    // Função para carregar questões do banco de dados
-    // função que permite outras funções simultaneamente
-      async function carregarQuestoes() {
+    async function carregarQuestoes() {
       try {
-        // Mostra loading, esconde a questão
         document.getElementById('loading').style.display = 'block';
-        document.getElementById('questao').style.display = 'none';
+        document.getElementById('questionCard').style.display = 'none';
 
         const response = await fetch(`${API_URL}/questoes?limite=15`);
         if (!response.ok) throw new Error('Erro ao carregar questões');
@@ -360,9 +347,8 @@
         questaoAtual = 0;
         respostas = new Array(questoes.length).fill(null);
 
-        // Oculta loading, mostra a questão
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('questao').style.display = 'block';
+        document.getElementById('questionCard').style.display = 'block';
 
         if (questoes.length > 0) {
           renderizarQuestao();
@@ -374,81 +360,67 @@
       } catch (error) {
         console.error('Erro:', error);
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('questao').style.display = 'block';
+        document.getElementById('questionCard').style.display = 'block';
         document.getElementById('enunciadoBox').innerHTML = 
           '<p style="color:red; text-align:center;">Erro ao carregar questões</p>';
       }
     }
-  
-    // Função para renderizar a questão atual
+
     function renderizarQuestao() {
-      if (questaoAtual >= questoes.length) { // quando todas as questões acabarem
-        mostrarResultadoFinal(); // mostra o array dos resultados
+      if (questaoAtual >= questoes.length) {
+        mostrarResultadoFinal();
         return;
       }
 
-      const questao = questoes[questaoAtual]; //pega o indice da questao atual e passa para essa variavel
+      const questao = questoes[questaoAtual];
       
-      // Atualizar número da questão e progresso
-      document.getElementById('questaoNumero').textContent = // pega o conteúdo do h1 pelo id e define o que tem dentro 
-        `Questão ${questaoAtual + 1} de ${questoes.length}`; // pega  o indice da questão atual e o tanto de questões existentes 
+      document.getElementById('questaoNumero').textContent = 
+        `Questão ${questaoAtual + 1} de ${questoes.length}`;
       
-      const progresso = ((questaoAtual + 1) / questoes.length) * 100; //  porcentagem de progresso
-      document.getElementById('barraProgresso').style.width = `${progresso}%`; // atualiza a largura da barra de progresso
+      const progresso = ((questaoAtual + 1) / questoes.length) * 100;
+      document.getElementById('barraProgresso').style.width = `${progresso}%`;
 
-      // Renderizar enunciado
-      const enunciadoBox = document.getElementById('enunciadoBox'); // pega o conteúdo html pelo id 
-      enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`; // insere o enunciado da questão pela api do bd 
+      const enunciadoBox = document.getElementById('enunciadoBox');
+      enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`;
 
-      // Renderizar alternativas
-      const alternativesContainer = document.getElementById('alternativesContainer'); // pega o conteúdo html pelo id 
-      const alternativas = ['a', 'b', 'c', 'd']; // define as alternativas
-      const letras = ['A', 'B', 'C', 'D']; // define as letras das alternativas
+      const alternativesContainer = document.getElementById('alternativesContainer');
+      const alternativas = ['a', 'b', 'c', 'd'];
+      const letras = ['A', 'B', 'C', 'D'];
       
-      alternativesContainer.innerHTML = alternativas.map((alt, index) => { // pega a variavel e percorre o array de alternativas
-        const isSelected = alternativaSelecionada === alt; // verifica se a alternativa atual é a que o usuario escolheu 
-        // se tiver selecionado, adiciona a classe selected para mudar a cor
-        // chama a função selecionarAlternativa quando o usuario clicar na alternativa 
+      alternativesContainer.innerHTML = alternativas.map((alt, index) => {
+        const isSelected = alternativaSelecionada === alt;
         return `
           <div class="alternative-row ${isSelected ? 'selected' : ''}" 
                onclick="selecionarAlternativa('${alt}', this)"> 
-            <div class="alternative-badge">${letras[index]}</div> // coloca a letra da alternativa na frente
-            ${questao[`alternativa_${alt}`]} // insere o texto da alternativa
+            <div class="alternative-badge">${letras[index]}</div> 
+            ${questao[`alternativa_${alt}`]} 
           </div>
         `;
-      }).join(''); // mapazinho para montar o layout das alternativas
+      }).join('');
 
-      // Restaurar seleção anterior se existir
-      if (respostas[questaoAtual]) { // pega o array de respostas e o indice é o contador (se ele existir, significa que o usuario ja respondeu aquela questão)
-        alternativaSelecionada = respostas[questaoAtual]; // armazena a resposta na variavel
-        const selectedRow = document.querySelector(`[onclick*="${alternativaSelecionada}"]`); // seleciona a linha da alternativa
-        if (selectedRow) { // se tiver selecionado
-          selectedRow.classList.add('selected'); // adiciona a classe selected
+      if (respostas[questaoAtual]) {
+        alternativaSelecionada = respostas[questaoAtual];
+        const selectedRow = document.querySelector(`[onclick*="${alternativaSelecionada}"]`);
+        if (selectedRow) {
+          selectedRow.classList.add('selected');
         }
-      } else { // se não tiver selecionado
-        alternativaSelecionada = null; // reseta a variavel
+      } else {
+        alternativaSelecionada = null;
       }
 
-      // Atualizar botão
       document.getElementById('btn-enviar').textContent = 
         questaoAtual === questoes.length - 1 ? 'Finalizar avaliação' : 'Próxima questão';
     }
 
-    // Função para selecionar alternativa
     function selecionarAlternativa(letra, element) {
-      // Remover seleção anterior
       const rows = document.querySelectorAll('.alternative-row');
       rows.forEach(row => row.classList.remove('selected'));
       
-      // Adicionar seleção atual
       element.classList.add('selected');
       alternativaSelecionada = letra;
-      
-      // Salvar resposta
       respostas[questaoAtual] = letra;
     }
 
-    // Função para verificar resposta e avançar
     async function verificarResposta() {
       if (!alternativaSelecionada) {
         alert('Por favor, selecione uma alternativa antes de continuar.');
@@ -458,7 +430,6 @@
       const questao = questoes[questaoAtual];
 
       try {
-        // Verificar resposta no backend
         const response = await fetch(`${API_URL}/verificar-resposta`, {
           method: 'POST',
           headers: {
@@ -475,18 +446,14 @@
         }
 
         const resultado = await response.json();
-
-        // Mostrar feedback
         mostrarFeedback(resultado);
 
-        // Aguardar um momento antes de avançar
         setTimeout(() => {
           questaoAtual++;
           alternativaSelecionada = null;
           
           if (questaoAtual < questoes.length) {
             renderizarQuestao();
-            // Remover feedback
             document.getElementById('feedbackContainer')?.remove();
           } else {
             mostrarResultadoFinal();
@@ -495,7 +462,6 @@
 
       } catch (error) {
         console.error('Erro:', error);
-        // Fallback: verificação local
         const alternativaCorreta = questao.alternativa_correta.toLowerCase();
         const acertou = alternativaSelecionada === alternativaCorreta;
         
@@ -519,9 +485,7 @@
       }
     }
 
-    // Função para mostrar feedback visual
     function mostrarFeedback(resultado) {
-      // Remover feedback anterior se existir
       document.getElementById('feedbackContainer')?.remove();
 
       const feedbackDiv = document.createElement('div');
@@ -548,7 +512,6 @@
 
       document.body.appendChild(feedbackDiv);
 
-      // Adicionar animação CSS
       const style = document.createElement('style');
       style.textContent = `
         @keyframes slideIn {
@@ -563,15 +526,13 @@
       document.head.appendChild(style);
     }
 
-    // Função para mostrar resultado final
-    async function mostrarResultadoFinal() {
-      const totalQuestoes = questoes.length; // pega o tamanho do array de questoes
-      let acertos = 0; // inicialmente é 0
+    function mostrarResultadoFinal() {
+      const totalQuestoes = questoes.length;
+      let acertos = 0;
 
-      // Calcular acertos (verificação local para o resumo)
-      for (let i = 0; i < questoes.length; i++) { // vai passando pelo array 
-        if (respostas[i] && respostas[i].toLowerCase() === questoes[i].alternativa_correta.toLowerCase()) {// lowercase só converte para letra minuscula para nao dar erro 
-          acertos++; //se a opcao etiver equivalente soma um
+      for (let i = 0; i < questoes.length; i++) {
+        if (respostas[i] && respostas[i].toLowerCase() === questoes[i].alternativa_correta.toLowerCase()) {
+          acertos++;
         }
       }
 
@@ -598,22 +559,17 @@
       document.getElementById('btn-enviar').style.display = 'none';
     }
 
-    // Função para reiniciar avaliação
     function reiniciarAvaliacao() {
       document.getElementById('btn-enviar').style.display = 'block';
       document.getElementById('btn-enviar').textContent = 'Confirmar respostas';
       carregarQuestoes();
     }
 
-    // Inicializar quando a página carregar
     document.addEventListener('DOMContentLoaded', () => {
       carregarQuestoes();
-      
-      // Atualizar evento do botão
       document.getElementById('btn-enviar').onclick = verificarResposta;
     });
 
-    // Atalho de teclado para selecionar alternativas
     document.addEventListener('keydown', (e) => {
       const key = e.key.toLowerCase();
       if (['a', 'b', 'c', 'd'].includes(key)) {
