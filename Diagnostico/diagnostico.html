@@ -296,6 +296,16 @@
     </aside>
 
     <main class="main"> <!----->
+        <div id="loading" style="text-align: center; padding: 50px; display: block;">
+              Carregando questões...
+            </div>
+
+            <div class="questao" id="questao" style="display: none;">
+              <!-- todo o conteúdo original permanece aqui -->
+              <div class="cabecalho-questao"> ... </div>
+        <div class="enunciado-box" id="enunciadoBox">...</div>
+        <div class="alternatives-container" id="alternativesContainer">...</div>
+      </div>
       <div class="questao" id="questao">
         <div class="cabecalho-questao">
           <div class="titulo-questao">
@@ -335,35 +345,41 @@
     const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
 
     // Função para carregar questões do banco de dados
-    async function carregarQuestoes() { // função que permite outras funções simultaneamente
+    // função que permite outras funções simultaneamente
+      async function carregarQuestoes() {
       try {
-        document.getElementById('questao').innerHTML = // pega o html por id e insere dinamicamente
-          '<div style="text-align: center; padding: 50px;">Carregando questões...</div>';// mensagem de carregando
+        // Mostra loading, esconde a questão
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('questao').style.display = 'none';
 
-        const response = await fetch(`${API_URL}/questoes?limite=15`); // isso faz a requisição para a api e define que o limite é 15 questões
-        // colocar o hhttp do node 
+        const response = await fetch(`${API_URL}/questoes?limite=15`);
+        if (!response.ok) throw new Error('Erro ao carregar questões');
 
-        if (!response.ok) { // se nao reconhecer da erro
-          throw new Error('Erro ao carregar questões');
+        questoes = await response.json();
+        console.log('Questões recebidas:', questoes);
+        questaoAtual = 0;
+        respostas = new Array(questoes.length).fill(null);
+
+        // Oculta loading, mostra a questão
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('questao').style.display = 'block';
+
+        if (questoes.length > 0) {
+          renderizarQuestao();
+        } else {
+          document.getElementById('enunciadoBox').innerHTML = 
+            '<p style="text-align:center;">Nenhuma questão disponível</p>';
+          document.getElementById('alternativesContainer').innerHTML = '';
         }
-
-        questoes = await response.json(); // pega a resposta e armazena na variavel questões
-        questaoAtual = 0; // indice da primeira questao 
-        respostas = new Array(questoes.length).fill(null); //cria um array do mesmo tamanho de "questoes" par aarmazenar as respostas do usuario 
-        
-        if (questoes.length > 0) { // se tiver questões
-          renderizarQuestao(); // renderiza a primeira questão
-        } else { // erro
-          document.getElementById('questao').innerHTML = 
-            '<div style="text-align: center; padding: 50px;">Nenhuma questão disponível</div>';
-        }
-      } catch (error) { // se alguma coisa la em cima da errado , ele da erro 
+      } catch (error) {
         console.error('Erro:', error);
-        document.getElementById('questao').innerHTML = 
-          '<div style="text-align: center; padding: 50px; color: red;">Erro ao carregar questões</div>';
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('questao').style.display = 'block';
+        document.getElementById('enunciadoBox').innerHTML = 
+          '<p style="color:red; text-align:center;">Erro ao carregar questões</p>';
       }
     }
-
+  
     // Função para renderizar a questão atual
     function renderizarQuestao() {
       if (questaoAtual >= questoes.length) { // quando todas as questões acabarem
@@ -391,9 +407,11 @@
       
       alternativesContainer.innerHTML = alternativas.map((alt, index) => { // pega a variavel e percorre o array de alternativas
         const isSelected = alternativaSelecionada === alt; // verifica se a alternativa atual é a que o usuario escolheu 
+        // se tiver selecionado, adiciona a classe selected para mudar a cor
+        // chama a função selecionarAlternativa quando o usuario clicar na alternativa 
         return `
-          <div class="alternative-row ${isSelected ? 'selected' : ''}" // se tiver selecionado, adiciona a classe selected para mudar a cor
-               onclick="selecionarAlternativa('${alt}', this)"> // chama a função selecionarAlternativa quando o usuario clicar na alternativa 
+          <div class="alternative-row ${isSelected ? 'selected' : ''}" 
+               onclick="selecionarAlternativa('${alt}', this)"> 
             <div class="alternative-badge">${letras[index]}</div> // coloca a letra da alternativa na frente
             ${questao[`alternativa_${alt}`]} // insere o texto da alternativa
           </div>
