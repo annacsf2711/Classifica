@@ -125,6 +125,7 @@ app.post('/loginProf', async (req, res) => {
 });
 
 // ===================== CONFIG PROF =====================
+
 app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_professor} = req.params;   // pega o id 
 
@@ -157,13 +158,13 @@ app.put("/professor/:id_professor", async (req, res) => {
     const {id_professor} = req.params;   // pega o id 
     const { nome, email, cep, cpf, especialidade, data_nasc } = req.body;
     try {
-        await pool.query(
-            `UPDATE classifica.professor
-             SET nome = ?, email = ?, cep = ?, cpf = ?, especialidade = ?, data_nasc = ?
-             WHERE id_professor = ?`,
-            [nome, email, cep, cpf, especialidade, data_nasc, id_professor]
-        );
-        res.status(200).send("Professor atualizado com sucesso");
+      await pool.query(
+        `UPDATE classifica.professor
+        SET nome = $1, email = $2, cep = $3, cpf = $4, especialidade = $5, data_nasc = $6
+        WHERE id_professor = $7`,
+        [nome, email, cep, cpf, especialidade, data_nasc, id_professor]
+      );
+      res.status(200).send("Professor atualizado com sucesso");
     } catch (erro) {
         console.error(erro);
         res.status(500).send("Erro ao atualizar professor");
