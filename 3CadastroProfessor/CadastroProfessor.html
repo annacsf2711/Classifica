@@ -6,7 +6,7 @@
 <title>Classifica - Cadastro de Professor</title>
 
 <script type="module" src="CadastroProfessor.js" defer></script> <!-- Conectar ao java script -->
-<script type="module" src="../ConferirData.js" defer></script> <!-- Conectar ao java script -->
+<script type="module" src="../DataCepCpf.js" defer></script> <!-- Conectar ao java script -->
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -198,7 +198,6 @@
             </div>
         </div>
 
-        <div class="row">
           <div>
             <label>CEP</label>
             <input type="text" id="cep" placeholder="00000-000" required>
@@ -210,8 +209,8 @@
         </div>
 
         <div class="buttons">
-          <button type="submit"  class="btn btn-primary" onclick="conferir(); conferirData();">Cadastrar</button>
-          <button type="button"  class="btn btn-secondary" onclick="cancelar()">Cancelar</button>
+          <button type="submit"  class="btn btn-primary" onclick="conferir()">Cadastrar</button>
+          <button type="button"  class="btn btn-secondary" id="btnCancelarProf">Cancelar</button>
         </div>
 
       </form>

@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Classifica - Cadastro de Aluno</title>
 
-<script src="CadastroAluno.js" defer></script> <!-- Conectar ao java script -->
+<script type="module" src="CadastroAluno.js" defer></script> <!-- Conectar ao java script -->
+<script type="module" src="../DataCepCpf.js" defer></script> <!-- Conectar ao java script -->
+
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -194,8 +196,8 @@
         </div>
 
         <div class="buttons">
-          <button type="submit" class="btn btn-primary" onclick="conferir(); conferirData();">Cadastrar</button>
-          <button type="button"  class="btn btn-secondary" onclick="cancelar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" onclick="conferir()">Cadastrar</button>
+          <button type="button" class="btn btn-secondary" id="btnCancelarAlu">Cancelar</button>
         </div>
       </form>
     </div>

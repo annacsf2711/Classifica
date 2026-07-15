@@ -1,7 +1,6 @@
 // ===================== Login =====================
 document.getElementById("formLoginProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
-    
     const dadosLoginProf = { //criar um obj com os dados digitados nos inputs
         senha: document.getElementById("senha").value,
         email: document.getElementById("email").value,
@@ -18,7 +17,7 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
         });
         const dados = await resposta.json(); // converte a resposta do servidor para objeto js
 
-        if (dados.idProfessor) { // verifica se o login foi realizado com sucesso
+        if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
             localStorage.setItem("idProfessor", dados.idProfessor); // salva o id do professor no navegador
             console.log("Id professor:", dados.idProfessor);
             window.location.href = "../5ConfiguracoesProf/ConfiguracoesProf.html";        

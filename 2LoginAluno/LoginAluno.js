@@ -1,5 +1,4 @@
 // ===================== Login =====================
-
 document.getElementById("formLoginAluno").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
     
@@ -7,6 +6,8 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
         senha: document.getElementById("senha").value,
         email: document.getElementById("email").value,
     };
+    console.log("dados", dadosLoginAluno);
+
     try{
         const resposta = await fetch("http://localhost:3000/loginAluno", { // envie os dados para o servidor backend
             method: "POST", // tipo de requisiçã HTTP usada para enviar dados
@@ -15,15 +16,23 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
             },
             body: JSON.stringify(dadosLoginAluno), // enviando os dados
         });
-        const texto = await resposta.text(); // pega a respost que veio do servidor e tranforma em texto
-        alert(texto); // mostra uma mensagem na tela
-    } 
-    catch(erro){ // caso dê erro
-        console.error(erro); // mostra o erro no console do navegador 
-        alert("Erro ao conectar com o servidor"); // mostra a mensagem ao usuário
+        const dados = await resposta.json(); // converte a resposta do servidor para objeto js
+
+        console.log("Resposta do servidor:", dados);
+
+        if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
+            localStorage.setItem("idEstudante", dados.idEstudante); // salva o id do aluno no navegador
+            console.log("Id aluno:", dados.idEstudante);
+            console.log("Vou redirecionar");
+            window.location.href = "http://127.0.0.1:5500/TCC---Classifica/6ConfiguracoesAluno/ConfiguracoesAluno.html";        
+        } else {
+            alert(dados.mensagem); 
+        }
+    } catch (erro) { // executa caso ocorra algum erro na requisição
+        console.error(erro); 
+        alert("Erro ao conectar com o servidor"); 
     }
 });
-
 
 
 

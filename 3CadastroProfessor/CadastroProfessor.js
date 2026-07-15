@@ -1,4 +1,4 @@
-import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR} from "../ConferirData.js";
+import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR} from "../DataCepCpf.js";
 
 // ===================== CPF: 000.000.000-00 ====================================================
 document.getElementById("cpf")
@@ -17,8 +17,7 @@ document.getElementById('cep')
 
 
 // ===================== Cadastrar ===============================================================
-document.getElementById("formCadastroProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
-    
+document.getElementById("formCadastroProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o event
     evento.preventDefault();
 
     const data = document.getElementById("dataNascimento").value;
@@ -80,6 +79,9 @@ function conferir() { // Cria a função que será executada ao clicar no botão
 function cancelar() {
     window.location.href = "../4LoginProfessor/LoginProfessor.html"; //window.location.href é uma forma de dizer ao navegador para abrir outra página
 }
+document.getElementById("btnCancelarProf")
+    .addEventListener("click", cancelar);
+
 
 
 
