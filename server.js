@@ -279,33 +279,3 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
     res.status(500).send("Erro ao desativar");
   }
 });
-
-// ===================== VERIFICAR RESPOSTA ====================
-app.post('/api/verificar-resposta', async (req, res) => {
-  const { questaoId, respostaAluno } = req.body;
-  
-  try {
-    const resultado = await pool.query(
-      `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
-      [questaoId]
-    );
-    
-    if (resultado.rows.length === 0) {
-      return res.status(404).json({ error: 'Questão não encontrada' });
-    }
-    
-    const questao = resultado.rows[0];
-    const alternativaCorreta = questao.alternativa_correta.toLowerCase();
-    const acertou = respostaAluno.toLowerCase() === alternativaCorreta;
-    
-    res.json({
-      acertou,
-      alternativaCorreta: alternativaCorreta.toUpperCase(),
-      mensagem: acertou ? 'Resposta correta!' : 'Resposta incorreta!'
-    });
-    
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao verificar resposta");
-  }
-});
