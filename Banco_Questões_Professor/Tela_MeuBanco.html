@@ -192,6 +192,47 @@
     border: none; background: #3ec98a; color: #fff;
     padding: 6px 16px; border-radius: 999px; cursor: pointer;
   }
+  .modal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a5568;
+  border-bottom: 3px solid transparent;
+}
+.tab-btn.active {
+  color: #3aa4e8;
+  border-bottom: 3px solid #3aa4e8;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+#formNovaQuestao label {
+  display: block;
+  margin: 12px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+#formNovaQuestao textarea,
+#formNovaQuestao input,
+#formNovaQuestao select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+#formNovaQuestao textarea { resize: vertical; min-height: 70px; }
 </style>
 </head>
 <body>
@@ -241,12 +282,59 @@
       </div>
     </aside>
     <div id="modalAdicionar" class="modal-overlay" style="display:none;">
-      <div class="modal-box">
-        <h3>Adicionar Questão</h3>
-        <div id="listaDisponiveis" class="lista-disponiveis"></div>
-        <button id="fecharModal" class="btn" style="background:#4a5568; margin-top:16px;">Fechar</button>
+    <div class="modal-box">
+      <h3>Adicionar Questão</h3>
+
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="existentes">Questões existentes</button>
+        <button class="tab-btn" data-tab="nova">Criar nova questão</button>
       </div>
+
+      <!-- ABA: escolher questão já existente -->
+      <div id="tabExistentes" class="tab-content active">
+        <div id="listaDisponiveis" class="lista-disponiveis"></div>
+      </div>
+
+      <!-- ABA: criar questão nova -->
+      <div id="tabNova" class="tab-content">
+        <form id="formNovaQuestao">
+          <label>Enunciado</label>
+          <textarea id="novoEnunciado" required></textarea>
+
+          <label>Alternativa A</label>
+          <input type="text" id="novaAlternativaA" required>
+
+          <label>Alternativa B</label>
+          <input type="text" id="novaAlternativaB" required>
+
+          <label>Alternativa C</label>
+          <input type="text" id="novaAlternativaC" required>
+
+          <label>Alternativa D</label>
+          <input type="text" id="novaAlternativaD" required>
+
+          <label>Alternativa correta</label>
+          <select id="novaCorreta" required>
+            <option value="a">A</option>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="d">D</option>
+          </select>
+
+          <label>Nível de dificuldade</label>
+          <select id="novoNivel" required>
+            <option value="facil">Fácil</option>
+            <option value="medio">Médio</option>
+            <option value="dificil">Difícil</option>
+          </select>
+
+          <button type="submit" class="btn" style="margin-top:16px;">Criar e adicionar ao banco</button>
+        </form>
+      </div>
+
+      <button id="fecharModal" class="btn" style="background:#4a5568; margin-top:16px;">Fechar</button>
     </div>
+</div>
     <!-- Main -->
     <main class="main">
       <a href="Tela_Banco_Professor.html" class="close" style="text-decoration: none;">&times;</a>
@@ -265,5 +353,6 @@
       </div>
     </main>
   </div>
+  <script src="MeuBanco.js"></script>
 </body>
 </html>

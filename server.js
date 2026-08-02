@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -96,9 +96,7 @@ app.post('/loginProf', async (req, res) => {
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(  
-      `SELECT EXISTS( 
-          SELECT id FROM classifica.professor WHERE email = $1 AND senha = $2
-      )`,
+      `SELECT id FROM classifica.professor WHERE email = $1 AND senha = $2`,
       [email, senha]
     ); 
 
@@ -113,4 +111,144 @@ app.post('/loginProf', async (req, res) => {
   }
 });
 
+// ===================== LISTAR QUESTÕES DE UM BANCO =====================
+app.get('/listarQuestoesBanco/:bancoId', async (req, res) => {
+  const { bancoId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT e.id_exercicio AS id, e.enunciado, e.nivel_dificuldade AS tipo
+       FROM classifica.banco_questoes_exercicios bqe
+       JOIN classifica.exercicio e ON e.id_exercicio = bqe.exercicio_id
+       WHERE bqe.banco_id = $1
+       ORDER BY bqe.ordem`,
+      [bancoId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar questões do banco");
+  }
+});
 
+// ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
+app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
+  const { bancoId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT e.id_exercicio AS id, e.enunciado, e.nivel_dificuldade AS tipo
+       FROM classifica.exercicio e
+       WHERE e.id_exercicio NOT IN (
+         SELECT exercicio_id FROM classifica.banco_questoes_exercicios WHERE banco_id = $1
+       )
+       ORDER BY e.id_exercicio`,
+      [bancoId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar exercícios disponíveis");
+  }
+});
+
+// ===================== ADICIONAR QUESTÃO AO BANCO =====================
+app.post('/adicionarQuestaoBanco', async (req, res) => {
+  const { bancoId, exercicioId } = req.body;
+  try {
+    // calcula a próxima posição (ordem) dentro do banco
+    const ordemResultado = await pool.query(
+      `SELECT COALESCE(MAX(ordem), 0) + 1 AS proxima_ordem
+       FROM classifica.banco_questoes_exercicios WHERE banco_id = $1`,
+      [bancoId]
+    );
+    const proximaOrdem = ordemResultado.rows[0].proxima_ordem;
+
+    await pool.query(
+      `INSERT INTO classifica.banco_questoes_exercicios (banco_id, exercicio_id, ordem)
+       VALUES ($1, $2, $3)`,
+      [bancoId, exercicioId, proximaOrdem]
+    );
+
+    res.send("Questão adicionada ao banco com sucesso!");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao adicionar questão ao banco");
+  }
+});
+// ===================== CRIAR NOVO EXERCÍCIO =====================
+app.post('/criarExercicio', async (req, res) => {
+  const {
+    enunciado, alternativaA, alternativaB, alternativaC, alternativaD,
+    alternativaCorreta, nivelDificuldade, criadoPor, bancoId
+  } = req.body;
+
+  try {
+    // 1. descobre a disciplina configurada no banco de questões
+    const bancoResultado = await pool.query(
+      `SELECT disciplina FROM classifica.banco_questoes WHERE id = $1`,
+      [bancoId]
+    );
+
+    if (bancoResultado.rows.length === 0) {
+      return res.status(404).send("Banco de questões não encontrado");
+    }
+
+    const disciplina = bancoResultado.rows[0].disciplina;
+
+    // 2. busca o id da área correspondente a essa disciplina (colunas reais: id_area, nome_area)
+    // Consulta todas as áreas e faz comparação normalizada em JS para lidar com acentos e caixa
+    const areaResultado = await pool.query(
+      `SELECT id_area, nome_area FROM classifica.area_conhecimento`
+    );
+
+    if (areaResultado.rows.length === 0) {
+      return res.status(400).send(`Nenhuma área cadastrada no sistema`);
+    }
+
+    // normaliza texto removendo acentos, espaços e convertendo para minúsculas
+    const normalizeName = (s) => {
+      if (s == null) return '';
+      // decomposição unicode + remoção de marcas de combinação para tirar acentos
+      return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+    };
+
+    const disciplinaNorm = normalizeName(disciplina);
+    let idArea = null;
+    for (const row of areaResultado.rows) {
+      if (normalizeName(row.nome_area) === disciplinaNorm) {
+        idArea = row.id_area;
+        break;
+      }
+    }
+
+    // fallback: tentar correspondência case-insensitive direta no banco (se algo falhar)
+    if (idArea === null) {
+      const tentativa = await pool.query(
+        `SELECT id_area FROM classifica.area_conhecimento WHERE TRIM(nome_area) ILIKE TRIM($1) LIMIT 1`,
+        [disciplina]
+      );
+      if (tentativa.rows.length > 0) idArea = tentativa.rows[0].id_area;
+    }
+
+    if (idArea === null) {
+      return res.status(400).send(`Nenhuma área encontrada para a disciplina "${disciplina}"`);
+    }
+
+    // 3. cria o exercício já com o id_area correto
+    const resultado = await pool.query(
+      `INSERT INTO classifica.exercicio
+         (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d,
+          alternativa_correta, nivel_dificuldade, id_area, data_criada, criado_por, dono,
+          total_tentativas, total_acertos)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10, 0, 0)
+       RETURNING id_exercicio AS id`,
+      [enunciado, alternativaA, alternativaB, alternativaC, alternativaD,
+       alternativaCorreta, nivelDificuldade, idArea, criadoPor, criadoPor]
+    );
+
+    res.json({ id: resultado.rows[0].id });
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao criar exercício");
+  }
+});
