@@ -33,6 +33,7 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
         alert("Erro ao conectar com o servidor"); 
     }
 });
+//kjkij
 
 
 
