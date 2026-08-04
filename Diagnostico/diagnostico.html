@@ -382,7 +382,7 @@
       }
 
       const questao = questoes[questaoAtual]; // pega o indice da questao atual e passa para essa variavel 
-      // // Atualizar número da questão e progresso
+      // Atualizar número da questão e progresso
       document.getElementById('questaoNumero').textContent = // pega o conteúdo do h1 pelo id e define o que tem dentro 
         `Questão ${questaoAtual + 1} de ${questoes.length}`;// pega  o indice da questão atual e o tanto de questões existentes  
       
@@ -499,16 +499,16 @@
 
       const feedbackDiv = document.createElement('div'); // cria o feedback
       feedbackDiv.id = 'feedbackContainer'; // define o id do feedback
-      feedbackDiv.style.cssText = ` // define o estilo do feedback
-        position: fixed; // define a posição do feedback
-        top: 20px; // define o topo do feedback
-        right: 20px; // define a direita do feedback
-        padding: 15px 25px; // define o preenchimento do feedback
-        border-radius: 8px; // define o arredondamento do feedback
-        color: white; // define a cor do texto do feedback
-        font-weight: bold; // define o peso da fonte do feedback
-        z-index: 1000; // define a ordem de empilhamento do feedback
-        animation: slideIn 0.3s ease-out; // define a animação do feedback
+      feedbackDiv.style.cssText = ` 
+        position: fixed; 
+        top: 20px; 
+        right: 20px; 
+        padding: 15px 25px; 
+        border-radius: 8px; 
+        color: white; 
+        font-weight: bold; 
+        z-index: 1000; 
+        animation: slideIn 0.3s ease-out; 
       `;
 
       if (resultado.acertou) { // Se acertou
@@ -522,21 +522,21 @@
       document.body.appendChild(feedbackDiv); // adiciona o feedback ao corpo do documento
 
       const style = document.createElement('style'); // cria o estilo
-      style.textContent = ` // define o estilo
-        @keyframes slideIn { // define a animação de entrada
-          from { transform: translateX(100%); opacity: 0; } // define a posição inicial da animação
-          to { transform: translateX(0); opacity: 1; } // define a posição final da animação
+      style.textContent = ` 
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; } 
+          to { transform: translateX(0); opacity: 1; } 
         }
-        @keyframes slideOut { // define a animação de saída
-          from { transform: translateX(0); opacity: 1; } // define a posição inicial da animação
-          to { transform: translateX(100%); opacity: 0; } // define a posição final da animação
+        @keyframes slideOut { 
+          from { transform: translateX(0); opacity: 1; } 
+          to { transform: translateX(100%); opacity: 0; } 
         }
       `;
       document.head.appendChild(style); // adiciona o estilo ao cabeçalho do documento
     }
 
     function mostrarResultadoFinal() { // mostra o resultado final
-      const totalQuestoes = questoes.length; // tamanho do array 
+      const totalQuestoes = questoes.length; // tamanho do array e passa para a variavel 
       let acertos = 0; // acertos
 
       for (let i = 0; i < questoes.length; i++) { // loop que percorre as questões
@@ -545,15 +545,15 @@
         }
       }
 
-      const porcentagem = Math.round((acertos / totalQuestoes) * 100); // calcula a porcentagem
+      const porcentagem = Math.round((acertos / totalQuestoes) * 100); // calcula a porcentagem para mostrar no final 
       
-      document.getElementById('questionCard').innerHTML = ` // define o HTML da questão
-        <div style="text-align: center; padding: 50px;"> // define o estilo do container
-          <h2 style="color: #2c3e50; margin-bottom: 20px;">Avaliação Concluída!</h2> // define o título
-          <div style="font-size: 48px; font-weight: bold; color: #3aa4e8; margin-bottom: 20px;"> // define o estilo da porcentagem
+      document.getElementById('questionCard').innerHTML = ` 
+        <div style="text-align: center; padding: 50px;"> 
+          <h2 style="color: #2c3e50; margin-bottom: 20px;">Avaliação Concluída!</h2> 
+          <div style="font-size: 48px; font-weight: bold; color: #3aa4e8; margin-bottom: 20px;"> 
             ${porcentagem}%
           </div>
-          <p style="font-size: 18px; color: #4a5568; margin-bottom: 10px;"> // define o estilo do parágrafo
+          <p style="font-size: 18px; color: #4a5568; margin-bottom: 10px;"> 
             Você acertou ${acertos} de ${totalQuestoes} questões
           </p>
         </div>
@@ -562,11 +562,6 @@
       document.getElementById('btn-enviar').style.display = 'none';
     }
 
-    function reiniciarAvaliacao() { // Reinicia a avaliação
-      document.getElementById('btn-enviar').style.display = 'block'; // mostra o botão de enviar
-      document.getElementById('btn-enviar').textContent = 'Confirmar respostas'; // define o texto do botão
-      carregarQuestoes(); // carrega as questões
-    }
 
     document.addEventListener('DOMContentLoaded', () => { // espera o DOM carregar
       carregarQuestoes(); // carrega as questões
@@ -574,10 +569,10 @@
     });
 
     document.addEventListener('keydown', (e) => { // escuta eventos de teclado
-      const key = e.key.toLowerCase();
+      const key = e.key.toLowerCase();  // converter a tecla para minúsculo para não dar erro na comparação
       if (['a', 'b', 'c', 'd'].includes(key)) { // verifica se a tecla é uma alternativa
         const index = ['a', 'b', 'c', 'd'].indexOf(key); // pega o índice da alternativa
-        const rows = document.querySelectorAll('.alternative-row'); // seleciona todas as alternativas
+        const rows = document.querySelectorAll('.alternative-row'); // seleciona todas as alternativas e armazena no array rows
         if (rows[index]) { // verifica se a alternativa existe
           selecionarAlternativa(key, rows[index]); // seleciona a alternativa
         }

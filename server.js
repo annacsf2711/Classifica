@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -216,6 +216,25 @@ app.get('/api/questoes', async (req, res) => {
   }
 });
 
+// ===================== PASSAR AS QUESTÕES RESPONDIDAS DO DIAGNOSTICO ====================
+app.post('/api/respostas', async (req, res) => {
+  try {
+    const { id_estudante, respostas } = req.body;
+    
+    for (const resposta of respostas) {
+      await pool.query(
+        `INSERT INTO classifica.resposta_exercicio (id_estudante, id_exercicio, resposta)
+         VALUES ($1, $2, $3)`,
+        [id_estudante, resposta.id_exercicio, resposta.resposta]
+      );
+    }
+    
+    res.send("Respostas enviadas com sucesso!");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao enviar respostas");
+  }
+});
 // ===================== CONFIG PROF =====================
 app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_professor} = req.params;   // pega o id 
