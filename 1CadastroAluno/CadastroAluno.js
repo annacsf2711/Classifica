@@ -1,4 +1,4 @@
-import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR} from "../DataCepCpf.js";
+import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, cpfJaCadastrado, validarCPF} from "../DataCepCpf.js";
 
 // ===================== CPF: 000.000.000-00 ====================================================
 document.getElementById("cpf")
@@ -84,3 +84,16 @@ document.getElementById("btnCancelarAlu")
     .addEventListener("click", cancelar);
 
 
+// ===================== CPF ACEITO E EXISTENTE ================================================================================
+
+const cpf = document.getElementById("cpf").value;
+if (!validarCPF(cpf)) {
+    alert("CPF inválido!");
+    return;
+}
+
+const cpf = document.getElementById("cpf").value;
+    if (await cpfJaCadastrado(cpf)) {
+        alert("Este CPF já está cadastrado!");
+    return;
+}

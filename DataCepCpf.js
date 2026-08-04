@@ -92,4 +92,56 @@ export function PontosCEP(cep){
   cep.target.value = v;
 }
 
+// ===================== CPF EXISTENTE E ACEITO  - do chat pq é uma linha de raciocínio que n entendi nem a matemática básica =============
+
+export function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ""); // Remove pontos e traços
+    
+    if (cpf.length !== 11) return false;    // Deve ter 11 dígitos
+
+    if (/^(\d)\1+$/.test(cpf)) return false;     // Rejeita CPFs com todos os números iguais
+ 
+    // Calcula o 1º dígito verificador
+    let soma = 0;
+    for (let i = 0; i < 9; i++) {
+        soma += Number(cpf[i]) * (10 - i);
+    }
+ 
+    let resto = (soma * 10) % 11;
+    if (resto === 10) resto = 0;
+ 
+    if (resto !== Number(cpf[9])) return false;
+ 
+    // Calcula o 2º dígito verificador
+    soma = 0;
+    for (let i = 0; i < 10; i++) {
+        soma += Number(cpf[i]) * (11 - i);
+    }
+ 
+    resto = (soma * 10) % 11;
+    if (resto === 10) resto = 0;
+ 
+    if (resto !== Number(cpf[10])) return false;
+ 
+    return true;
+}
+
+export function cpfJaCadastrado(cpf) {
+    try {
+        const resposta = await fetch("http://localhost:3000/verificarCpf", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cpf })
+        });
+ 
+        const dados = await resposta.json();
+ 
+        return dados.cpfExiste;
+    } catch (erro) {
+        console.error("Erro ao verificar CPF:", erro);
+        return false;
+    }
+}
 

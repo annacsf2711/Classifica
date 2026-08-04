@@ -1,4 +1,4 @@
-import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR} from "../DataCepCpf.js";
+import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, validarCPF, cpfJaCadastrado} from "../DataCepCpf.js";
 
 // ===================== CPF: 000.000.000-00 ====================================================
 document.getElementById("cpf")
@@ -81,8 +81,5 @@ function cancelar() {
 }
 document.getElementById("btnCancelarProf")
     .addEventListener("click", cancelar);
-
-
-
 
 

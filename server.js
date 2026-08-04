@@ -279,3 +279,23 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
     res.status(500).send("Erro ao desativar");
   }
 });
+
+
+// ===================== CPF conferir se existe estudante =====================
+app.post("/verificarCpf", (req, res) => {
+    const { cpf } = req.body;
+    const sql = "SELECT idEstudante FROM estudante WHERE cpf = ?";
+ 
+    conexao.query(sql, [cpf], (erro, resultado) => {
+        if (erro) {
+            console.error(erro);
+            return res.status(500).json({
+                erro: true,
+                mensagem: "Erro ao consultar CPF"
+            });
+        }
+        res.json({
+            cpfExiste: resultado.length > 0
+        });
+    });
+});
