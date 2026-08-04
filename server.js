@@ -252,3 +252,127 @@ app.post('/criarExercicio', async (req, res) => {
     res.status(500).send("Erro ao criar exercício");
   }
 });
+
+// ===================================================================
+// Cole estas rotas no seu server.js, antes de app.listen(...)
+// Seguem o mesmo padrão das rotas de banco_questoes que você já tem
+// ===================================================================
+
+// ===================== LISTAR SIMULADOS DE UM PROFESSOR =====================
+app.get('/listarSimulados/:professorId', async (req, res) => {
+  const { professorId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT s.id, s.nome, s.turma, s.data_criacao,
+              COUNT(se.exercicio_id) AS total_questoes
+       FROM classifica.simulado s
+       LEFT JOIN classifica.simulado_exercicios se ON se.simulado_id = s.id
+       WHERE s.professor_id = $1 AND s.ativo = true
+       GROUP BY s.id
+       ORDER BY s.data_criacao DESC`,
+      [professorId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar simulados");
+  }
+});
+
+// ===================== CRIAR SIMULADO =====================
+app.post('/criarSimulado', async (req, res) => {
+  const { nome, turma, professorId } = req.body;
+  try {
+    const resultado = await pool.query(
+      `INSERT INTO classifica.simulado (nome, turma, professor_id)
+       VALUES ($1, $2, $3)
+       RETURNING id`,
+      [nome, turma, professorId]
+    );
+    res.json({ id: resultado.rows[0].id });
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao criar simulado");
+  }
+});
+
+// ===================== ADICIONAR QUESTÃO AO SIMULADO =====================
+app.post('/adicionarQuestaoSimulado', async (req, res) => {
+  const { simuladoId, exercicioId } = req.body;
+  try {
+    const ordemResultado = await pool.query(
+      `SELECT COALESCE(MAX(ordem), 0) + 1 AS proxima_ordem
+       FROM classifica.simulado_exercicios WHERE simulado_id = $1`,
+      [simuladoId]
+    );
+    const proximaOrdem = ordemResultado.rows[0].proxima_ordem;
+
+    await pool.query(
+      `INSERT INTO classifica.simulado_exercicios (simulado_id, exercicio_id, ordem)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (simulado_id, exercicio_id) DO NOTHING`,
+      [simuladoId, exercicioId, proximaOrdem]
+    );
+
+    res.send("Questão adicionada ao simulado com sucesso!");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao adicionar questão ao simulado");
+  }
+});
+
+// ===================== REMOVER QUESTÃO DO SIMULADO =====================
+app.delete('/removerQuestaoSimulado/:simuladoId/:exercicioId', async (req, res) => {
+  const { simuladoId, exercicioId } = req.params;
+  try {
+    await pool.query(
+      `DELETE FROM classifica.simulado_exercicios WHERE simulado_id = $1 AND exercicio_id = $2`,
+      [simuladoId, exercicioId]
+    );
+    res.send("Questão removida do simulado");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao remover questão do simulado");
+  }
+});
+
+// ===================== LISTAR QUESTÕES DE UM SIMULADO (para o aluno abrir/responder) =====================
+app.get('/listarQuestoesSimulado/:simuladoId', async (req, res) => {
+  const { simuladoId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT e.id_exercicio AS id, e.enunciado,
+              e.alternativa_a, e.alternativa_b, e.alternativa_c, e.alternativa_d,
+              e.alternativa_correta, se.ordem
+       FROM classifica.simulado_exercicios se
+       JOIN classifica.exercicio e ON e.id_exercicio = se.exercicio_id
+       WHERE se.simulado_id = $1
+       ORDER BY se.ordem`,
+      [simuladoId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar questões do simulado");
+  }
+});
+
+// ===================== LISTAR QUESTÕES DO PROFESSOR (para escolher no modal "Adicionar Simulado") =====================
+app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
+  const { professorId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT e.id_exercicio AS id, e.enunciado, e.nivel_dificuldade,
+              a.nome_area AS disciplina
+       FROM classifica.exercicio e
+       JOIN classifica.area_conhecimento a ON a.id_area = e.id_area
+       WHERE e.criado_por = $1
+       ORDER BY e.data_criada DESC`,
+      [professorId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar exercícios do professor");
+  }
+});
