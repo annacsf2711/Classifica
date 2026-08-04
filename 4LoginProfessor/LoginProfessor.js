@@ -1,5 +1,4 @@
-import {configurarControleSenha} from "../DataCepCpf.js";
-
+import {SenhaVisivel} from "../DataCepCpf.js";
 // ===================== Login =====================
 document.getElementById("formLoginProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
@@ -32,6 +31,12 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
     }
 });
 
+// ===================== Senha =====================
+document.addEventListener('DOMContentLoaded', () => {
+    //DOMContentLoaded: Espera apenas o HTML/DOM ficar pronto (é mais rápido e o mais recomendado para a maioria dos scripts).
+    const campoSenha = document.getElementById("senha");
+    const botaoCadeado = document.getElementById("btn-cadeado");
 
-// ===================================== Senha ===================================================
-configurarControleSenha("senha", "editarSenha");
+    // Ativa a funcionalidade
+    SenhaVisivel(campoSenha, botaoCadeado);
+});

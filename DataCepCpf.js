@@ -126,7 +126,7 @@ export function validarCPF(cpf) {
     return true;
 }
 
-export function cpfJaCadastrado(cpf) {
+export async function cpfJaCadastrado(cpf) {
     try {
         const resposta = await fetch("http://localhost:3000/verificarCpf", {
             method: "POST",
@@ -145,3 +145,27 @@ export function cpfJaCadastrado(cpf) {
     }
 }
 
+//============================ SENHA =======================================
+export function SenhaVisivel(campoSenha, btnCadeado) { 
+    if (!campoSenha || !btnCadeado) return;     // Garante que o botão e o campo foram encontrados antes de continuar
+
+    // Procura o ícone dentro do botão passado
+    const icone = btnCadeado.querySelector(".material-symbols-outlined");
+
+    if (!icone) return; // Segurança caso o ícone não exista
+
+    btnCadeado.addEventListener("click", () => {
+       const estaOculta = campoSenha.type === "password";
+        
+        if (estaOculta) {
+            campoSenha.type = "text";
+            icone.textContent = "lock_open"; 
+        } else {
+            campoSenha.type = "password";
+            icone.textContent = "lock";    
+        }
+        
+        // Mantém o foco no campo para o usuário continuar digitando se quiser
+        campoSenha.focus();
+    });
+}
