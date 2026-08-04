@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -253,6 +253,7 @@ app.post('/criarExercicio', async (req, res) => {
   }
 });
 
+
 // ===================================================================
 // Cole estas rotas no seu server.js, antes de app.listen(...)
 // Seguem o mesmo padrão das rotas de banco_questoes que você já tem
@@ -357,22 +358,36 @@ app.get('/listarQuestoesSimulado/:simuladoId', async (req, res) => {
   }
 });
 
-// ===================== LISTAR QUESTÕES DO PROFESSOR (para escolher no modal "Adicionar Simulado") =====================
+// ===================== LISTAR QUESTÕES DA MATÉRIA DO PROFESSOR (para escolher no modal "Adicionar Simulado") =====================
 app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
   const { professorId } = req.params;
   try {
+    // 1. descobre a especialidade (disciplina) do professor
+    const profResultado = await pool.query(
+      `SELECT especialidade FROM classifica.professor WHERE id = $1`,
+      [professorId]
+    );
+
+    if (profResultado.rows.length === 0) {
+      return res.status(404).send("Professor não encontrado");
+    }
+
+    const especialidade = profResultado.rows[0].especialidade;
+
+    // 2. lista TODAS as questões da mesma área de conhecimento, independente de quem criou
     const resultado = await pool.query(
       `SELECT e.id_exercicio AS id, e.enunciado, e.nivel_dificuldade,
               a.nome_area AS disciplina
        FROM classifica.exercicio e
        JOIN classifica.area_conhecimento a ON a.id_area = e.id_area
-       WHERE e.criado_por = $1
+       WHERE TRIM(a.nome_area) ILIKE TRIM($1)
        ORDER BY e.data_criada DESC`,
-      [professorId]
+      [especialidade]
     );
+
     res.json(resultado.rows);
   } catch (erro) {
     console.error(erro);
-    res.status(500).send("Erro ao listar exercícios do professor");
+    res.status(500).send("Erro ao listar exercícios da matéria do professor");
   }
 });

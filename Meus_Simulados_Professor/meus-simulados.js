@@ -1,10 +1,15 @@
 // ATENÇÃO: ajuste a porta/host se o seu backend rodar em outro endereço
     const API_URL = 'http://localhost:3000';
 
-    // Assume que o professorId e o nome foram salvos no login (loginProf devolve professorId)
-    // Ajuste essas chaves conforme o que você realmente grava no localStorage no login
-    const professorId = localStorage.getItem('professorId');
-    const nomeProfessorSalvo = localStorage.getItem('nomeProfessor');
+    // Enquanto não há login integrado, o professor pode ser passado direto na URL:
+    // Tela_Meus_Simulados.html?id_professor=1&nome=Leticia%20Pinho
+    // Quando o login estiver pronto, basta gravar 'professorId' e 'nomeProfessor'
+    // no localStorage no momento do loginProf, e isso continua funcionando sozinho
+    // (a URL tem prioridade sobre o localStorage, pra facilitar testes).
+    const parametrosUrl = new URLSearchParams(window.location.search);
+
+    const professorId = parametrosUrl.get('id_professor') || localStorage.getItem('professorId');
+    const nomeProfessorSalvo = parametrosUrl.get('nome') || localStorage.getItem('nomeProfessor');
 
     let exerciciosDisponiveis = [];
     let selecionadas = new Set();
@@ -17,7 +22,7 @@
 
       if (!professorId) {
         document.getElementById('listaSimulados').innerHTML =
-          '<div class="estado-erro">Não foi possível identificar o professor logado. Faça login novamente.</div>';
+          '<div class="estado-erro">Nenhum professor identificado. Acesse a página com ?id_professor=SEU_ID na URL (ex: Tela_Meus_Simulados.html?id_professor=1).</div>';
         return;
       }
 
