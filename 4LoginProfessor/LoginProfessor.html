@@ -6,7 +6,12 @@
 <title>Classifica - Login Professor</title>
 
 <script src="LoginProfessor.js" defer></script>
+<script type="module" src="../DataCepCpf.js" defer></script>
 
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -206,6 +211,26 @@
     .circle { display: none; }
     .right { padding: 40px 30px; }
   }
+    .senha-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .senha-container input {
+    flex: 1;
+  }
+  .btn-cadeado {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-cadeado .material-symbols-outlined {
+    font-size: 24px;
+    color: #666;
+  }
 
 </style>
 </head>
@@ -237,10 +262,13 @@
           <label>E-mail</label>
           <input type="email" id="email" placeholder="seu@email.com" required>
 
-          <label>Senha</label>
-          <div class="input-wrapper">
+          <label for="senha">Senha</label>
+          <div class="senha-container">
             <input type="password" id="senha" placeholder="Sua senha" required>
-          </div>
+              <button type="button" id="editarSenha" class="btn-cadeado">
+              <span class="material-symbols-outlined">lock</span>
+            </button>
+        </div>
           
           <a href="#" class="forgot-password">Esqueceu a senha?</a>
 

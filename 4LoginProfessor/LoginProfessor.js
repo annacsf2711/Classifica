@@ -1,3 +1,5 @@
+import {configurarControleSenha} from "../DataCepCpf.js";
+
 // ===================== Login =====================
 document.getElementById("formLoginProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
@@ -31,3 +33,5 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
 });
 
 
+// ===================================== Senha ===================================================
+configurarControleSenha("senha", "editarSenha");

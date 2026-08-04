@@ -24,7 +24,7 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
             localStorage.setItem("idEstudante", dados.idEstudante); // salva o id do aluno no navegador
             console.log("Id aluno:", dados.idEstudante);
             console.log("Vou redirecionar");
-            window.location.href = "http://127.0.0.1:5500/TCC---Classifica/6ConfiguracoesAluno/ConfiguracoesAluno.html";        
+            window.location.href = "http://127.0.0.1:5500/TCC---Classifica/Diagnostico/telainicialdiag.html";        
         } else {
             alert(dados.mensagem); 
         }
