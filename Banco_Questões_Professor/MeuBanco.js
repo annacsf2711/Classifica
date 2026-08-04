@@ -5,6 +5,7 @@ const API_URL = 'http://localhost:3000';
 const params = new URLSearchParams(window.location.search);
 const bancoId = params.get('bancoId');
 
+
 // professor logado (salvo no localStorage no momento do login, veja observação abaixo)
 const professorId = localStorage.getItem('professorId');
 

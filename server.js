@@ -364,7 +364,7 @@ app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
   try {
     // 1. descobre a especialidade (disciplina) do professor
     const profResultado = await pool.query(
-      `SELECT especialidade FROM classifica.professor WHERE id = $1`,
+      `SELECT especialidade FROM classifica.professor WHERE id_professor = $1`,
       [professorId]
     );
 
@@ -387,7 +387,7 @@ app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
 
     res.json(resultado.rows);
   } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao listar exercícios da matéria do professor");
-  }
+      console.error("ERRO COMPLETO:", erro);
+      res.status(500).send(erro.message);
+    }
 });

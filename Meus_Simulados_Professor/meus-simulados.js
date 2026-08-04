@@ -85,11 +85,16 @@
     // ===================== CARREGAR QUESTÕES DO BANCO DO PROFESSOR =====================
     async function carregarExerciciosDisponiveis() {
       const picker = document.getElementById('questoesPicker');
+      console.log("Professor ID:", professorId);
+      console.log("URL:", `${API_URL}/listarExerciciosProfessor/${professorId}`);
       picker.innerHTML = '<div style="padding:14px; font-size:14px; color:#4a5568;">Carregando questões...</div>';
 
       try {
         const response = await fetch(`${API_URL}/listarExerciciosProfessor/${professorId}`);
-        if (!response.ok) throw new Error('Erro ao buscar exercícios');
+        if (!response.ok) {
+          const texto = await response.text();
+          throw new Error(texto);
+        }
 
         exerciciosDisponiveis = await response.json();
 
@@ -109,9 +114,9 @@
         `).join('');
 
       } catch (erro) {
-        console.error('Erro:', erro);
-        picker.innerHTML = '<div style="padding:14px; font-size:14px; color:#c0392b;">Erro ao carregar suas questões.</div>';
-      }
+          console.error('Erro completo:', erro);
+          alert(erro.message);
+        }  
     }
 
     function alternarSelecao(exercicioId, marcado) {
