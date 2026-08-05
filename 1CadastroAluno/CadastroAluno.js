@@ -45,13 +45,8 @@ document.getElementById("formCadastroAluno").addEventListener("submit", async (e
     const cpf = document.getElementById("cpf").value;
     const email = document.getElementById("email").value;
 
-    if (!validarCPF(cpf)) {
-        alert("CPF inválido!");
-        return;
-    }
 
     const podeCadastrar = await conferirCpfEmail(cpf, email);
-
     if (!podeCadastrar) {
         return;
     }

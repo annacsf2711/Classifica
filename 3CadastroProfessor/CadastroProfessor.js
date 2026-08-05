@@ -46,13 +46,8 @@ document.getElementById("formCadastroProf").addEventListener("submit", async (ev
     const cpf = document.getElementById("cpf").value;
     const email = document.getElementById("email").value;
      
-    if (!validarCPF(cpf)) {
-        alert("CPF inválido!");
-        return;
-    }
      
     const podeCadastrar = await conferirCpfEmailProf(cpf, email);
-     
     if (!podeCadastrar) {
         return;
     }
