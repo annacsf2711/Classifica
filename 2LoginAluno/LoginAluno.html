@@ -6,8 +6,12 @@
 <title>Classifica - Login Aluno</title>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="LoginAluno.js" defer></script>
-
+<script type="module" src="LoginAluno.js" defer></script>
+<script type="module" src="../DataCepCpf.js" defer></script>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -208,7 +212,39 @@
     .circle { display: none; }
     .right { padding: 40px 30px; }
   }
+  .senha-container{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
 
+  .senha-container input{
+      flex: 1;
+  }
+
+  .btn-cadeado{
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #718096;
+      padding: 0;
+  }
+
+  .btn-cadeado:hover{
+      color: #3aa4e8;
+  }
+
+  .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+      font-size: 24px;
+  }
 </style>
 </head>
 <body>
@@ -239,9 +275,12 @@
           <label>E-mail</label>
           <input type="email" id="email" placeholder="seu@email.com" required>
 
-          <label>Senha</label>
-          <div class="input-wrapper">
-            <input type="password" id="senha" placeholder="Sua senha" required>
+        <label for="senha">Senha</label>
+          <div class="senha-container">
+            <input type="password" id="senha" placeholder="Sua senha">
+              <button type="button" id="btn-cadeado" class="btn-cadeado">
+              <span class="material-symbols-outlined">lock</span>
+            </button>
           </div>
           
           <a href="#" class="forgot-password">Esqueceu a senha?</a>

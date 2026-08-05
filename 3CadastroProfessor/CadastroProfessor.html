@@ -7,7 +7,10 @@
 
 <script type="module" src="CadastroProfessor.js" defer></script> <!-- Conectar ao java script -->
 <script type="module" src="../DataCepCpf.js" defer></script> <!-- Conectar ao java script -->
-
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -136,6 +139,39 @@
   @media (max-width: 700px) {
     .container { flex-direction: column; }
   }
+    .senha-container{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+
+  .senha-container input{
+      flex: 1;
+  }
+
+  .btn-cadeado{
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #718096;
+      padding: 0;
+  }
+
+  .btn-cadeado:hover{
+      color: #3aa4e8;
+  }
+
+  .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+      font-size: 24px;
+  }
 </style>
 </head>
 <body>
@@ -198,20 +234,27 @@
             </div>
         </div>
 
+        <div class="row">
           <div>
             <label>CEP</label>
             <input type="text" id="cep" placeholder="00000-000" required>
           </div>
           <div>
-            <label>Senha</label>
-            <input type="password" id="senha" placeholder="Senha" required>
+            <label for="senha">Senha</label>
+            <div class="senha-container">
+              <input type="password" id="senha" placeholder="Sua senha" required >
+              <button type="button" id="btn-cadeado" class="btn-cadeado">
+                <span class="material-symbols-outlined">lock</span>
+              </button>
+            </div>
           </div>
         </div>
 
         <div class="buttons">
-          <button type="submit"  class="btn btn-primary" onclick="conferir()">Cadastrar</button>
+          <button type="submit"  class="btn btn-primary">Cadastrar</button>
           <button type="button"  class="btn btn-secondary" id="btnCancelarProf">Cancelar</button>
         </div>
+      </div>
 
       </form>
     </div>

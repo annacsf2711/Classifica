@@ -92,4 +92,140 @@ export function PontosCEP(cep){
   cep.target.value = v;
 }
 
+//============================ SENHA =======================================
+export function SenhaVisivel(campoSenha, btnCadeado) { 
+    if (!campoSenha || !btnCadeado) return;     // Garante que o botão e o campo foram encontrados antes de continuar
 
+    // Procura o ícone dentro do botão passado
+    const icone = btnCadeado.querySelector(".material-symbols-outlined");
+
+    if (!icone) return; // Segurança caso o ícone não exista
+
+    btnCadeado.addEventListener("click", () => {
+       const estaOculta = campoSenha.type === "password";
+        
+        if (estaOculta) {
+            campoSenha.type = "text";
+            icone.textContent = "lock_open"; 
+        } else {
+            campoSenha.type = "password";
+            icone.textContent = "lock";    
+        }
+        
+        // Mantém o foco no campo para o usuário continuar digitando se quiser
+        campoSenha.focus();
+    });
+}
+
+//============================ Conferir CPF e Email =======================================
+export async function conferirCpfEmail(cpf, email) {
+    try {
+        if (!validarCPF(cpf)) {
+            alert("CPF inválido!");
+            return false;
+        }
+        // Envia CPF e e-mail para o servidor verificar se já existem cadastrados no banco
+        const respostaVerificacao = await fetch("http://localhost:3000/verificarCadastroAluno",{
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, // Informa que os dados enviados serão em JSON
+            body: JSON.stringify({
+                cpf: cpf,
+                email: email
+            })
+        });
+        const dadosVerificacao = await respostaVerificacao.json(); // resposta do servidor
+
+        if (dadosVerificacao.cpfExiste) {
+            alert("CPF já cadastrado!");
+            return false;
+        }
+        if (dadosVerificacao.emailExiste) {
+            alert("E-mail já cadastrado!");
+            return false;
+        }
+        return true;
+    }
+    catch(erro){
+        console.error(erro);
+        alert("Erro ao verificar CPF e e-mail");
+        return false;
+    }
+}
+
+export async function conferirCpfEmailProf(cpf, email) {
+    try {
+        if (!validarCPF(cpf)) {
+            alert("CPF inválido!");
+            return false;
+        }
+
+        // Envia CPF e e-mail para o servidor verificar se já existem cadastrados no banco
+        const respostaVerificacao = await fetch("http://localhost:3000/verificarCadastroProf",{
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, // Informa que os dados enviados serão em JSON
+            body: JSON.stringify({
+                cpf: cpf,
+                email: email
+            })
+        });
+        const dadosVerificacao = await respostaVerificacao.json(); // resposta do servidor
+
+        if (dadosVerificacao.cpfExiste) {
+            alert("CPF já cadastrado!");
+            return false;
+        }
+        if (dadosVerificacao.emailExiste) {
+            alert("E-mail já cadastrado!");
+            return false;
+        }
+        return true;
+    }
+    catch(erro){
+        console.error(erro);
+        alert("Erro ao verificar CPF e e-mail");
+        return false;
+    }
+}
+
+//============================ Validar CPF =======================================
+export function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ""); // Remove qualquer caractere que não seja número
+
+    if (cpf.length !== 11) { // Verifica se o CPF possui exatamente 11 dígitos
+        return false;
+    }
+
+    if (/^(\d)\1{10}$/.test(cpf)) { // Verifica se todos os dígitos são iguais (ex: 11111111111)
+        return false;
+    }
+
+    let soma = 0; // Variável que armazenará a soma dos cálculos
+
+    for (let i = 0; i < 9; i++) { // Percorre os 9 primeiros dígitos do CPF
+        // Multiplica cada dígito pelo peso correspondente - Pesos: 10, 9, 8, ..., 2
+        soma += parseInt(cpf[i]) * (10 - i);
+    }
+
+    let resto = (soma * 10) % 11;  // Calcula o primeiro dígito verificador
+    if (resto === 10) resto = 0; // Se o resultado for 10, o dígito vira 0
+    if (resto !== parseInt(cpf[9])) { // Compara o dígito calculado com o 10º dígito do CPF
+        return false;
+    }
+
+    soma = 0; // Reinicia a soma para calcular o segundo dígito
+
+    for (let i = 0; i < 10; i++) {
+        // Pesos: 11, 10, 9, ..., 2
+        soma += parseInt(cpf[i]) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;     // Calcula o segundo dígito verificador
+    if (resto === 10) resto = 0; // Se o resultado for 10, o dígito vira 0
+
+    if (resto !== parseInt(cpf[10])) { // Compara o dígito calculado com o último dígito do CPF
+        return false;
+    }
+
+    // Se passou por todas as verificações, o CPF é válido
+    return true;
+}

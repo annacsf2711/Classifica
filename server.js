@@ -266,7 +266,6 @@ app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os
     if (resultado.rows.length === 0) {
       return res.status(404).send("Professor não encontrado");
     }
-    
     res.json(resultado.rows[0]); // pegar o primeira elemento
 
   } catch (erro) {
@@ -275,8 +274,7 @@ app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os
   }
 });
 
-console.log("Rota PUT carregada");
-app.put("/professor/:id_professor", async (req, res) => {
+app.put("/professor/:id_professor", async (req, res) => { // mudando dados
   
     console.log(req.params);
     console.log(req.body);
@@ -297,11 +295,10 @@ app.put("/professor/:id_professor", async (req, res) => {
     }
 });
 
+
 // ===================== Delete PROF =====================
 app.put("/desativarProfessor/:id_professor", async (req, res) => {
   
-  console.log("Rota desativar professor chamada");
-
   const {id_professor} = req.params;
   try {
     await pool.query(
@@ -313,4 +310,72 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
     console.error(erro);
     res.status(500).send("Erro ao desativar");
   }
+});
+
+
+// ===================== CPF e E-mail conferir se existem =====================
+app.post("/verificarCadastroAluno", async (req, res) => {
+    // Recebe CPF e e-mail enviados pelo frontend
+    const { cpf, email } = req.body;
+    try {
+      // Consulta no PostgreSQL
+      const resultado = await pool.query(
+        `SELECT id_estudante, cpf, email FROM classifica.estudante
+          WHERE cpf = $1 OR email = $2`,
+          [cpf, email]
+        );
+        // Verifica se o CPF existe
+        const cpfExiste = resultado.rows.some(function(estudante) {
+            return estudante.cpf === cpf;
+        });
+        // Verifica se o e-mail existe
+        const emailExiste = resultado.rows.some(function(estudante) {
+            return estudante.email === email;
+        });
+        // Retorna para o frontend
+        res.json({
+            cpfExiste,
+            emailExiste
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            erro: true,
+            mensagem: "Erro ao consultar CPF e e-mail"
+        });
+    }
+});
+
+app.post("/verificarCadastroProf", async (req, res) => {
+    // Recebe CPF e e-mail enviados pelo frontend
+    const { cpf, email } = req.body;
+    try {
+      // Consulta no PostgreSQL
+      const resultado = await pool.query(
+        `SELECT id_professor, cpf, email FROM classifica.professor
+          WHERE cpf = $1 OR email = $2`,
+          [cpf, email]
+        );
+        // Verifica se o CPF existe
+        const cpfExiste = resultado.rows.some(function(professor) {
+            return professor.cpf === cpf;
+        });
+        // Verifica se o e-mail existe
+        const emailExiste = resultado.rows.some(function(professor) {
+            return professor.email === email;
+        });
+        // Retorna para o frontend
+        res.json({
+            cpfExiste,
+            emailExiste
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            erro: true,
+            mensagem: "Erro ao consultar CPF e e-mail"
+        });
+    }
 });

@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Classifica - Login Professor</title>
 
-<script src="LoginProfessor.js" defer></script>
+<script type="module" src="LoginProfessor.js" defer></script>
 <script type="module" src="../DataCepCpf.js" defer></script>
-
 <link
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
@@ -211,25 +210,38 @@
     .circle { display: none; }
     .right { padding: 40px 30px; }
   }
-    .senha-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .senha-container{
+      display: flex;
+      align-items: center;
+      gap: 10px;
   }
-  .senha-container input {
-    flex: 1;
+
+  .senha-container input{
+      flex: 1;
   }
-  .btn-cadeado {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .btn-cadeado{
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #718096;
+      padding: 0;
   }
-  .btn-cadeado .material-symbols-outlined {
-    font-size: 24px;
-    color: #666;
+
+  .btn-cadeado:hover{
+      color: #3aa4e8;
+  }
+
+  .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+      font-size: 24px;
   }
 
 </style>
@@ -264,8 +276,8 @@
 
           <label for="senha">Senha</label>
           <div class="senha-container">
-            <input type="password" id="senha" placeholder="Sua senha" required>
-              <button type="button" id="editarSenha" class="btn-cadeado">
+            <input type="password" id="senha" placeholder="Sua senha">
+              <button type="button" id="btn-cadeado" class="btn-cadeado">
               <span class="material-symbols-outlined">lock</span>
             </button>
         </div>

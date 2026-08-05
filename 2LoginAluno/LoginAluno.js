@@ -1,3 +1,4 @@
+import {SenhaVisivel} from "../DataCepCpf.js";
 // ===================== Login =====================
 document.getElementById("formLoginAluno").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
@@ -33,9 +34,19 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
         alert("Erro ao conectar com o servidor"); 
     }
 });
+// ===================== Senha =====================
+document.addEventListener('DOMContentLoaded', () => {
+    //DOMContentLoaded: Espera apenas o HTML/DOM ficar pronto (é mais rápido e o mais recomendado para a maioria dos scripts).
+    const campoSenha = document.getElementById("senha");
+    const botaoCadeado = document.getElementById("btn-cadeado");
+
+    // Ativa a funcionalidade
+    SenhaVisivel(campoSenha, botaoCadeado);
+});
 
 
 
+// ===================== teste google =====================
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: "360940613559-u8aev3vdje02f7ag7p81ekgqgdd0u8tr.apps.googleusercontent.com",
