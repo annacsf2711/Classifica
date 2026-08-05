@@ -1,4 +1,4 @@
-import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, validarCPF, conferirCpfEmail} from "../DataCepCpf.js";
+import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, validarCPF, conferirCpfEmail, SenhaVisivel} from "../DataCepCpf.js";
 
 // ===================== CPF: 000.000.000-00 ====================================================
 document.getElementById("cpf")
@@ -102,3 +102,12 @@ function cancelar() {
 document.getElementById("btnCancelarAlu")
     .addEventListener("click", cancelar);
 
+// ===================== Senha =====================
+document.addEventListener('DOMContentLoaded', () => {
+    //DOMContentLoaded: Espera apenas o HTML/DOM ficar pronto (é mais rápido e o mais recomendado para a maioria dos scripts).
+    const campoSenha = document.getElementById("senha");
+    const botaoCadeado = document.getElementById("btn-cadeado");
+
+    // Ativa a funcionalidade
+    SenhaVisivel(campoSenha, botaoCadeado);
+});
