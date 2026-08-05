@@ -125,3 +125,4 @@ document.getElementById("deletar").addEventListener("click", async () => {
       alert("Erro ao desativar a conta.");
     }
 });
+

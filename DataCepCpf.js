@@ -92,59 +92,6 @@ export function PontosCEP(cep){
   cep.target.value = v;
 }
 
-// ===================== CPF EXISTENTE E ACEITO  - do chat pq é uma linha de raciocínio que n entendi nem a matemática básica =============
-
-export function validarCPF(cpf) {
-    cpf = cpf.replace(/\D/g, ""); // Remove pontos e traços
-    
-    if (cpf.length !== 11) return false;    // Deve ter 11 dígitos
-
-    if (/^(\d)\1+$/.test(cpf)) return false;     // Rejeita CPFs com todos os números iguais
- 
-    // Calcula o 1º dígito verificador
-    let soma = 0;
-    for (let i = 0; i < 9; i++) {
-        soma += Number(cpf[i]) * (10 - i);
-    }
- 
-    let resto = (soma * 10) % 11;
-    if (resto === 10) resto = 0;
- 
-    if (resto !== Number(cpf[9])) return false;
- 
-    // Calcula o 2º dígito verificador
-    soma = 0;
-    for (let i = 0; i < 10; i++) {
-        soma += Number(cpf[i]) * (11 - i);
-    }
- 
-    resto = (soma * 10) % 11;
-    if (resto === 10) resto = 0;
- 
-    if (resto !== Number(cpf[10])) return false;
- 
-    return true;
-}
-
-export async function cpfJaCadastrado(cpf) {
-    try {
-        const resposta = await fetch("http://localhost:3000/verificarCpf", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ cpf })
-        });
- 
-        const dados = await resposta.json();
- 
-        return dados.cpfExiste;
-    } catch (erro) {
-        console.error("Erro ao verificar CPF:", erro);
-        return false;
-    }
-}
-
 //============================ SENHA =======================================
 export function SenhaVisivel(campoSenha, btnCadeado) { 
     if (!campoSenha || !btnCadeado) return;     // Garante que o botão e o campo foram encontrados antes de continuar
@@ -168,4 +115,117 @@ export function SenhaVisivel(campoSenha, btnCadeado) {
         // Mantém o foco no campo para o usuário continuar digitando se quiser
         campoSenha.focus();
     });
+}
+
+//============================ Conferir CPF e Email =======================================
+export async function conferirCpfEmail(cpf, email) {
+    try {
+        if (!validarCPF(cpf)) {
+            alert("CPF inválido!");
+            return false;
+        }
+        // Envia CPF e e-mail para o servidor verificar se já existem cadastrados no banco
+        const respostaVerificacao = await fetch("http://localhost:3000/verificarCadastroAluno",{
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, // Informa que os dados enviados serão em JSON
+            body: JSON.stringify({
+                cpf: cpf,
+                email: email
+            })
+        });
+        const dadosVerificacao = await respostaVerificacao.json(); // resposta do servidor
+
+        if (dadosVerificacao.cpfExiste) {
+            alert("CPF já cadastrado!");
+            return false;
+        }
+        if (dadosVerificacao.emailExiste) {
+            alert("E-mail já cadastrado!");
+            return false;
+        }
+        return true;
+    }
+    catch(erro){
+        console.error(erro);
+        alert("Erro ao verificar CPF e e-mail");
+        return false;
+    }
+}
+
+export async function conferirCpfEmailProf(cpf, email) {
+    try {
+        if (!validarCPF(cpf)) {
+            alert("CPF inválido!");
+            return false;
+        }
+
+        // Envia CPF e e-mail para o servidor verificar se já existem cadastrados no banco
+        const respostaVerificacao = await fetch("http://localhost:3000/verificarCadastroProf",{
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, // Informa que os dados enviados serão em JSON
+            body: JSON.stringify({
+                cpf: cpf,
+                email: email
+            })
+        });
+        const dadosVerificacao = await respostaVerificacao.json(); // resposta do servidor
+
+        if (dadosVerificacao.cpfExiste) {
+            alert("CPF já cadastrado!");
+            return false;
+        }
+        if (dadosVerificacao.emailExiste) {
+            alert("E-mail já cadastrado!");
+            return false;
+        }
+        return true;
+    }
+    catch(erro){
+        console.error(erro);
+        alert("Erro ao verificar CPF e e-mail");
+        return false;
+    }
+}
+
+//============================ Validar CPF =======================================
+export function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ""); // Remove qualquer caractere que não seja número
+
+    if (cpf.length !== 11) { // Verifica se o CPF possui exatamente 11 dígitos
+        return false;
+    }
+
+    if (/^(\d)\1{10}$/.test(cpf)) { // Verifica se todos os dígitos são iguais (ex: 11111111111)
+        return false;
+    }
+
+    let soma = 0; // Variável que armazenará a soma dos cálculos
+
+    for (let i = 0; i < 9; i++) { // Percorre os 9 primeiros dígitos do CPF
+        // Multiplica cada dígito pelo peso correspondente - Pesos: 10, 9, 8, ..., 2
+        soma += parseInt(cpf[i]) * (10 - i);
+    }
+
+    let resto = (soma * 10) % 11;  // Calcula o primeiro dígito verificador
+    if (resto === 10) resto = 0; // Se o resultado for 10, o dígito vira 0
+    if (resto !== parseInt(cpf[9])) { // Compara o dígito calculado com o 10º dígito do CPF
+        return false;
+    }
+
+    soma = 0; // Reinicia a soma para calcular o segundo dígito
+
+    for (let i = 0; i < 10; i++) {
+        // Pesos: 11, 10, 9, ..., 2
+        soma += parseInt(cpf[i]) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;     // Calcula o segundo dígito verificador
+    if (resto === 10) resto = 0; // Se o resultado for 10, o dígito vira 0
+
+    if (resto !== parseInt(cpf[10])) { // Compara o dígito calculado com o último dígito do CPF
+        return false;
+    }
+
+    // Se passou por todas as verificações, o CPF é válido
+    return true;
 }

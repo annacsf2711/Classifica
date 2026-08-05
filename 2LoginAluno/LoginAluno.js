@@ -47,8 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ===================== teste google =====================
-
-
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: "360940613559-u8aev3vdje02f7ag7p81ekgqgdd0u8tr.apps.googleusercontent.com",

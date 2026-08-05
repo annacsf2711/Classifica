@@ -1,4 +1,4 @@
-import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, cpfJaCadastrado, validarCPF} from "../DataCepCpf.js";
+import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, validarCPF, conferirCpfEmail} from "../DataCepCpf.js";
 
 // ===================== CPF: 000.000.000-00 ====================================================
 document.getElementById("cpf")
@@ -13,12 +13,49 @@ document.getElementById("dataNascimento")
 // ===================== CEP: 00000-000 =========================================================
 document.getElementById('cep')
     .addEventListener('input', PontosCEP );
- 
+
+    
+// ===================== Conferir se tudo está preenchido ====================================================
+function conferir() { 
+    let nome = document.getElementById("nome").value;
+    let cep = document.getElementById("cep").value;
+    let cpf = document.getElementById("cpf").value;
+    let data = document.getElementById("dataNascimento").value;
+    let email = document.getElementById("email").value;
+    let senha = document.getElementById("senha").value;
+
+    if (nome == null|| cep == null|| cpf == null || email == null|| senha == null || data == null || 
+        nome.trim() == "" || cep.trim() == "" || cpf.trim() == "" || email.trim() == "" || senha.trim() == "" || 
+        data.trim() == "") {   // Verifica se o valor é nulo ou se está vazio
+
+        alert("Complete todos os campos!");  // Exibe uma mensagem informando que o campo está incompleto (alert = pequenas janelas de diálogo)
+        return false;
+    } 
+    return true;
+}
 
 // ===================== Cadastrar ===============================================================
-document.getElementById("formCadastroAluno").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
-    evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
+document.getElementById("formCadastroAluno").addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    if (!conferir()) {
+        return;
+    }
     
+    const cpf = document.getElementById("cpf").value;
+    const email = document.getElementById("email").value;
+
+    if (!validarCPF(cpf)) {
+        alert("CPF inválido!");
+        return;
+    }
+
+    const podeCadastrar = await conferirCpfEmail(cpf, email);
+
+    if (!podeCadastrar) {
+        return;
+    }
+
     const data = document.getElementById("dataNascimento").value;
 
     const correto = conferirDataBR(data);
@@ -57,24 +94,6 @@ document.getElementById("formCadastroAluno").addEventListener("submit", async (e
 });
 
 
-// ===================== Conferir se tudo está preenchido ====================================================
-
-function conferir() { // Cria a função que será executada ao clicar no botão   
-    let nome = document.getElementById("nome").value;
-    let cep = document.getElementById("cep").value;
-    let cpf = document.getElementById("cpf").value;
-    let data = document.getElementById("dataNascimento").value;
-    let email = document.getElementById("email").value;
-    let senha = document.getElementById("senha").value;
-
-    if (nome == null|| cep == null|| cpf == null || email == null|| senha == null || data == null || 
-        nome.trim() == "" || cep.trim() == "" || cpf.trim() == "" || email.trim() == "" || senha.trim() == "" || 
-        data.trim() == "") {   // Verifica se o valor é nulo ou se está vazio
-
-        alert("Complete todos os campos!");  // Exibe uma mensagem informando que o campo está incompleto (alert = pequenas janelas de diálogo)
-    } 
-}
-
 // ===================== Calcelar ================================================================================
 function cancelar() {
     window.location.href = "../2LoginAluno/LoginAluno.html"; //window.location.href é uma forma de dizer ao navegador para abrir outra página
@@ -83,17 +102,3 @@ function cancelar() {
 document.getElementById("btnCancelarAlu")
     .addEventListener("click", cancelar);
 
-
-// ===================== CPF ACEITO E EXISTENTE ================================================================================
-
-const cpf = document.getElementById("cpf").value;
-if (!validarCPF(cpf)) {
-    alert("CPF inválido!");
-    return;
-}
-
-const cpf = document.getElementById("cpf").value;
-    if (await cpfJaCadastrado(cpf)) {
-        alert("Este CPF já está cadastrado!");
-    return;
-}

@@ -1,4 +1,4 @@
-import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, validarCPF, cpfJaCadastrado} from "../DataCepCpf.js";
+import { ColocarBarra, PontosCPF, PontosCEP, TransformarDataBr, conferirDataBR, validarCPF, conferirCpfEmailProf} from "../DataCepCpf.js";
 
 // ===================== CPF: 000.000.000-00 ====================================================
 document.getElementById("cpf")
@@ -15,10 +15,47 @@ document.getElementById('cep')
     .addEventListener('input', PontosCEP );
  
 
+// ===================== Conferir se tudo está preenchido ====================================================
+function conferir() { // Cria a função que será executada ao clicar no botão   
+    let nome = document.getElementById("nome").value;
+    let cep = document.getElementById("cep").value;
+    let cpf = document.getElementById("cpf").value;
+    let disciplina = document.getElementById("disciplina").value;
+    let data = document.getElementById("dataNascimento").value;
+    let email = document.getElementById("email").value;
+    let senha = document.getElementById("senha").value;
+
+    if (nome == null|| cep == null|| cpf == null || email == null|| senha == null || data == null || 
+        nome.trim() == "" || cep.trim() == "" || cpf.trim() == "" || email.trim() == "" || senha.trim() == "" || 
+        data.trim() == "" || disciplina == null || disciplina.trim() == "") {   // Verifica se o valor é nulo ou se está vazio
+
+        alert("Complete todos os campos!");  // Exibe uma mensagem informando que o campo está incompleto (alert = pequenas janelas de diálogo)
+        return false;
+    } 
+    return true;
+}
 
 // ===================== Cadastrar ===============================================================
 document.getElementById("formCadastroProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o event
     evento.preventDefault();
+
+    if (!conferir()) { // conferir se tudo está preenchido
+        return;
+    }
+    
+    const cpf = document.getElementById("cpf").value;
+    const email = document.getElementById("email").value;
+     
+    if (!validarCPF(cpf)) {
+        alert("CPF inválido!");
+        return;
+    }
+     
+    const podeCadastrar = await conferirCpfEmailProf(cpf, email);
+     
+    if (!podeCadastrar) {
+        return;
+    }
 
     const data = document.getElementById("dataNascimento").value;
 
@@ -27,6 +64,7 @@ document.getElementById("formCadastroProf").addEventListener("submit", async (ev
         alert("Data inválida");
         return;
     } 
+
     const dataNova = TransformarDataBr(data);
 
     const dadosCadastrosProf = { //criar um obj com os dados digitados nos inputs
@@ -56,24 +94,6 @@ document.getElementById("formCadastroProf").addEventListener("submit", async (ev
     }
 });
 
-
-// ===================== Conferir se tudo está preenchido ====================================================
-function conferir() { // Cria a função que será executada ao clicar no botão   
-    let nome = document.getElementById("nome").value;
-    let cep = document.getElementById("cep").value;
-    let cpf = document.getElementById("cpf").value;
-    let disciplina = document.getElementById("disciplina").value;
-    let data = document.getElementById("dataNascimento").value;
-    let email = document.getElementById("email").value;
-    let senha = document.getElementById("senha").value;
-
-    if (nome == null|| cep == null|| cpf == null || email == null|| senha == null || data == null || 
-        nome.trim() == "" || cep.trim() == "" || cpf.trim() == "" || email.trim() == "" || senha.trim() == "" || 
-        data.trim() == "" || disciplina == null | disciplina.trim() == "") {   // Verifica se o valor é nulo ou se está vazio
-
-        alert("Complete todos os campos!");  // Exibe uma mensagem informando que o campo está incompleto (alert = pequenas janelas de diálogo)
-    } 
-}
 
 // ===================== Calcelar ================================================================================
 function cancelar() {
