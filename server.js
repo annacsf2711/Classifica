@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -216,24 +216,40 @@ app.get('/api/questoes', async (req, res) => {
   }
 });
 
-// ===================== PASSAR AS QUESTÕES RESPONDIDAS DO DIAGNOSTICO ====================
+// ===================== SALVAR RESPOSTAS DO DIAGNÓSTICO ====================
 app.post('/api/respostas', async (req, res) => {
-  try {
-    const { id_estudante, respostas } = req.body;
-    
-    for (const resposta of respostas) {
-      await pool.query(
-        `INSERT INTO classifica.resposta_exercicio (id_estudante, id_exercicio, resposta)
-         VALUES ($1, $2, $3)`,
-        [id_estudante, resposta.id_exercicio, resposta.resposta]
-      );
+    try {
+        const { id_estudante, respostas } = req.body;
+        // respostas é um array de objetos: [{ id_exercicio, resposta }]
+
+        if (!id_estudante || !respostas || !Array.isArray(respostas)) {
+            return res.status(400).send("Dados inválidos");
+        }
+
+        for (const item of respostas) {
+            // Buscar a alternativa correta do exercício
+            const questao = await pool.query(
+                `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
+                [item.id_exercicio]
+            );
+            if (questao.rows.length === 0) continue;
+
+            const correta = questao.rows[0].alternativa_correta;
+            const correto = item.resposta.toLowerCase() === correta.toLowerCase();
+
+            await pool.query(
+                `INSERT INTO classifica.tentativa 
+                    (id_estudante, id_exercicio, resposta_marcada, correto)
+                 VALUES ($1, $2, $3, $4)`,
+                [id_estudante, item.id_exercicio, item.resposta, correto]
+            );
+        }
+
+        res.status(200).send("Respostas salvas com sucesso!");
+    } catch (erro) {
+        console.error("Erro ao salvar respostas:", erro);
+        res.status(500).send("Erro ao salvar respostas no banco");
     }
-    
-    res.send("Respostas enviadas com sucesso!");
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao enviar respostas");
-  }
 });
 // ===================== CONFIG PROF =====================
 app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id

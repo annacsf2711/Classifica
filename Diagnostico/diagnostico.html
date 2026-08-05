@@ -331,19 +331,46 @@
 
   <script>
    // Estado da aplicação
-    let questoes = []; //array
-    let questaoAtual = 0; //contador de qual questão esta
-    let alternativaSelecionada = null; //qual a resposta selecionada
-    let respostas = []; // Array para armazenar respostas do aluno
+    // ===================== Estado da aplicação =====================
+let questoes = []; //array
+let questaoAtual = 0; //contador de qual questão esta
+let alternativaSelecionada = null; //qual a resposta selecionada
+let respostas = []; // Array para armazenar respostas do aluno
+let idEstudante = null; // ID do aluno logado
+let nomeEstudante = ''; // Nome do aluno
 
-    // Configuração da API
-    const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
+// Configuração da API
+const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
 
-    // Função para carregar questões do banco de dados
-    // função que permite outras funções simultaneamente
+// ===================== Carregar dados do aluno =====================
+async function carregarDadosAluno() {
+    // pega o id do estudante salvo no navegador
+    idEstudante = localStorage.getItem('idEstudante');
+    if (!idEstudante) {
+        alert('Você não está logado. Faça login novamente.');
+        window.location.href = '../2LoginAluno/LoginAluno.html';
+        return false;
+    }
 
-    async function carregarQuestoes() {
-      try {
+    try {
+        // busca o nome do aluno no banco
+        const response = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+        if (!response.ok) throw new Error('Erro ao buscar dados do aluno');
+        const dados = await response.json();
+        nomeEstudante = dados.nome || 'Aluno';
+        document.getElementById('nomeUsuario').textContent = nomeEstudante;
+        return true;
+    } catch (error) {
+        console.error('Erro ao carregar nome do aluno:', error);
+        document.getElementById('nomeUsuario').textContent = 'Aluno';
+        return true; // continua mesmo sem o nome
+    }
+}
+
+// ===================== Carregar questões =====================
+// função que permite outras funções simultaneamente
+async function carregarQuestoes() {
+    try {
         // Mostra loading, esconde a questão
         document.getElementById('loading').style.display = 'block';
         document.getElementById('questionCard').style.display = 'none';
@@ -360,146 +387,123 @@
         document.getElementById('questionCard').style.display = 'block'; //mostra a questão
 
         if (questoes.length > 0) { // se tiver questões
-          renderizarQuestao(); // renderiza a questão
+            renderizarQuestao(); // renderiza a questão
         } else { // senão, mostra que não tem questões
-          document.getElementById('enunciadoBox').innerHTML = 
-            '<p style="text-align:center;">Nenhuma questão disponível</p>'; // mostra mensagem de que não tem questões
-          document.getElementById('alternativesContainer').innerHTML = ''; // limpa as alternativas
+            document.getElementById('enunciadoBox').innerHTML = 
+                '<p style="text-align:center;">Nenhuma questão disponível</p>'; // mostra mensagem de que não tem questões
+            document.getElementById('alternativesContainer').innerHTML = ''; // limpa as alternativas
         }
-      } catch (error) { //se der erro
+    } catch (error) { //se der erro
         console.error('Erro:', error); // mostra o erro
         document.getElementById('loading').style.display = 'none'; // esconde o loading
         document.getElementById('questionCard').style.display = 'block'; // mostra a questão
         document.getElementById('enunciadoBox').innerHTML = 
-          '<p style="color:red; text-align:center;">Erro ao carregar questões</p>'; // mostra erro
-      }
+            '<p style="color:red; text-align:center;">Erro ao carregar questões</p>'; // mostra erro
     }
+}
 
-    function renderizarQuestao() { // renderiza a questão
-      if (questaoAtual >= questoes.length) { // quando todas as questões acabarem 
+// ===================== Renderizar questão =====================
+function renderizarQuestao() { // renderiza a questão
+    if (questaoAtual >= questoes.length) { // quando todas as questões acabarem 
         mostrarResultadoFinal(); // mostra o resultado
         return;
-      }
+    }
 
-      const questao = questoes[questaoAtual]; // pega o indice da questao atual e passa para essa variavel 
-      // Atualizar número da questão e progresso
-      document.getElementById('questaoNumero').textContent = // pega o conteúdo do h1 pelo id e define o que tem dentro 
+    const questao = questoes[questaoAtual]; // pega o indice da questao atual e passa para essa variavel 
+    // Atualizar número da questão e progresso
+    document.getElementById('questaoNumero').textContent = // pega o conteúdo do h1 pelo id e define o que tem dentro 
         `Questão ${questaoAtual + 1} de ${questoes.length}`;// pega  o indice da questão atual e o tanto de questões existentes  
-      
-      const progresso = ((questaoAtual + 1) / questoes.length) * 100; // calcula o progresso
-      document.getElementById('barraProgresso').style.width = `${progresso}%`; // define a largura da barra de progresso
+    
+    const progresso = ((questaoAtual + 1) / questoes.length) * 100; // calcula o progresso
+    document.getElementById('barraProgresso').style.width = `${progresso}%`; // define a largura da barra de progresso
 
-      const enunciadoBox = document.getElementById('enunciadoBox'); // pega o conteúdo do h1 pelo id e define o que tem dentro 
-      enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`; // coloca o enunciado da questão dentro do h1 
+    const enunciadoBox = document.getElementById('enunciadoBox'); // pega o conteúdo do h1 pelo id e define o que tem dentro 
+    enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`; // coloca o enunciado da questão dentro do h1 
 
-      const alternativesContainer = document.getElementById('alternativesContainer'); // pega o conteúdo do h1 pelo id e define o que tem dentro
-      const alternativas = ['a', 'b', 'c', 'd']; // define as alternativas
-      const letras = ['A', 'B', 'C', 'D']; // define as letras das alternativas
-      
-      alternativesContainer.innerHTML = alternativas.map((alt, index) => {
-        const isSelected = alternativaSelecionada === alt; // verifica se a alternativa foi selecionada
+    const alternativesContainer = document.getElementById('alternativesContainer'); // pega o conteúdo do h1 pelo id e define o que tem dentro
+    const alternativas = ['a', 'b', 'c', 'd']; // define as alternativas
+    const letras = ['A', 'B', 'C', 'D']; // define as letras das alternativas
+    
+    alternativesContainer.innerHTML = alternativas.map((alt, index) => {
+        const isSelected = (respostas[questaoAtual] === alt); // verifica se a alternativa foi selecionada
         return `
-          <div class="alternative-row ${isSelected ? 'selected' : ''}" 
-               onclick="selecionarAlternativa('${alt}', this)"> 
-            <div class="alternative-badge">${letras[index]}</div> 
-            ${questao[`alternativa_${alt}`]} 
-          </div>
+            <div class="alternative-row ${isSelected ? 'selected' : ''}" 
+                 onclick="selecionarAlternativa('${alt}', this)"> 
+                <div class="alternative-badge">${letras[index]}</div> 
+                ${questao[`alternativa_${alt}`]} 
+            </div>
         `;
-      }).join('');
+    }).join('');
 
-      if (respostas[questaoAtual]) { // se já tiver resposta
+    // Sincroniza a seleção visual com o que está salvo
+    if (respostas[questaoAtual]) { // se já tiver resposta
         alternativaSelecionada = respostas[questaoAtual]; // seleciona a resposta
-        const selectedRow = document.querySelector(`[onclick*="${alternativaSelecionada}"]`); // seleciona a linha 
-        if (selectedRow) { // se tiver linha
-          selectedRow.classList.add('selected'); // adiciona a linha selecionada
-        }
-      } else { // senão
-        alternativaSelecionada = null; // zera a alternativa selecionada 
-      }
+        const rows = document.querySelectorAll('.alternative-row');
+        rows.forEach(row => {
+            const onclickAttr = row.getAttribute('onclick');
+            if (onclickAttr && onclickAttr.includes(`'${alternativaSelecionada}'`)) {
+                row.classList.add('selected');
+            }
+        });
+    } else {
+        alternativaSelecionada = null; // zera a alternativa selecionada
+    }
 
-      document.getElementById('btn-enviar').textContent = 
+    document.getElementById('btn-enviar').textContent = 
         questaoAtual === questoes.length - 1 ? 'Finalizar avaliação' : 'Próxima questão'; // muda o texto do botão 
-    }
+}
 
-    function selecionarAlternativa(letra, element) { // seleciona a alternativa
-      const rows = document.querySelectorAll('.alternative-row'); // seleciona todas as linhas
-      rows.forEach(row => row.classList.remove('selected')); // remove a linha selecionada
-      
-      element.classList.add('selected'); // adiciona a linha selecionada
-      alternativaSelecionada = letra; // seleciona a alternativa
-      respostas[questaoAtual] = letra; // adiciona a resposta
-    }
+// ===================== Selecionar alternativa =====================
+function selecionarAlternativa(letra, element) { // seleciona a alternativa
+    const rows = document.querySelectorAll('.alternative-row'); // seleciona todas as linhas
+    rows.forEach(row => row.classList.remove('selected')); // remove a linha selecionada
+    
+    element.classList.add('selected'); // adiciona a linha selecionada
+    alternativaSelecionada = letra; // seleciona a alternativa
+    respostas[questaoAtual] = letra; // adiciona a resposta
+}
 
-    async function verificarResposta() {
-      if (!alternativaSelecionada) { // se não tiver alternativa
+// ===================== Verificar resposta (local) =====================
+function verificarResposta() {
+    if (!alternativaSelecionada) { // se não tiver alternativa
         alert('Por favor, selecione uma alternativa antes de continuar.'); // mostra alerta
         return; // retorna
-      }
-
-      const questao = questoes[questaoAtual]; // pega a questão atual
-
-      try { // Tenta fazer a requisição
-        const response = await fetch(`${API_URL}/verificar-resposta`, { // faz a requisição
-          method: 'POST', // define o método como POST
-          headers: {
-            'Content-Type': 'application/json', // define o tipo de conteúdo
-          },
-          body: JSON.stringify({
-            questaoId: questao.id, // define o id da questão
-            respostaAluno: alternativaSelecionada // define a resposta do aluno
-          })
-        });
-
-        if (!response.ok) { // Se a resposta não for ok
-          throw new Error('Erro ao verificar resposta'); // lança erro
-        }
-
-        const resultado = await response.json(); // pega o resultado
-        mostrarFeedback(resultado); // mostra o resultado
-
-        setTimeout(() => { // espera 1,5 segundos
-          questaoAtual++; // incrementa o contador de questões
-          alternativaSelecionada = null; // zera a alternativa selecionada
-          
-          if (questaoAtual < questoes.length) { // se tiver questão
-            renderizarQuestao(); // renderiza a questão
-            document.getElementById('feedbackContainer')?.remove(); // remove o feedback
-          } else { // senão
-            mostrarResultadoFinal(); // mostra o resultado final
-          }
-        }, 1500);
-
-      } catch (error) { // Se der erro
-        console.error('Erro:', error); // mostra o erro
-        const alternativaCorreta = questao.alternativa_correta.toLowerCase(); // define a alternativa correta
-        const acertou = alternativaSelecionada === alternativaCorreta; // verifica se acertou
-        
-        mostrarFeedback({ // mostra o resultado
-          acertou, // define se acertou
-          alternativaCorreta: questao.alternativa_correta.toUpperCase(), // define a alternativa correta
-          mensagem: acertou ? 'Resposta correta!' : 'Resposta incorreta!' // define a mensagem
-        });
-
-        setTimeout(() => { // espera 1,5 segundos
-          questaoAtual++; // incrementa o contador de questões
-          alternativaSelecionada = null; // zera a alternativa selecionada
-          
-          if (questaoAtual < questoes.length) { // se tiver questão
-            renderizarQuestao(); // renderiza a questão
-            document.getElementById('feedbackContainer')?.remove(); // remove o feedback
-          } else {
-            mostrarResultadoFinal(); // mostra o resultado final
-          }
-        }, 1500); // espera 1,5 segundos
-      }
     }
 
-    function mostrarFeedback(resultado) { // mostra o resultado
-      document.getElementById('feedbackContainer')?.remove(); // remove o feedback
+    const questao = questoes[questaoAtual]; // pega a questão atual
+    const alternativaCorreta = questao.alternativa_correta.toLowerCase(); // pega a alternativa correta
+    const acertou = alternativaSelecionada === alternativaCorreta; // verifica se acertou
 
-      const feedbackDiv = document.createElement('div'); // cria o feedback
-      feedbackDiv.id = 'feedbackContainer'; // define o id do feedback
-      feedbackDiv.style.cssText = ` 
+    // Já salvamos a resposta no array, mas garantimos
+    respostas[questaoAtual] = alternativaSelecionada; // salva a resposta
+
+    // Exibe feedback
+    mostrarFeedback({ // mostra o resultado
+        acertou, // define se acertou
+        alternativaCorreta: questao.alternativa_correta.toUpperCase() // define a alternativa correta
+    });
+
+    // Avança após 1,5s
+    setTimeout(() => { // espera 1,5 segundos
+        questaoAtual++; // incrementa o contador de questões
+        alternativaSelecionada = null; // zera a alternativa selecionada
+        document.getElementById('feedbackContainer')?.remove(); // remove o feedback
+
+        if (questaoAtual < questoes.length) { // se tiver questão
+            renderizarQuestao(); // renderiza a questão
+        } else { // senão
+            mostrarResultadoFinal(); // mostra o resultado final
+        }
+    }, 1500); // espera 1,5 segundos
+}
+
+// ===================== Mostrar feedback =====================
+function mostrarFeedback(resultado) { // mostra o resultado
+    document.getElementById('feedbackContainer')?.remove(); // remove o feedback
+
+    const feedbackDiv = document.createElement('div'); // cria o feedback
+    feedbackDiv.id = 'feedbackContainer'; // define o id do feedback
+    feedbackDiv.style.cssText = ` 
         position: fixed; 
         top: 20px; 
         right: 20px; 
@@ -509,79 +513,128 @@
         font-weight: bold; 
         z-index: 1000; 
         animation: slideIn 0.3s ease-out; 
-      `;
+    `;
 
-      if (resultado.acertou) { // Se acertou
+    if (resultado.acertou) { // Se acertou
         feedbackDiv.style.backgroundColor = '#4CAF50'; // define a cor de fundo
         feedbackDiv.textContent = '✓ Resposta Correta!'; // define o texto
-      } else { // Se errou
+    } else { // Se errou
         feedbackDiv.style.backgroundColor = '#f44336'; // define a cor de fundo
         feedbackDiv.textContent = `✗ Resposta Incorreta! A correta era: ${resultado.alternativaCorreta}`; // define o texto
-      }
-
-      document.body.appendChild(feedbackDiv); // adiciona o feedback ao corpo do documento
-
-      const style = document.createElement('style'); // cria o estilo
-      style.textContent = ` 
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; } 
-          to { transform: translateX(0); opacity: 1; } 
-        }
-        @keyframes slideOut { 
-          from { transform: translateX(0); opacity: 1; } 
-          to { transform: translateX(100%); opacity: 0; } 
-        }
-      `;
-      document.head.appendChild(style); // adiciona o estilo ao cabeçalho do documento
     }
 
-    function mostrarResultadoFinal() { // mostra o resultado final
-      const totalQuestoes = questoes.length; // tamanho do array e passa para a variavel 
-      let acertos = 0; // acertos
+    document.body.appendChild(feedbackDiv); // adiciona o feedback ao corpo do documento
 
-      for (let i = 0; i < questoes.length; i++) { // loop que percorre as questões
-        if (respostas[i] && respostas[i].toLowerCase() === questoes[i].alternativa_correta.toLowerCase()) { // verifica se acertou comparando os arrays 
-          acertos++; // incrementa o acerto
+    // Adiciona animação (se ainda não existir)
+    if (!document.getElementById('feedbackStyle')) {
+        const style = document.createElement('style'); // cria o estilo
+        style.id = 'feedbackStyle';
+        style.textContent = ` 
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; } 
+                to { transform: translateX(0); opacity: 1; } 
+            }
+        `;
+        document.head.appendChild(style); // adiciona o estilo ao cabeçalho do documento
+    }
+}
+
+// ===================== Enviar respostas para o banco =====================
+async function enviarRespostas() {
+    if (!idEstudante) {
+        console.error('ID do estudante não encontrado.');
+        return;
+    }
+
+    // Monta o array com id_exercicio e a resposta marcada
+    const dadosParaEnvio = questoes.map((q, index) => ({
+        id_exercicio: q.id,
+        resposta: respostas[index] || null // pode ser null se não respondeu
+    }));
+
+    try { // Tenta fazer a requisição
+        const response = await fetch(`${API_URL}/respostas`, { // faz a requisição
+            method: 'POST', // define o método como POST
+            headers: {
+                'Content-Type': 'application/json', // define o tipo de conteúdo
+            },
+            body: JSON.stringify({
+                id_estudante: idEstudante,
+                respostas: dadosParaEnvio
+            })
+        });
+
+        if (!response.ok) { // Se a resposta não for ok
+            const erro = await response.text();
+            throw new Error(erro); // lança erro
         }
-      }
 
-      const porcentagem = Math.round((acertos / totalQuestoes) * 100); // calcula a porcentagem para mostrar no final 
-      
-      document.getElementById('questionCard').innerHTML = ` 
+        const mensagem = await response.text(); // pega a resposta
+        console.log('Respostas enviadas com sucesso:', mensagem); // mostra no console
+    } catch (error) { // Se der erro
+        console.error('Erro ao enviar respostas:', error); // mostra o erro
+        alert('Erro ao salvar suas respostas. Tente novamente mais tarde.'); // mostra alerta
+    }
+}
+
+// ===================== Mostrar resultado final =====================
+function mostrarResultadoFinal() { // mostra o resultado final
+    const totalQuestoes = questoes.length; // tamanho do array e passa para a variavel 
+    let acertos = 0; // acertos
+
+    for (let i = 0; i < questoes.length; i++) { // loop que percorre as questões
+        const resp = respostas[i];
+        if (resp && resp.toLowerCase() === questoes[i].alternativa_correta.toLowerCase()) { // verifica se acertou comparando os arrays 
+            acertos++; // incrementa o acerto
+        }
+    }
+
+    const porcentagem = Math.round((acertos / totalQuestoes) * 100); // calcula a porcentagem para mostrar no final 
+    
+    document.getElementById('questionCard').innerHTML = ` 
         <div style="text-align: center; padding: 50px;"> 
-          <h2 style="color: #2c3e50; margin-bottom: 20px;">Avaliação Concluída!</h2> 
-          <div style="font-size: 48px; font-weight: bold; color: #3aa4e8; margin-bottom: 20px;"> 
-            ${porcentagem}%
-          </div>
-          <p style="font-size: 18px; color: #4a5568; margin-bottom: 10px;"> 
-            Você acertou ${acertos} de ${totalQuestoes} questões
-          </p>
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">Avaliação Concluída!</h2> 
+            <div style="font-size: 48px; font-weight: bold; color: #3aa4e8; margin-bottom: 20px;"> 
+                ${porcentagem}%
+            </div>
+            <p style="font-size: 18px; color: #4a5568; margin-bottom: 10px;"> 
+                Você acertou ${acertos} de ${totalQuestoes} questões
+            </p>
         </div>
-      `;
+    `;
 
-      document.getElementById('btn-enviar').style.display = 'none';
-    }
+    document.getElementById('btn-enviar').style.display = 'none'; // esconde o botão
 
+    // Envia as respostas para o banco (somente uma vez)
+    enviarRespostas(); // chama a função para enviar as respostas
+}
 
-    document.addEventListener('DOMContentLoaded', () => { // espera o DOM carregar
-      carregarQuestoes(); // carrega as questões
-      document.getElementById('btn-enviar').onclick = verificarResposta; // define o onclick do botão
-    });
+// ===================== Inicialização =====================
+document.addEventListener('DOMContentLoaded', async () => { // espera o DOM carregar
+    // 1. Carrega dados do aluno (ID e nome)
+    const ok = await carregarDadosAluno();
+    if (!ok) return;
 
-    document.addEventListener('keydown', (e) => { // escuta eventos de teclado
-      const key = e.key.toLowerCase();  // converter a tecla para minúsculo para não dar erro na comparação
-      if (['a', 'b', 'c', 'd'].includes(key)) { // verifica se a tecla é uma alternativa
+    // 2. Carrega as questões
+    await carregarQuestoes(); // carrega as questões
+
+    // 3. Associa o botão à função de verificação
+    document.getElementById('btn-enviar').onclick = verificarResposta; // define o onclick do botão
+});
+
+// ===================== Atalhos de teclado =====================
+document.addEventListener('keydown', (e) => { // escuta eventos de teclado
+    const key = e.key.toLowerCase();  // converter a tecla para minúsculo para não dar erro na comparação
+    if (['a', 'b', 'c', 'd'].includes(key)) { // verifica se a tecla é uma alternativa
         const index = ['a', 'b', 'c', 'd'].indexOf(key); // pega o índice da alternativa
         const rows = document.querySelectorAll('.alternative-row'); // seleciona todas as alternativas e armazena no array rows
         if (rows[index]) { // verifica se a alternativa existe
-          selecionarAlternativa(key, rows[index]); // seleciona a alternativa
+            selecionarAlternativa(key, rows[index]); // seleciona a alternativa
         }
-      } else if (e.key === 'Enter') { // verifica se a tecla é Enter
+    } else if (e.key === 'Enter') { // verifica se a tecla é Enter
         verificarResposta(); // verifica a resposta
-      }       
-    });
-
-    document.getElementById("nomeUsuario").textContent = estudante.nome; // define o nome do estudante
+    }       
+});
 
   </script>
 </body>
