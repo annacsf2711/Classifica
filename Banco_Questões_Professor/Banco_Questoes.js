@@ -8,23 +8,37 @@ const professorId = localStorage.getItem('professorId') || 1;
 
 // elementos da tela
 const listaBancos = document.getElementById('listaBancos');
-const btnNovoBanco = document.getElementById('btnNovoBanco');
-const modalNovoBanco = document.getElementById('modalNovoBanco');
-const inputNomeBanco = document.getElementById('inputNomeBanco');
-const inputDisciplinaBanco = document.getElementById('inputDisciplinaBanco');
-const btnSalvarBanco = document.getElementById('btnSalvarBanco');
-const btnCancelarBanco = document.getElementById('btnCancelarBanco');
+const addCard = document.getElementById('addCard');
+const formCard = document.getElementById('formCard');
+const inputNomeBanco = document.getElementById('nomeBanco');
+const inputDisciplinaBanco = document.getElementById('disciplinaBanco');
+const btnSalvarBanco = document.getElementById('salvarBanco');
+
+// ===================== MOSTRAR/ESCONDER FORMULÁRIO =====================
+function toggleForm() {
+  formCard.classList.toggle('open');
+  if (formCard.classList.contains('open')) {
+    inputNomeBanco.focus();
+  }
+}
 
 // ===================== CARREGAR BANCOS DO PROFESSOR =====================
 async function carregarBancos() {
+  listaBancos.innerHTML = '<p class="estado-vazio">Carregando bancos...</p>';
+
   try {
     const resposta = await fetch(`${API_URL}/listarBancos/${professorId}`);
+
+    if (!resposta.ok) {
+      throw new Error(`Erro HTTP ${resposta.status}`);
+    }
+
     const bancos = await resposta.json();
 
     listaBancos.innerHTML = '';
 
-    if (bancos.length === 0) {
-      listaBancos.innerHTML = '<p>Nenhum banco criado ainda.</p>';
+    if (!bancos || bancos.length === 0) {
+      listaBancos.innerHTML = '<p class="estado-vazio">Nenhum banco criado ainda.</p>';
       return;
     }
 
@@ -32,7 +46,8 @@ async function carregarBancos() {
       const card = document.createElement('div');
       card.classList.add('card-banco');
 
-      // se for banco do sistema, mostra o nome com destaque de cor (ex: "Questões Classifica")
+      // se for banco do sistema, mostra a última palavra do nome com destaque
+      // (ex: "Questões Classifica" -> "Classifica" fica colorido)
       const nomeFormatado = banco.tipo === 'sistema'
         ? banco.nome.replace(/(\S+)$/, '<span class="destaque">$1</span>')
         : banco.nome;
@@ -45,14 +60,21 @@ async function carregarBancos() {
             <span><span class="dot"></span> Disciplina: ${banco.disciplina || '-'}</span>
           </div>
         </div>
-        <a href="Tela_Meu_Banco.html?bancoId=${banco.id}" class="btn">Abrir</a>
+        <button class="btn" onclick="abrirBanco(${banco.id})">Abrir</button>
       `;
       listaBancos.appendChild(card);
     });
 
   } catch (erro) {
-    console.error("Erro ao carregar bancos:", erro);
+    console.error('Erro ao carregar bancos:', erro);
+    listaBancos.innerHTML = '<p class="estado-erro">Não foi possível carregar os bancos. Verifique se a API está rodando.</p>';
   }
+}
+
+// ===================== ABRIR UM BANCO (salva o id e navega) =====================
+function abrirBanco(id) {
+  localStorage.setItem('bancoId', id);
+  window.location.href = 'Tela_MeuBanco.html';
 }
 
 // ===================== CRIAR NOVO BANCO =====================
@@ -65,35 +87,35 @@ async function criarBanco() {
     return;
   }
 
+  btnSalvarBanco.disabled = true;
+  btnSalvarBanco.textContent = 'Salvando...';
+
   try {
-    await fetch(`${API_URL}/criarBanco`, {
+    const resposta = await fetch(`${API_URL}/criarBanco`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, disciplina, professorId })
     });
 
-    // limpa os campos e fecha o modal
+    if (!resposta.ok) {
+      throw new Error(`Erro HTTP ${resposta.status}`);
+    }
+
+    // limpa os campos e fecha o formulário depois de salvar
     inputNomeBanco.value = '';
     inputDisciplinaBanco.value = '';
-    modalNovoBanco.style.display = 'none';
+    formCard.classList.remove('open');
 
     carregarBancos(); // atualiza a lista com o novo banco
 
   } catch (erro) {
-    console.error("Erro ao criar banco:", erro);
+    console.error('Erro ao criar banco:', erro);
+    alert('Não foi possível criar o banco. Verifique se a API está rodando.');
+  } finally {
+    btnSalvarBanco.disabled = false;
+    btnSalvarBanco.textContent = 'Salvar';
   }
 }
-
-// ===================== EVENTOS =====================
-btnNovoBanco.addEventListener('click', () => {
-  modalNovoBanco.style.display = 'flex';
-});
-
-btnCancelarBanco.addEventListener('click', () => {
-  modalNovoBanco.style.display = 'none';
-});
-
-btnSalvarBanco.addEventListener('click', criarBanco);
 
 // ===================== INICIAR =====================
 carregarBancos();

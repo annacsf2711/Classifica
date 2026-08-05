@@ -1,9 +1,8 @@
 // ===================== CONFIGURAÇÃO =====================
 const API_URL = 'http://localhost:3000';
 
-// pega o banco pela URL, ex: Tela_Meu_Banco.html?bancoId=2
-const params = new URLSearchParams(window.location.search);
-const bancoId = params.get('bancoId');
+// pega o banco salvo no localStorage (definido em abrirBanco() na tela anterior)
+const bancoId = localStorage.getItem('bancoId');
 
 
 // professor logado (salvo no localStorage no momento do login, veja observação abaixo)
@@ -11,6 +10,8 @@ const professorId = localStorage.getItem('professorId');
 
 // elementos da tela
 const listaQuestoes = document.getElementById('listaQuestoes');
+const tituloBanco = document.getElementById('tituloBanco');
+const subtituloBanco = document.getElementById('subtituloBanco');
 const modalAdicionar = document.getElementById('modalAdicionar');
 const listaDisponiveis = document.getElementById('listaDisponiveis');
 const addBtn = document.querySelector('.add-btn');
@@ -20,6 +21,28 @@ const fecharModal = document.getElementById('fecharModal');
 const tabBtns = document.querySelectorAll('.tab-btn');
 const tabContents = document.querySelectorAll('.tab-content');
 const formNovaQuestao = document.getElementById('formNovaQuestao');
+
+// ===================== CARREGAR DADOS DO BANCO (nome, disciplina, id) =====================
+async function carregarInfoBanco() {
+  try {
+    const resposta = await fetch(`${API_URL}/buscarBanco/${bancoId}`);
+
+    if (!resposta.ok) {
+      throw new Error(`Servidor retornou status ${resposta.status}`);
+    }
+
+    const banco = await resposta.json();
+
+    tituloBanco.textContent = banco.nome;
+    subtituloBanco.textContent = `Disciplina: ${banco.disciplina || '-'} · ID do banco: ${banco.id}`;
+    document.title = `Classifica - ${banco.nome}`;
+
+  } catch (erro) {
+    console.error("Erro ao carregar informações do banco:", erro);
+    tituloBanco.textContent = `Banco #${bancoId}`;
+    subtituloBanco.textContent = 'Não foi possível carregar os detalhes deste banco.';
+  }
+}
 
 // ===================== CARREGAR QUESTÕES DO BANCO =====================
 async function carregarQuestoes() {
@@ -222,7 +245,9 @@ fecharModal.addEventListener('click', () => modalAdicionar.style.display = 'none
 
 // ===================== INICIAR =====================
 if (bancoId) {
+  carregarInfoBanco();
   carregarQuestoes();
 } else {
+  tituloBanco.textContent = 'Banco não identificado';
   listaQuestoes.innerHTML = '<p>Banco não identificado. Volte à tela anterior.</p>';
 }

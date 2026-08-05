@@ -100,7 +100,7 @@
     margin-bottom: 40px;
   }
 
-  .card {
+  .card, .card-banco {
     background: #fff;
     border-radius: 20px;
     padding: 28px 36px;
@@ -112,24 +112,25 @@
     gap: 20px;
     flex-wrap: wrap;
   }
-  .card-info h3 {
+  .card-info h3, .card-banco h3 {
     font-size: 24px;
     color: #2c3e50;
     margin-bottom: 12px;
   }
-  .card-info h3 .accent { color: #3aa4e8; }
-  .meta {
+  .card-info h3 .accent, .card-banco h3 .destaque { color: #3aa4e8; }
+  .meta, .card-banco .info {
     display: flex;
     gap: 24px;
     color: #4a5568;
     font-size: 17px;
     flex-wrap: wrap;
   }
-  .meta span { display: flex; align-items: center; gap: 8px; }
+  .meta span, .card-banco .info span { display: flex; align-items: center; gap: 8px; }
   .dot {
     width: 10px; height: 10px;
     background: #3ec98a;
     border-radius: 50%;
+    flex-shrink: 0;
   }
 
   .btn {
@@ -142,10 +143,18 @@
     font-weight: 600;
     cursor: pointer;
     transition: opacity .2s, transform .1s;
-    text-decoration: none; 
+    text-decoration: none;
+    display: inline-block;
   }
   .btn:hover { opacity: 0.9; }
   .btn:active { transform: scale(0.98); }
+
+  .estado-vazio, .estado-erro {
+    color: #4a5568;
+    font-size: 17px;
+    padding: 10px 4px 20px;
+  }
+  .estado-erro { color: #c0392b; }
 
   .add-card {
     width: 90px; height: 90px;
@@ -267,27 +276,12 @@
       <h2>Banco de Questões</h2>
       <div class="divider"></div>
 
-      <div class="card">
-        <div class="card-info">
-          <h3>Questões <span class="accent">Classifica</span></h3>
-          <div class="meta">
-            <span><span class="dot"></span>Disciplina: Matemática</span>
-          </div>
-        </div>
-        <button class="btn">Abrir</button>
+      <!-- Lista é preenchida via JS (carregarBancos) -->
+      <div id="listaBancos">
+        <p class="estado-vazio">Carregando bancos...</p>
       </div>
 
-      <div class="card">
-        <div class="card-info">
-          <h3>Meu Banco</h3>
-          <div class="meta">
-            <span><span class="dot"></span>34 questões</span>
-            <span><span class="dot"></span>Disciplina: Matemática</span>
-          </div>
-        </div>
-        <a href="Tela_MeuBanco.html" class="btn">Abrir</a>
-      </div>
-
+      <br>
       <div class="add-row">
         <div class="add-card" id="addCard" title="Adicionar novo banco" onclick="toggleForm()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -299,34 +293,16 @@
         <div class="form-card" id="formCard">
           <label for="nomeBanco">Nome</label>
           <input type="text" id="nomeBanco" placeholder="Nome do Banco de Questões" />
-          <button class="btn" id="salvarBanco" onclick="salvarBanco()">Salvar</button>
+
+          <label for="disciplinaBanco">Disciplina</label>
+          <input type="text" id="disciplinaBanco" placeholder="Ex: Matemática" />
+
+          <button class="btn" id="salvarBanco" onclick="criarBanco()">Salvar</button>
         </div>
       </div>
     </main>
   </div>
 
-  <script>
-    function toggleForm() {
-      const form = document.getElementById('formCard');
-      form.classList.toggle('open');
-      if (form.classList.contains('open')) {
-        document.getElementById('nomeBanco').focus();
-      }
-    }
-
-    function salvarBanco() {
-      const nome = document.getElementById('nomeBanco').value.trim();
-      if (!nome) {
-        alert('Digite um nome antes de salvar.');
-        return;
-      }
-      // Aqui você conecta com sua lógica real (API, banco de dados, etc.)
-      console.log('Salvando banco de questões:', nome);
-
-      // Fecha e limpa o formulário depois de salvar
-      document.getElementById('nomeBanco').value = '';
-      document.getElementById('formCard').classList.remove('open');
-    }
-  </script>
+  <script src="Banco_Questoes.js"></script>
 </body>
 </html>

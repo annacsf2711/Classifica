@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -108,6 +108,44 @@ app.post('/loginProf', async (req, res) => {
   } catch (erro) {
     console.error(erro);
     res.status(500).send("Erro ao processar o login no banco");
+  }
+});
+
+// ===================== LISTAR BANCOS DE QUESTÕES DE UM PROFESSOR =====================
+app.get('/listarBancos/:professorId', async (req, res) => {
+  const { professorId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT b.id, b.nome, b.disciplina,
+              COUNT(bqe.exercicio_id)::int AS total_questoes
+       FROM classifica.banco_questoes b
+       LEFT JOIN classifica.banco_questoes_exercicios bqe ON bqe.banco_id = b.id
+       WHERE b.professor_id = $1
+       GROUP BY b.id, b.nome, b.disciplina
+       ORDER BY b.id DESC`,
+      [professorId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar bancos de questões");
+  }
+});
+
+// ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
+app.post('/criarBanco', async (req, res) => {
+  const { nome, disciplina, professorId } = req.body;
+  try {
+    const resultado = await pool.query(
+      `INSERT INTO classifica.banco_questoes (nome, disciplina, professor_id)
+       VALUES ($1, $2, $3)
+       RETURNING id`,
+      [nome, disciplina, professorId]
+    );
+    res.json({ id: resultado.rows[0].id });
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao criar banco de questões");
   }
 });
 
