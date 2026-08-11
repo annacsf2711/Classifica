@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classifica - Banco de Questões</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #eef1f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px;
+    background: #f5f1e8;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    min-height: 90vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+    color: #fff;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .brand { text-align: center; margin-bottom: 40px; }
+  .brand .badge {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .brand h1 { font-size: 28px; font-weight: 700; }
+
+  .nav { list-style: none; }
+  .nav li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .nav li:hover { background: rgba(255,255,255,0.12); }
+  .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+  .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 30px;
+  }
+  .user .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    color: #3aa4e8;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 20px;
+  }
+  .user .info { line-height: 1.3; }
+  .user .info b { display: block; font-size: 15px; }
+  .user .info span { font-size: 13px; opacity: 0.9; }
+
+  /* Main content */
+  .main {
+    flex: 1;
+    padding: 60px 70px;
+  }
+  .main h2 {
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+  }
+  .divider {
+    height: 6px;
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    border-radius: 4px;
+    margin-bottom: 40px;
+  }
+
+  .card, .card-banco {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 36px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .card-info h3, .card-banco h3 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+  }
+  .card-info h3 .accent, .card-banco h3 .destaque { color: #3aa4e8; }
+  .meta, .card-banco .info {
+    display: flex;
+    gap: 24px;
+    color: #4a5568;
+    font-size: 17px;
+    flex-wrap: wrap;
+  }
+  .meta span, .card-banco .info span { display: flex; align-items: center; gap: 8px; }
+  .dot {
+    width: 10px; height: 10px;
+    background: #3ec98a;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    padding: 14px 40px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+
+  .estado-vazio, .estado-erro {
+    color: #4a5568;
+    font-size: 17px;
+    padding: 10px 4px 20px;
+  }
+  .estado-erro { color: #c0392b; }
+
+  .add-card {
+    width: 90px; height: 90px;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    transition: transform .1s;
+    color: #4a5568;
+    flex-shrink: 0;
+  }
+  .add-card:hover { transform: translateY(-2px); }
+  .add-card svg { width: 40px; height: 40px; }
+
+  /* Linha que agrupa o botão + e o formulário */
+  .add-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* Caixa do formulário "Nome do Banco de Questões" */
+  .form-card {
+    display: none;
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    flex: 1;
+    min-width: 260px;
+  }
+  .form-card.open { display: block; }
+  .form-card label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  .form-card input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dcdfe4;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 18px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-card input[type="text"]:focus {
+    border-color: #3aa4e8;
+  }
+  .form-card .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .main { padding: 30px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+            </svg>
+          </div>
+          <h1>Classifica</h1>
+        </div>
+
+        <ul class="nav">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Sala de Aula
+          </li>
+          <li>
+             <a href="../Meus_Simulados_Professor/Meus_Simulados.html" style="display:flex; align-items:center; gap:14px; color:inherit; text-decoration:none; width:100%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+                Meus Simulados
+            </a>
+          </li>
+          <li class="active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Banco de Questões
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Configurações
+          </li>
+        </ul>
+      </div>
+
+      <div class="user">
+        <div class="avatar">L</div>
+        <div class="info">
+          <b>Letícia Pinho</b>
+          <span>Professor(a)</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <h2>Banco de Questões</h2>
+      <div class="divider"></div>
+
+      <!-- Lista é preenchida via JS (carregarBancos) -->
+      <div id="listaBancos">
+        <p class="estado-vazio">Carregando bancos...</p>
+      </div>
+
+      <br>
+      <div class="add-row">
+        <div class="add-card" id="addCard" title="Adicionar novo banco" onclick="toggleForm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+
+        <div class="form-card" id="formCard">
+          <label for="nomeBanco">Nome</label>
+          <input type="text" id="nomeBanco" placeholder="Nome do Banco de Questões" />
+
+          <label for="disciplinaBanco">Disciplina</label>
+          <input type="text" id="disciplinaBanco" placeholder="Ex: Matemática" />
+
+          <button class="btn" id="salvarBanco" onclick="criarBanco()">Salvar</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="Banco_Questoes.js"></script>
+</body>
+</html>
