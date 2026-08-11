@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:3000';
 // ID do professor logado.
 // Por enquanto fixo pra teste — depois troque pelo valor real
 // (ex: salvo no localStorage no momento do login).
-const professorId = localStorage.getItem('professorId') || 1;
+const professorId = localStorage.getItem('professorId') || 3;
 
 // elementos da tela
 const listaBancos = document.getElementById('listaBancos');
