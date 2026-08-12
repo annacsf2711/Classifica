@@ -325,6 +325,10 @@
         <button class="btn-submit" id="btn-enviar">
           Confirmar respostas
         </button>
+
+        <button class="btn-submit" id="btn-prosseguir" style="display: none;">
+          Prosseguir
+        </button>
       </div>
     </main>
   </div>
@@ -605,8 +609,16 @@ function mostrarResultadoFinal() { // mostra o resultado final
 
     document.getElementById('btn-enviar').style.display = 'none'; // esconde o botão
 
-    // Envia as respostas para o banco (somente uma vez)
-    enviarRespostas(); // chama a função para enviar as respostas
+    var btnProsseguir = document.getElementById('btn-prosseguir');
+    btnProsseguir.style.display = 'block';
+
+    // Ao clicar em Prosseguir, chama a função de validação/redirecionamento
+    btnProsseguir.onclick = function() {
+        obterCodigoFormatado();
+    };
+
+    // Envia as respostas para o banco
+    enviarRespostas();
 }
 
 // ===================== Inicialização =====================

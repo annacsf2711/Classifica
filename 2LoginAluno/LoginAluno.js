@@ -34,7 +34,7 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
         alert("Erro ao conectar com o servidor"); 
     }
 });
-// ===================== Senha =====================
+// ===================== Senha Cadeado =====================
 document.addEventListener('DOMContentLoaded', () => {
     //DOMContentLoaded: Espera apenas o HTML/DOM ficar pronto (é mais rápido e o mais recomendado para a maioria dos scripts).
     const campoSenha = document.getElementById("senha");
