@@ -559,10 +559,6 @@ app.post("/verificarCadastroProf", async (req, res) => {
 });
 
 
-// ===================================================================
-// Cole estas rotas no seu server.js, antes de app.listen(...)
-// Seguem o mesmo padrão das rotas de banco_questoes que você já tem
-// ===================================================================
 
 // ===================== LISTAR SIMULADOS DE UM PROFESSOR =====================
 app.get('/listarSimulados/:professorId', async (req, res) => {
@@ -695,4 +691,48 @@ app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
       console.error("ERRO COMPLETO:", erro);
       res.status(500).send(erro.message);
     }
+});
+// ===================== LISTAR ALUNOS DA TURMA =====================
+app.get('/colegasTurma/:idEstudante', async (req, res) => {
+  const { idEstudante } = req.params;
+
+  try {
+
+    const turmaResultado = await pool.query(
+      `
+      SELECT id_turma
+      FROM classifica.estudante
+      WHERE id_estudante = $1
+      `,
+      [idEstudante]
+    );
+
+    if (turmaResultado.rows.length === 0) {
+      return res.json([]);
+    }
+
+    const idTurma =
+      turmaResultado.rows[0].id_turma;
+
+    const colegasResultado = await pool.query(
+      `
+      SELECT
+        id_estudante,
+        nome
+      FROM classifica.estudante
+      WHERE id_turma = $1
+      AND id_estudante <> $2
+      ORDER BY nome
+      `,
+      [idTurma, idEstudante]
+    );
+
+    res.json(colegasResultado.rows);
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send(
+      "Erro ao listar colegas"
+    );
+  }
 });
