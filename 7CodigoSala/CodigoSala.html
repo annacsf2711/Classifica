@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script type="module" src="CodigoSala.html" defer></script>
+<script type="module" src="../6ConfiguracoesAluno/ConfiguracoesAluno.html" defer></script>
+
+
 <title>Entrar na Sala - Classifica</title>
 
 <style>
@@ -264,7 +268,7 @@
 
   <script>
 
-    const idEstudante = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
+    const id = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
 
     console.log("ID:", idEstudante);
 
@@ -279,23 +283,19 @@
     })
 
 
-    function obterCodigoFormatado() { // Função para juntar e retornar apenas o código digitado
-        var inputs = document.querySelectorAll('.code-input-wrapper input');
-        var codigo = "";
-        for (var i = 0; i < inputs.length; i++) {
-            codigo = codigo + inputs[i].value;
-        }
-        if (codigo.length === 6) {
-            window.location.href = "../6ConfiguracoesAluno/ConfiguracoesAluno.html";
-        } else {
-            alert("Por favor, preencha o código completo!");
-        }
+    function obterCodigoFormatado() {
+      const inputs = document.querySelectorAll('.code-input-wrapper input');
+      let codigo = "";
+      inputs.forEach(input => { codigo += input.value; });
 
-        return codigo; // O return fica por último
-    }
+      if (codigo === "111111") {
+          window.location.href = "../6ConfiguracoesAluno/ConfiguracoesAluno.html";
+      } else {
+          alert("Código inválido!");
+      }
 
-
-
+      return codigo;
+  }
   </script>
 </body>
 </html>
