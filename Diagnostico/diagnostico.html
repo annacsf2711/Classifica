@@ -622,20 +622,6 @@ document.addEventListener('DOMContentLoaded', async () => { // espera o DOM carr
     document.getElementById('btn-enviar').onclick = verificarResposta; // define o onclick do botão
 });
 
-// ===================== Atalhos de teclado =====================
-document.addEventListener('keydown', (e) => { // escuta eventos de teclado
-    const key = e.key.toLowerCase();  // converter a tecla para minúsculo para não dar erro na comparação
-    if (['a', 'b', 'c', 'd'].includes(key)) { // verifica se a tecla é uma alternativa
-        const index = ['a', 'b', 'c', 'd'].indexOf(key); // pega o índice da alternativa
-        const rows = document.querySelectorAll('.alternative-row'); // seleciona todas as alternativas e armazena no array rows
-        if (rows[index]) { // verifica se a alternativa existe
-            selecionarAlternativa(key, rows[index]); // seleciona a alternativa
-        }
-    } else if (e.key === 'Enter') { // verifica se a tecla é Enter
-        verificarResposta(); // verifica a resposta
-    }       
-});
-
   </script>
 </body>
 </html>

@@ -197,14 +197,14 @@ app.get('/api/questoes', async (req, res) => {
     
     const resultado = await pool.query(
       `SELECT 
-        id_exercicio as id,
+        id_enunciadodiag as id,
         enunciado,
         alternativa_a,
         alternativa_b,
         alternativa_c,
         alternativa_d,
         alternativa_correta
-       FROM classifica.exercicio 
+       FROM classifica.avaliacao_diagnostica 
        LIMIT $1`,
       [limite]
     );
@@ -220,7 +220,7 @@ app.get('/api/questoes', async (req, res) => {
 app.post('/api/respostas', async (req, res) => {
     try {
         const { id_estudante, respostas } = req.body;
-        // respostas é um array de objetos: [{ id_exercicio, resposta }]
+        // respostas é um array de objetos: [{ id_enunciadodiag, resposta }]
 
         if (!id_estudante || !respostas || !Array.isArray(respostas)) {
             return res.status(400).send("Dados inválidos");
@@ -229,8 +229,8 @@ app.post('/api/respostas', async (req, res) => {
         for (const item of respostas) {
             // Buscar a alternativa correta do exercício
             const questao = await pool.query(
-                `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
-                [item.id_exercicio]
+                `SELECT alternativa_correta FROM classifica.avaliacao_diagnostica WHERE id_enunciadodiag = $1`,
+                [item.id_enunciadodiag]
             );
             if (questao.rows.length === 0) continue;
 
@@ -239,9 +239,9 @@ app.post('/api/respostas', async (req, res) => {
 
             await pool.query(
                 `INSERT INTO classifica.tentativa 
-                    (id_estudante, id_exercicio, resposta_marcada, correto)
+                    (id_estudante, id_enunciadodiag, resposta_marcada, correto)
                  VALUES ($1, $2, $3, $4)`,
-                [id_estudante, item.id_exercicio, item.resposta, correto]
+                [id_estudante, item.id_enunciadodiag, item.resposta, correto]
             );
         }
 
