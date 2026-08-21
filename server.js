@@ -333,13 +333,13 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
 });
 // ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
 app.post('/criarBanco', async (req, res) => {
-  const { nome, disciplina, professorId } = req.body;
+  const { nome, disciplina, idProfessor } = req.body;
   try {
     const resultado = await pool.query(
       `INSERT INTO classifica.banco_questoes (nome, disciplina, professor_id)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [nome, disciplina, professorId]
+      [nome, disciplina, idProfessor]
     );
     res.json({ id: resultado.rows[0].id });
   } catch (erro) {
@@ -401,18 +401,36 @@ app.get('/buscarBanco/:bancoId', async (req, res) => {
   }
 });
 // ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
+// ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
 app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
   try {
+    // 1. descobre a disciplina do banco
+    const bancoResultado = await pool.query(
+      `SELECT disciplina FROM classifica.banco_questoes WHERE id = $1`,
+      [bancoId]
+    );
+
+    if (bancoResultado.rows.length === 0) {
+      return res.status(404).send("Banco de questões não encontrado");
+    }
+
+    const disciplina = bancoResultado.rows[0].disciplina;
+
+    // 2. lista só as questões da mesma área de conhecimento,
+    //    que ainda não estão nesse banco
     const resultado = await pool.query(
       `SELECT e.id_exercicio AS id, e.enunciado, e.nivel_dificuldade AS tipo
        FROM classifica.exercicio e
-       WHERE e.id_exercicio NOT IN (
-         SELECT exercicio_id FROM classifica.banco_questoes_exercicios WHERE banco_id = $1
-       )
+       JOIN classifica.area_conhecimento a ON a.id_area = e.id_area
+       WHERE TRIM(a.nome_area) ILIKE TRIM($1)
+         AND e.id_exercicio NOT IN (
+           SELECT exercicio_id FROM classifica.banco_questoes_exercicios WHERE banco_id = $2
+         )
        ORDER BY e.id_exercicio`,
-      [bancoId]
+      [disciplina, bancoId]
     );
+
     res.json(resultado.rows);
   } catch (erro) {
     console.error(erro);
@@ -607,12 +625,13 @@ app.get('/listarSimulados/:professorId', async (req, res) => {
   const { professorId } = req.params;
   try {
     const resultado = await pool.query(
-      `SELECT s.id, s.nome, s.turma, s.data_criacao,
+      `SELECT s.id, s.nome, t.nome AS turma, s.data_criacao,
               COUNT(se.exercicio_id) AS total_questoes
        FROM classifica.simulado s
        LEFT JOIN classifica.simulado_exercicios se ON se.simulado_id = s.id
+       LEFT JOIN classifica.turma t ON t.idturma = s.turma_id
        WHERE s.professor_id = $1 AND s.ativo = true
-       GROUP BY s.id
+       GROUP BY s.id, t.nome
        ORDER BY s.data_criacao DESC`,
       [professorId]
     );
@@ -625,13 +644,13 @@ app.get('/listarSimulados/:professorId', async (req, res) => {
 
 // ===================== CRIAR SIMULADO =====================
 app.post('/criarSimulado', async (req, res) => {
-  const { nome, turma, professorId } = req.body;
+  const { nome, turmaId, professorId } = req.body;
   try {
     const resultado = await pool.query(
-      `INSERT INTO classifica.simulado (nome, turma, professor_id)
+      `INSERT INTO classifica.simulado (nome, turma_id, professor_id)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [nome, turma, professorId]
+      [nome, turmaId, professorId]
     );
     res.json({ id: resultado.rows[0].id });
   } catch (erro) {
@@ -776,5 +795,23 @@ app.get('/colegasTurma/:idEstudante', async (req, res) => {
     res.status(500).send(
       "Erro ao listar colegas"
     );
+  }
+});
+// ===================== LISTAR TURMAS DE UM PROFESSOR =====================
+app.get('/listarTurmasProfessor/:professorId', async (req, res) => {
+  const { professorId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT t.idturma AS id, t.nome AS nome, t.codigo
+       FROM classifica.turma t
+       JOIN classifica.professor_turma pt ON pt.idturma = t.idturma
+       WHERE pt.id_professor = $1
+       ORDER BY t.nome`,
+      [professorId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar turmas do professor");
   }
 });

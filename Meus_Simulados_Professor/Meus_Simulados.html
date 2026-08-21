@@ -294,6 +294,25 @@
     margin-bottom: 20px;
   }
   .selecionadas-label b { color: #3ec98a; }
+  .turmas-picker {
+  border: 1px solid #dcdfe4;
+  border-radius: 10px;
+  max-height: 160px;
+  overflow-y: auto;
+  margin-bottom: 18px;
+}
+.turma-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef1f5;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2c3e50;
+}
+.turma-item:last-child { border-bottom: none; }
+.turma-item:hover { background: #f7f9fb; }
 
   .btn-criar-simulado {
     width: 100%;
@@ -396,8 +415,10 @@
       <label for="nomeSimulado">Nome</label>
       <input type="text" id="nomeSimulado" placeholder="Nome do Simulado" />
 
-      <label for="turmaSimulado">Turma</label>
-      <input type="text" id="turmaSimulado" placeholder="Turma" />
+      <label>Turma</label>
+      <div class="turmas-picker" id="turmasPicker">
+        <div style="padding:14px; font-size:14px; color:#4a5568;">Carregando turmas...</div>
+      </div>
 
       <label>Selecione as questões do seu banco</label>
       <div class="questoes-picker" id="questoesPicker">
