@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -296,8 +296,8 @@ app.put("/professor/:id_professor", async (req, res) => { // mudando dados
 });
 
 // ===================== LISTAR BANCOS DE QUESTÕES DE UM PROFESSOR =====================
-app.get('/listarBancos/:professorId', async (req, res) => {
-  const { professorId } = req.params;
+app.get('/listarBancos/:idProfessor', async (req, res) => {
+  const { idProfessor } = req.params;
   try {
     const resultado = await pool.query(
       `SELECT b.id, b.nome, b.disciplina,
@@ -307,7 +307,7 @@ app.get('/listarBancos/:professorId', async (req, res) => {
        WHERE b.professor_id = $1
        GROUP BY b.id, b.nome, b.disciplina
        ORDER BY b.id DESC`,
-      [professorId]
+      [idProfessor]
     );
     res.json(resultado.rows);
   } catch (erro) {
@@ -366,7 +366,40 @@ app.get('/listarQuestoesBanco/:bancoId', async (req, res) => {
     res.status(500).send("Erro ao listar questões do banco");
   }
 });
+// ===================== BUSCAR DADOS DE UM BANCO =====================
+app.get('/buscarBanco/:bancoId', async (req, res) => {
 
+  const { bancoId } = req.params;
+
+  try {
+
+    const resultado = await pool.query(
+      `
+      SELECT
+        id,
+        nome,
+        disciplina
+      FROM classifica.banco_questoes
+      WHERE id = $1
+      `,
+      [bancoId]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).send("Banco não encontrado");
+    }
+
+    res.json(resultado.rows[0]);
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    res.status(500).send(
+      "Erro ao buscar banco"
+    );
+  }
+});
 // ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
 app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
@@ -472,15 +505,24 @@ app.post('/criarExercicio', async (req, res) => {
 
     // 3. cria o exercício já com o id_area correto
     const resultado = await pool.query(
-      `INSERT INTO classifica.exercicio
-         (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d,
-          alternativa_correta, nivel_dificuldade, id_area, data_criada, criado_por, dono,
-          total_tentativas, total_acertos)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10, 0, 0)
-       RETURNING id_exercicio AS id`,
-      [enunciado, alternativaA, alternativaB, alternativaC, alternativaD,
-       alternativaCorreta, nivelDificuldade, idArea, criadoPor, criadoPor]
-    );
+  `INSERT INTO classifica.exercicio
+     (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d,
+      alternativa_correta, nivel_dificuldade, id_area, data_criada, criado_por,
+      total_tentativas, total_acertos)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, 0, 0)
+   RETURNING id_exercicio AS id`,
+  [
+    enunciado,
+    alternativaA,
+    alternativaB,
+    alternativaC,
+    alternativaD,
+    alternativaCorreta,
+    nivelDificuldade,
+    idArea,
+    criadoPor
+  ]
+);
 
     res.json({ id: resultado.rows[0].id });
 

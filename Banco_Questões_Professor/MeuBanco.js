@@ -6,7 +6,29 @@ const bancoId = localStorage.getItem('bancoId');
 
 
 // professor logado (salvo no localStorage no momento do login, veja observação abaixo)
-const professorId = localStorage.getItem('professorId');
+const idProfessor = localStorage.getItem('idProfessor');
+fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
+.then(async resposta => {
+   
+  if (!resposta.ok) {
+    const mensagem = await resposta.text();
+    throw new Error(mensagem);
+  }
+  return resposta.json();
+})
+
+.then(professor => {   // recebe os dados do professor retornados pelo servidor
+
+    
+  console.log("Professor:", professor);
+
+
+  document.getElementById("nomeUsuario").textContent = professor.nome;
+  
+})
+.catch(erro => {
+  console.error("Erro ao buscar professor:", erro);
+});
 
 // elementos da tela
 const listaQuestoes = document.getElementById('listaQuestoes');
@@ -169,7 +191,7 @@ formNovaQuestao.addEventListener('submit', async (e) => {
     alternativaD: document.getElementById('novaAlternativaD').value,
     alternativaCorreta: document.getElementById('novaCorreta').value,
     nivelDificuldade: document.getElementById('novoNivel').value,
-    criadoPor: professorId,
+    criadoPor: idProfessor,
     bancoId: bancoId // usado no backend pra descobrir a disciplina/área do banco
   };
 

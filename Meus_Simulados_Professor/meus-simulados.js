@@ -8,7 +8,7 @@
     // (a URL tem prioridade sobre o localStorage, pra facilitar testes).
     const parametrosUrl = new URLSearchParams(window.location.search);
 
-    const professorId = parametrosUrl.get('id_professor') || localStorage.getItem('professorId');
+    const professorId = parametrosUrl.get('id_professor') || localStorage.getItem('idProfessor');
     const nomeProfessorSalvo = parametrosUrl.get('nome') || localStorage.getItem('nomeProfessor');
 
     let exerciciosDisponiveis = [];
