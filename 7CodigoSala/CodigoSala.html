@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script type="module" src="CodigoSala.html" defer></script>
+<script type="module" src="../6ConfiguracoesAluno/ConfiguracoesAluno.html" defer></script>
+
+
 <title>Entrar na Sala - Classifica</title>
 <script type="module" src="CodigoSala.html" defer></script>
 <script type="module" src="../8SalaDeAulaAluno/SalaAulaAluno.html" defer></script>
@@ -267,24 +271,34 @@
 
   <script>
 
-    function obterCodigoFormatado() { // Função para juntar e retornar apenas o código digitado
-        var inputs = document.querySelectorAll('.code-input-wrapper input');
-        var codigo = "";
-        for (var i = 0; i < inputs.length; i++) {
-            codigo = codigo + inputs[i].value;
-        }
-        if (codigo.length === 6) {
-          window.location.href = "../8SalaDeAulaAluno/SalaAulaAluno.html";
-        } else {
-            alert("Por favor, preencha o código completo!");
-        }
+    const id = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
 
+    console.log("ID:", idEstudante);
 
-        return codigo; // O return fica por último
+    fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
+    .then(async resposta => {
+    
+    if (!resposta.ok) {
+        const mensagem = await resposta.text();
+        throw new Error(mensagem);
     }
+    return resposta.json();
+    })
 
 
+    function obterCodigoFormatado() {
+      const inputs = document.querySelectorAll('.code-input-wrapper input');
+      let codigo = "";
+      inputs.forEach(input => { codigo += input.value; });
 
+      if (codigo === "111111") {
+          window.location.href = "../6ConfiguracoesAluno/ConfiguracoesAluno.html";
+      } else {
+          alert("Código inválido!");
+      }
+
+      return codigo;
+  }
   </script>
 </body>
 </html>
