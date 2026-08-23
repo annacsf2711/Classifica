@@ -226,7 +226,18 @@
   .btn-submit:hover { opacity: 0.9; }
   .btn-submit:active { transform: scale(0.98); }
 
-  .btn-delete {
+.btn-delete {
+    padding: 15px 40px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: #f7f9fc;
+    color: #718096;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-desativar{
     padding: 15px 40px;
     border-radius: 14px;
     border: 1px solid #e2e8f0;
@@ -238,6 +249,11 @@
     transition: all .2s;
   }
   .btn-delete:hover {
+    background: #fff5f5;
+    color: #e53e3e;
+    border-color: #fed7d7;
+  }
+  .btn-desativar:hover {
     background: #fff5f5;
     color: #e53e3e;
     border-color: #fed7d7;
@@ -306,7 +322,7 @@
             Dashboard
           </li>
           <li>
-            <a href="../7CodigoSala/CodigoSala.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+            <a href="../7CodigoSala/CodigoSalaProf.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               Sala de Aula
             </a>
@@ -404,7 +420,8 @@
 
         <div class="form-actions">
           <button type="button" class="btn-submit" id="modificar">Modificar</button>
-          <button type="button" class="btn-delete" id="deletar">Excluir Usuário</button>
+          <button type="button" class="btn-desativar" id="desativar" title="Desativa a conta. Seus dados permanecem salvos e você poderá reativá-la futuramente.">Desativar Usuário</button>
+          <button type="button" class="btn-delete" id="deletar" title="Exclui permanentemente a conta e todos os dados associados. Esta ação não poderá ser desfeita.">Excluir Usuário</button>
         </div>
       </div>
     </main>

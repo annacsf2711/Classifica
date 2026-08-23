@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -316,7 +316,7 @@ app.get('/listarBancos/:professorId', async (req, res) => {
   }
 });
 
-// ===================== Delete PROF =====================
+// ===================== Desativar PROF =====================
 app.put("/desativarProfessor/:id_professor", async (req, res) => {
   
   const {id_professor} = req.params;
@@ -331,6 +331,33 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
     res.status(500).send("Erro ao desativar");
   }
 });
+
+// ===================== Deletar PROF =====================
+app.delete("/deletarProfessor/:id_professor", async (req, res) => {
+  const { id_professor } = req.params;
+
+  try {
+    // Tabelas que possuem FK para professor
+    await pool.query(
+      `DELETE FROM classifica.professor_turma
+       WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    // Exclui o professor
+    await pool.query(
+      `DELETE FROM classifica.professor
+       WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    res.send("Professor excluído permanentemente");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao excluir professor");
+  }
+});
+
 // ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
 app.post('/criarBanco', async (req, res) => {
   const { nome, disciplina, professorId } = req.body;
@@ -695,4 +722,40 @@ app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
       console.error("ERRO COMPLETO:", erro);
       res.status(500).send(erro.message);
     }
+});
+
+// ===================== Código Turma Professor =====================
+app.post('/turmaProf', async (req, res) => {
+  console.log("Dados recebidos da turma", req.body);
+
+  const { codigo } = req.body;
+  try {
+    const resultado = await pool.query(
+    `SELECT pt.id_professor, t.idturma, t.nome
+    FROM classifica.turma t
+    INNER JOIN classifica.professor_turma pt
+    ON pt.idturma = t.idturma
+    WHERE t.codigo = $1`,
+    [codigo]
+  );
+
+    if (resultado.rows.length > 0) {
+      res.json({
+        salaExistente: true,
+        mensagem: "Sala existente",
+        idProfessor: resultado.rows[0].id_professor,
+        idTurma: resultado.rows[0].idturma,
+        nomeTurma: resultado.rows[0].nome
+      });
+    } else {
+      res.status(404).json({
+        salaExistente: false,
+        mensagem: "Sala inexistente"
+      });
+    }
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao processar o código no banco");
+  }
 });

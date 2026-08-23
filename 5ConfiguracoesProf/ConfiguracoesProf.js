@@ -106,8 +106,8 @@ btnCadeado.addEventListener("click", () => {
     }
 });
 
-// ===================================== Deletar ===================================================
-document.getElementById("deletar").addEventListener("click", async () => {
+// ===================================== Desativar ===================================================
+document.getElementById("desativar").addEventListener("click", async () => {
     const confirmar = confirm("Deseja realmente desativar sua conta?");
     
     if (!confirmar) return;
@@ -129,3 +129,28 @@ document.getElementById("deletar").addEventListener("click", async () => {
       alert("Erro ao desativar a conta.");
     }
 });
+
+// ===================================== Deletar ===================================================
+document.getElementById("deletar").addEventListener("click", async () => {
+    const confirmar = confirm("Deseja realmente deletar sua conta?");
+    
+    if (!confirmar) return;
+    const idProfessor = localStorage.getItem("idProfessor");
+    
+    try {
+      const resposta = await fetch(`http://localhost:3000/deletarProfessor/${idProfessor}`, {
+        method: "DELETE"
+      });
+
+      if (!resposta.ok) {
+        throw new Error();
+      }
+      localStorage.removeItem("idProfessor");
+      alert("Conta deletada com sucesso!");
+      window.location.href = "../4LoginProfessor/LoginProfessor.html";
+    } catch (erro) {
+      console.error(erro);
+      alert("Erro ao desativar a conta.");
+    }
+});
+
