@@ -325,18 +325,13 @@
         <button class="btn-submit" id="btn-enviar">
           Confirmar respostas
         </button>
-
-        <button class="btn-submit" id="btn-prosseguir" style="display: none;">
-          <a href="../6ConfiguracoesAluno/ConfiguracoesAluno.html"></a>
-          Prosseguir
-        </button>
       </div>
     </main>
   </div>
 
   <script>
-   // Estado da aplicação
-    // ===================== Estado da aplicação =====================
+// Estado da aplicação
+// ===================== Estado da aplicação =====================
 let questoes = []; //array
 let questaoAtual = 0; //contador de qual questão esta
 let alternativaSelecionada = null; //qual a resposta selecionada
@@ -609,8 +604,9 @@ async function mostrarResultadoFinal() { // mostra o resultado final
     `;
 
     document.getElementById('btn-enviar').style.display = 'none'; // esconde o botão
-    
-    await enviarRespostas(); // Primeiro salva no banco de dados...
+
+    // Envia as respostas para o banco (somente uma vez)
+    await enviarRespostas(); // chama a função para enviar as respostas
 
     // em seguida libera o botão Prosseguir para o aluno clicar quando quiser
     var btnProsseguir = document.getElementById('btn-prosseguir');

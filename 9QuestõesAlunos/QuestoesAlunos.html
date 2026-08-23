@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Banco de Questões - Classifica</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:'Segoe UI',Tahoma,sans-serif;
+    background:#eef1f5;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.container{
+    display:flex;
+    width:100%;
+    max-width:1600px;
+    background:#f5f1e8;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.15);
+    min-height:90vh;
+}
+
+.sidebar{
+    width:280px;
+    background:linear-gradient(
+        180deg,
+        #3aa4e8 0%,
+        #3ec98a 100%
+    );
+    color:#fff;
+    padding:40px 24px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.brand{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.brand h1{
+    font-size:28px;
+}
+
+.nav{
+    list-style:none;
+}
+
+.nav li{
+    padding:14px 18px;
+    margin-bottom:8px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.nav li.active{
+    background:rgba(255,255,255,.22);
+    font-weight:600;
+}
+
+.nav li:hover{
+    background:rgba(255,255,255,.12);
+}
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    background:rgba(255,255,255,.15);
+    border-radius:30px;
+}
+
+.avatar{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:#fff;
+    color:#3aa4e8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+}
+
+.main{
+    flex:1;
+    padding:50px;
+}
+
+.question-card{
+    background:#fff;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 6px 20px rgba(0,0,0,.05);
+    margin-bottom:25px;
+}
+
+.question-title{
+    font-size:26px;
+    font-weight:700;
+    color:#2c3e50;
+    margin-bottom:25px;
+}
+
+.search-container{
+    display:flex;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.search-container input{
+    flex:1;
+    padding:15px;
+    border:1px solid #dcdfe4;
+    border-radius:10px;
+    font-size:16px;
+}
+
+.filtros{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.filtro-btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:25px;
+    cursor:pointer;
+    background:#eef1f5;
+    color:#2c3e50;
+    font-weight:600;
+}
+
+.filtro-btn.active{
+    background:linear-gradient(
+        90deg,
+        #3aa4e8,
+        #3ec98a
+    );
+    color:white;
+}
+
+.questoes{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.questao{
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 6px 20px rgba(0,0,0,.05);
+}
+
+.questao h3{
+    color:#2c3e50;
+    margin-bottom:10px;
+}
+
+.questao p{
+    color:#4a5568;
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+.tag{
+    display:inline-block;
+    padding:7px 14px;
+    border-radius:20px;
+    color:white;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+.matematica{ background:#3aa4e8; }
+.portugues{ background:#8b5cf6; }
+.ciencias{ background:#3ec98a; }
+.geografia{ background:#f59e0b; }
+.historia{ background:#ef4444; }
+
+.btn-resolver{
+    border:none;
+    padding:12px 25px;
+    border-radius:30px;
+    background:linear-gradient(
+        90deg,
+        #3aa4e8,
+        #3ec98a
+    );
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-resolver:hover{
+    opacity:.9;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <aside class="sidebar">
+
+        <div>
+            <div class="brand">
+                <h1>Classifica</h1>
+            </div>
+
+            <ul class="nav">
+                <li>Dashboard</li>
+                <li>Sala de Aula</li>
+                <li class="active">Questões</li>
+                <li>Desempenho</li>
+                <li>Configurações</li>
+            </ul>
+        </div>
+
+        <div class="user">
+            <div class="avatar">A</div>
+
+            <div>
+                <strong>Ana Júlia</strong>
+                <br>
+                <small>Estudante</small>
+            </div>
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <div class="question-card">
+
+            <div class="question-title">
+                Banco de Questões
+            </div>
+
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="pesquisa"
+                    placeholder="Pesquisar questão..."
+                    onkeyup="aplicarFiltros()"
+                >
+            </div>
+
+            <div class="filtros">
+
+                <button class="filtro-btn active"
+                onclick="filtrarDisciplina('todas', this)">
+                    Todas
+                </button>
+
+                <button class="filtro-btn"
+                onclick="filtrarDisciplina('matematica', this)">
+                    Matemática
+                </button>
+
+                <button class="filtro-btn"
+                onclick="filtrarDisciplina('portugues', this)">
+                    Língua Portuguesa
+                </button>
+
+                <button class="filtro-btn"
+                onclick="filtrarDisciplina('ciencias', this)">
+                    Ciências da Natureza
+                </button>
+
+                <button class="filtro-btn"
+                onclick="filtrarDisciplina('geografia', this)">
+                    Geografia
+                </button>
+
+                <button class="filtro-btn"
+                onclick="filtrarDisciplina('historia', this)">
+                    História
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="questoes">
+
+            <div class="questao" data-disciplina="matematica">
+                <span class="tag matematica">Matemática</span>
+                <h3>Equação do 1º Grau</h3>
+                <p>Resolva a equação: 3x + 6 = 18</p>
+                <button class="btn-resolver">Resolver Questão</button>
+            </div>
+
+            <div class="questao" data-disciplina="portugues">
+                <span class="tag portugues">Língua Portuguesa</span>
+                <h3>Interpretação de Texto</h3>
+                <p>Leia o texto e identifique a ideia principal do autor no segundo parágrafo.</p>
+                <button class="btn-resolver">Resolver Questão</button>
+            </div>
+
+            <div class="questao" data-disciplina="ciencias">
+                <span class="tag ciencias">Ciências da Natureza</span>
+                <h3>Fotossíntese</h3>
+                <p>Qual é o papel da clorofila no processo de fotossíntese das plantas?</p>
+                <button class="btn-resolver">Resolver Questão</button>
+            </div>
+
+            <div class="questao" data-disciplina="geografia">
+                <span class="tag geografia">Geografia</span>
+                <h3>Relevo Brasileiro</h3>
+                <p>Quais são as principais características dos planaltos presentes no Brasil?</p>
+                <button class="btn-resolver">Resolver Questão</button>
+            </div>
+
+            <div class="questao" data-disciplina="historia">
+                <span class="tag historia">História</span>
+                <h3>Revolução Industrial</h3>
+                <p>Explique como o surgimento das máquinas a vapor impactou o trabalho urbano no século XVIII.</p>
+                <button class="btn-resolver">Resolver Questão</button>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    var disciplinaAtual = 'todas';
+
+    // Função que altera o botão selecionado e guarda a disciplina escolhida
+    function filtrarDisciplina(disciplina, elemento) {
+        disciplinaAtual = disciplina;
+
+        // Atualiza a classe 'active' nos botões de filtro
+        var botoes = document.querySelectorAll('.filtro-btn');
+        for (var i = 0; i < botoes.length; i++) {
+            botoes[i].classList.remove('active');
+        }
+        elemento.classList.add('active');
+
+        // Executa a filtragem geral
+        aplicarFiltros();
+    }
+
+    // Função principal de filtragem (Combina busca por texto + filtro de disciplina)
+    function aplicarFiltros() {
+        var textoPesquisa = document.getElementById('pesquisa').value.toLowerCase();
+        var listaQuestoes = document.querySelectorAll('.questao');
+
+        for (var i = 0; i < listaQuestoes.length; i++) {
+            var questao = listaQuestoes[i];
+            var disciplinaQuestao = questao.getAttribute('data-disciplina');
+            var conteudoTexto = questao.innerText.toLowerCase();
+
+            // Condição 1: A disciplina bate com o filtro ativo ou o filtro é 'todas'
+            var disciplinaValida = (disciplinaAtual === 'todas' || disciplinaQuestao === disciplinaAtual);
+
+            // Condição 2: O texto digitado está dentro do título, tag ou parágrafo da questão
+            var textoValido = conteudoTexto.includes(textoPesquisa);
+
+            // Se atendeu aos dois requisitos, exibe a questão; caso contrário, esconde.
+            if (disciplinaValida && textoValido) {
+                questao.style.display = 'block';
+            } else {
+                questao.style.display = 'none';
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Entrar na Sala - Classifica</title>
+<script type="module" src="CodigoSala.html" defer></script>
+<script type="module" src="../8SalaDeAulaAluno/SalaAulaAluno.html" defer></script>
+
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -264,21 +267,6 @@
 
   <script>
 
-    const idEstudante = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
-
-    console.log("ID:", idEstudante);
-
-    fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
-    .then(async resposta => {
-    
-    if (!resposta.ok) {
-        const mensagem = await resposta.text();
-        throw new Error(mensagem);
-    }
-    return resposta.json();
-    })
-
-
     function obterCodigoFormatado() { // Função para juntar e retornar apenas o código digitado
         var inputs = document.querySelectorAll('.code-input-wrapper input');
         var codigo = "";
@@ -286,10 +274,11 @@
             codigo = codigo + inputs[i].value;
         }
         if (codigo.length === 6) {
-            window.location.href = "../6ConfiguracoesAluno/ConfiguracoesAluno.html";
+          window.location.href = "../8SalaDeAulaAluno/SalaAulaAluno.html";
         } else {
             alert("Por favor, preencha o código completo!");
         }
+
 
         return codigo; // O return fica por último
     }
