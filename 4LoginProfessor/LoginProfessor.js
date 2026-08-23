@@ -31,6 +31,7 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
     }
 });
 
+
 // ===================== Senha =====================
 document.addEventListener('DOMContentLoaded', () => {
     //DOMContentLoaded: Espera apenas o HTML/DOM ficar pronto (é mais rápido e o mais recomendado para a maioria dos scripts).
