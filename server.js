@@ -216,21 +216,38 @@ app.get('/api/questoes', async (req, res) => {
   }
 });
 
+// ===================== VERIFICAR SE ALUNO JÁ FEZ DIAGNÓSTICO ====================
+app.get('/api/diagnostico/status/:id_estudante', async (req, res) => {
+  const { id_estudante } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT COUNT(*) AS total FROM classifica.tentaiva_diagnostico WHERE id_estudante = $1`,
+      [id_estudante]
+    );
+    const jaFez = parseInt(resultado.rows[0].total) > 0;
+    res.json({ jaFez });
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao verificar diagnóstico");
+  }
+});
+
+
 // ===================== SALVAR RESPOSTAS DO DIAGNÓSTICO ====================
 app.post('/api/respostas', async (req, res) => {
     try {
         const { id_estudante, respostas } = req.body;
-        // respostas é um array de objetos: [{ id_enunciadodiag, resposta }]
+        // respostas é um array de objetos: [{ id_exerciciodiag, resposta }]
 
         if (!id_estudante || !respostas || !Array.isArray(respostas)) {
             return res.status(400).send("Dados inválidos");
         }
 
         for (const item of respostas) {
-            // Buscar a alternativa correta do exercício
+            // Buscar a alternativa correta da questão diagnóstica
             const questao = await pool.query(
                 `SELECT alternativa_correta FROM classifica.avaliacao_diagnostica WHERE id_enunciadodiag = $1`,
-                [item.id_enunciadodiag]
+                [item.id_exerciciodiag]   // usa o id da questão recebido do frontend
             );
             if (questao.rows.length === 0) continue;
 
@@ -238,10 +255,10 @@ app.post('/api/respostas', async (req, res) => {
             const correto = item.resposta.toLowerCase() === correta.toLowerCase();
 
             await pool.query(
-                `INSERT INTO classifica.tentativa 
-                    (id_estudante, id_enunciadodiag, resposta_marcada, correto)
-                 VALUES ($1, $2, $3, $4)`,
-                [id_estudante, item.id_enunciadodiag, item.resposta, correto]
+                `INSERT INTO classifica.tentaiva_diagnostico 
+                    (id_exercicio, resposta_marcada, correto, id_estudante, data_tentativa)
+                 VALUES ($1, $2, $3, $4, NOW())`,
+                [item.id_exercicio, item.resposta, correto, id_estudante]
             );
         }
 
@@ -251,6 +268,7 @@ app.post('/api/respostas', async (req, res) => {
         res.status(500).send("Erro ao salvar respostas no banco");
     }
 });
+
 // ===================== CONFIG PROF =====================
 app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_professor} = req.params;   // pega o id 

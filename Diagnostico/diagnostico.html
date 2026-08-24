@@ -611,6 +611,26 @@ function mostrarResultadoFinal() { // mostra o resultado final
 
 // ===================== Inicialização =====================
 document.addEventListener('DOMContentLoaded', async () => { // espera o DOM carregar
+  // Verificar se o aluno já fez o diagnóstico
+const idEstudante = localStorage.getItem('idEstudante');
+if (!idEstudante) {
+  window.location.href = '../2LoginAluno/LoginAluno.html';
+  return;
+}
+
+try {
+  const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
+  if (!response.ok) throw new Error('Erro ao verificar');
+  const data = await response.json();
+  if (data.jaFez) {
+    window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
+    return; // interrompe a execução
+  }
+} catch (erro) {
+  console.error(erro);
+  alert('Erro ao verificar seu progresso.');
+  return;
+}
     // 1. Carrega dados do aluno (ID e nome)
     const ok = await carregarDadosAluno();
     if (!ok) return;
@@ -623,5 +643,6 @@ document.addEventListener('DOMContentLoaded', async () => { // espera o DOM carr
 });
 
   </script>
+  
 </body>
 </html>
