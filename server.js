@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -813,5 +813,43 @@ app.get('/listarTurmasProfessor/:professorId', async (req, res) => {
   } catch (erro) {
     console.error(erro);
     res.status(500).send("Erro ao listar turmas do professor");
+  }
+});
+// ===================== SIMULADOS DE UMA DISCIPLINA PARA O ALUNO =====================
+app.get('/simuladosParaAluno/:idEstudante/:disciplina', async (req, res) => {
+  const { idEstudante, disciplina } = req.params;
+
+  try {
+    // 1. descobre a turma do aluno
+    const turmaResultado = await pool.query(
+      `SELECT id_turma FROM classifica.estudante WHERE id_estudante = $1`,
+      [idEstudante]
+    );
+
+    if (turmaResultado.rows.length === 0 || !turmaResultado.rows[0].id_turma) {
+      return res.json([]);
+    }
+
+    const idTurma = turmaResultado.rows[0].id_turma;
+
+    // 2. busca os simulados dessa turma, cujo professor leciona essa disciplina
+    const resultado = await pool.query(
+      `SELECT s.id, s.nome, s.data_criacao,
+              COUNT(se.exercicio_id)::int AS total_questoes
+       FROM classifica.simulado s
+       JOIN classifica.professor p ON p.id_professor = s.professor_id
+       LEFT JOIN classifica.simulado_exercicios se ON se.simulado_id = s.id
+       WHERE s.turma_id = $1
+         AND s.ativo = true
+         AND TRIM(p.especialidade) ILIKE TRIM($2)
+       GROUP BY s.id
+       ORDER BY s.data_criacao DESC`,
+      [idTurma, disciplina]
+    );
+
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao buscar simulados do aluno");
   }
 });
