@@ -336,7 +336,7 @@ let questoes = []; //array
 let questaoAtual = 0; //contador de qual questão esta
 let alternativaSelecionada = null; //qual a resposta selecionada
 let respostas = []; // Array para armazenar respostas do aluno
-let idEstudante = null; // ID do aluno logado
+let id_estudante = null; // ID do aluno logado
 let nomeEstudante = ''; // Nome do aluno
 
 // Configuração da API
@@ -345,8 +345,8 @@ const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
 // ===================== Carregar dados do aluno =====================
 async function carregarDadosAluno() {
     // pega o id do estudante salvo no navegador
-    idEstudante = localStorage.getItem('idEstudante');
-    if (!idEstudante) {
+    id_estudante = localStorage.getItem('id_estudante');
+    if (!id_estudante) {
         alert('Você não está logado. Faça login novamente.');
         window.location.href = '../2LoginAluno/LoginAluno.html';
         return false;
@@ -354,7 +354,7 @@ async function carregarDadosAluno() {
 
     try {
         // busca o nome do aluno no banco
-        const response = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+        const response = await fetch(`http://localhost:3000/estudante/${id_estudante}`);
         if (!response.ok) throw new Error('Erro ao buscar dados do aluno');
         const dados = await response.json();
         nomeEstudante = dados.nome || 'Aluno';
@@ -541,7 +541,7 @@ function mostrarFeedback(resultado) { // mostra o resultado
 
 // ===================== Enviar respostas para o banco =====================
 async function enviarRespostas() {
-    if (!idEstudante) {
+    if (!id_estudante) {
         console.error('ID do estudante não encontrado.');
         return;
     }
@@ -559,7 +559,7 @@ async function enviarRespostas() {
                 'Content-Type': 'application/json', // define o tipo de conteúdo
             },
             body: JSON.stringify({
-                id_estudante: idEstudante,
+                id_estudante: id_estudante,
                 respostas: dadosParaEnvio
             })
         });
@@ -612,14 +612,14 @@ function mostrarResultadoFinal() { // mostra o resultado final
 // ===================== Inicialização =====================
 document.addEventListener('DOMContentLoaded', async () => { // espera o DOM carregar
   // Verificar se o aluno já fez o diagnóstico
-const idEstudante = localStorage.getItem('idEstudante');
-if (!idEstudante) {
+const id_estudante = localStorage.getItem('id_estudante');
+if (!id_estudante) {
   window.location.href = '../2LoginAluno/LoginAluno.html';
   return;
 }
 
 try {
-  const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
+  const response = await fetch(`http://localhost:3000/api/diagnostico/status/${id_estudante}`);
   if (!response.ok) throw new Error('Erro ao verificar');
   const data = await response.json();
   if (data.jaFez) {

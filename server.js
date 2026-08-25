@@ -61,7 +61,7 @@ app.post('/loginAluno', async (req, res) => {
       res.json({  // envia um objeto com + informações
         usuarioExiste: true,
         mensagem: "Login realizado com sucesso!",
-        idEstudante: resultado.rows[0].id_estudante   // envia o id do aluno para o LoginAluno
+        id_estudante: resultado.rows[0].id_estudante   // envia o id do aluno para o LoginAluno
       });
     }
     else { 
@@ -219,16 +219,24 @@ app.get('/api/questoes', async (req, res) => {
 // ===================== VERIFICAR SE ALUNO JÁ FEZ DIAGNÓSTICO ====================
 app.get('/api/diagnostico/status/:id_estudante', async (req, res) => {
   const { id_estudante } = req.params;
+
+  if (!id_estudante || id_estudante === 'undefined') {
+    return res.status(400).json({ erro: 'ID do estudante não informado' });
+  }
+
   try {
     const resultado = await pool.query(
-      `SELECT COUNT(*) AS total FROM classifica.tentaiva_diagnostico WHERE id_estudante = $1`,
+      `SELECT COUNT(*) AS total
+       FROM classifica.tentativa_diagnostico
+       WHERE id_estudante = $1`,
       [id_estudante]
     );
-    const jaFez = parseInt(resultado.rows[0].total) > 0;
-    res.json({ jaFez });
+
+    const jaFez = Number(resultado.rows[0].total) > 0;
+    return res.json({ jaFez });
   } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao verificar diagnóstico");
+    console.error('Erro ao verificar diagnóstico:', erro);
+    return res.status(500).send("Erro ao verificar diagnóstico");
   }
 });
 
@@ -254,12 +262,12 @@ app.post('/api/respostas', async (req, res) => {
             const correta = questao.rows[0].alternativa_correta;
             const correto = item.resposta.toLowerCase() === correta.toLowerCase();
 
-            await pool.query(
-                `INSERT INTO classifica.tentaiva_diagnostico 
-                    (id_exercicio, resposta_marcada, correto, id_estudante, data_tentativa)
-                 VALUES ($1, $2, $3, $4, NOW())`,
-                [item.id_exercicio, item.resposta, correto, id_estudante]
-            );
+           await pool.query(
+    `INSERT INTO classifica.tentativa_diagnostico 
+        (id_exercicio, resposta_marcada, correto, id_estudante, data_tentativa)
+     VALUES ($1, $2, $3, $4, NOW())`,
+    [item.id_exercicio, item.resposta, correto, id_estudante]
+);
         }
 
         res.status(200).send("Respostas salvas com sucesso!");

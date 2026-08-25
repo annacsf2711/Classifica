@@ -64,29 +64,33 @@
       Iniciar Diagnóstico
     </button>
   </div>~
-  <script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    const idEstudante = localStorage.getItem('idEstudante');
-    if (!idEstudante) {
-      // Se não estiver logado, volta para o login
-      window.location.href = '../2LoginAluno/LoginAluno.html';
-      return;
+ <script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const idEstudante = localStorage.getItem('idEstudante');
+
+  if (!idEstudante) {
+    window.location.href = '../2LoginAluno/LoginAluno.html';
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
+
+    if (!response.ok) {
+      const texto = await response.text();
+      throw new Error(texto || 'Erro ao verificar');
     }
 
-    try {
-      const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
-      if (!response.ok) throw new Error('Erro ao verificar');
-      const data = await response.json();
-      if (data.jaFez) {
-        // Já fez diagnóstico: redireciona para Configurações
-        window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
-      }
-      // Se não fez, a página continua normalmente e o botão "Iniciar Diagnóstico" fica visível
-    } catch (erro) {
-      console.error(erro);
-      alert('Erro ao verificar seu progresso. Tente novamente.');
+    const data = await response.json();
+
+    if (data.jaFez) {
+      window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
     }
-  });
+  } catch (erro) {
+    console.error('Erro ao verificar diagnóstico:', erro);
+    alert('Erro ao verificar seu progresso. Tente novamente.');
+  }
+});
 </script>
 </body>
 </html>

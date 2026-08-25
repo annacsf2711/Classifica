@@ -1,37 +1,36 @@
-import {SenhaVisivel} from "../DataCepCpf.js";
+import { SenhaVisivel } from "../DataCepCpf.js";
+
 // ===================== Login =====================
-document.getElementById("formLoginAluno").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
-    evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
-    
-    const dadosLoginAluno = { //criar um obj com os dados digitados nos inputs
+document.getElementById("formLoginAluno").addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    const dadosLoginAluno = {
         senha: document.getElementById("senha").value,
         email: document.getElementById("email").value,
     };
-    console.log("dados", dadosLoginAluno);
 
-    try{
-        const resposta = await fetch("http://localhost:3000/loginAluno", { // envie os dados para o servidor backend
-            method: "POST", // tipo de requisiçã HTTP usada para enviar dados
-            headers: { // informações extras da requisição, como os dados estão sendo enviados
-                "Content-Type": "application/json", // estou enviando os dados em formato JSON
+    try {
+        const resposta = await fetch("http://localhost:3000/loginAluno", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(dadosLoginAluno), // enviando os dados
+            body: JSON.stringify(dadosLoginAluno),
         });
-        const dados = await resposta.json(); // converte a resposta do servidor para objeto js
 
-        console.log("Resposta do servidor:", dados);
+        const dados = await resposta.json();
 
-        if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
-            localStorage.setItem("idEstudante", dados.idEstudante); // salva o id do aluno no navegador
+        if (dados && dados.usuarioExiste) {
+            localStorage.setItem("idEstudante", String(dados.idEstudante));
             console.log("Id aluno:", dados.idEstudante);
-            console.log("Vou redirecionar");
-            window.location.href = "http://127.0.0.1:5500/TCC---Classifica/Diagnostico/telainicialdiag.html";        
+
+            window.location.href = "../Diagnostico/telainicialdiag.html";
         } else {
-            alert(dados.mensagem); 
+            alert(dados?.mensagem || "Email ou senha incorretos.");
         }
-    } catch (erro) { // executa caso ocorra algum erro na requisição
-        console.error(erro); 
-        alert("Erro ao conectar com o servidor"); 
+    } catch (erro) {
+        console.error(erro);
+        alert("Erro ao conectar com o servidor");
     }
 });
 // ===================== Senha =====================
