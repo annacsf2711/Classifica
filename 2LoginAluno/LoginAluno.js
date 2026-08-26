@@ -21,10 +21,10 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
         const dados = await resposta.json();
 
         if (dados && dados.usuarioExiste) {
-            localStorage.setItem("idEstudante", String(dados.idEstudante));
-            console.log("Id aluno:", dados.idEstudante);
-
+            localStorage.setItem("idEstudante", dados.id_estudante); // usa o nome retornado pelo servidor
+            console.log("Id aluno:", dados.id_estudante);
             window.location.href = "../Diagnostico/telainicialdiag.html";
+
         } else {
             alert(dados?.mensagem || "Email ou senha incorretos.");
         }

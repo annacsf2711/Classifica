@@ -66,30 +66,28 @@
   </div>~
  <script>
 document.addEventListener('DOMContentLoaded', async () => {
-  const idEstudante = localStorage.getItem('idEstudante');
-
-  if (!idEstudante) {
-    window.location.href = '../2LoginAluno/LoginAluno.html';
-    return;
-  }
-
-  try {
-    const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
-
-    if (!response.ok) {
-      const texto = await response.text();
-      throw new Error(texto || 'Erro ao verificar');
+    const idEstudante = localStorage.getItem('idEstudante');
+    
+    if (!idEstudante) {
+        // Se não estiver logado, redireciona para o login
+        window.location.href = '../2LoginAluno/LoginAluno.html';
+        return;
     }
 
-    const data = await response.json();
-
-    if (data.jaFez) {
-      window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
+    try {
+        const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
+        if (!response.ok) {
+            const erro = await response.json();
+            throw new Error(erro.erro || 'Erro ao verificar');
+        }
+        const data = await response.json();
+        if (data.jaFez) {
+            window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
+        }
+    } catch (erro) {
+        console.error('Erro ao verificar diagnóstico:', erro);
+        alert('Erro ao verificar seu progresso. Tente novamente.');
     }
-  } catch (erro) {
-    console.error('Erro ao verificar diagnóstico:', erro);
-    alert('Erro ao verificar seu progresso. Tente novamente.');
-  }
 });
 </script>
 </body>
