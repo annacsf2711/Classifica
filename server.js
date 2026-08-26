@@ -322,8 +322,8 @@ app.put("/professor/:id_professor", async (req, res) => { // mudando dados
 });
 
 // ===================== LISTAR BANCOS DE QUESTÕES DE UM PROFESSOR =====================
-app.get('/listarBancos/:professorId', async (req, res) => {
-  const { professorId } = req.params;
+app.get('/listarBancos/:idProfessor', async (req, res) => {
+  const { idProfessor } = req.params;
   try {
     const resultado = await pool.query(
       `SELECT b.id, b.nome, b.disciplina,
@@ -333,7 +333,7 @@ app.get('/listarBancos/:professorId', async (req, res) => {
        WHERE b.professor_id = $1
        GROUP BY b.id, b.nome, b.disciplina
        ORDER BY b.id DESC`,
-      [professorId]
+      [idProfessor]
     );
     res.json(resultado.rows);
   } catch (erro) {
@@ -359,13 +359,13 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
 });
 // ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
 app.post('/criarBanco', async (req, res) => {
-  const { nome, disciplina, professorId } = req.body;
+  const { nome, disciplina, idProfessor } = req.body;
   try {
     const resultado = await pool.query(
       `INSERT INTO classifica.banco_questoes (nome, disciplina, professor_id)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [nome, disciplina, professorId]
+      [nome, disciplina, idProfessor]
     );
     res.json({ id: resultado.rows[0].id });
   } catch (erro) {
@@ -392,20 +392,71 @@ app.get('/listarQuestoesBanco/:bancoId', async (req, res) => {
     res.status(500).send("Erro ao listar questões do banco");
   }
 });
+// ===================== BUSCAR DADOS DE UM BANCO =====================
+app.get('/buscarBanco/:bancoId', async (req, res) => {
 
+  const { bancoId } = req.params;
+
+  try {
+
+    const resultado = await pool.query(
+      `
+      SELECT
+        id,
+        nome,
+        disciplina
+      FROM classifica.banco_questoes
+      WHERE id = $1
+      `,
+      [bancoId]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).send("Banco não encontrado");
+    }
+
+    res.json(resultado.rows[0]);
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    res.status(500).send(
+      "Erro ao buscar banco"
+    );
+  }
+});
+// ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
 // ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
 app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
   try {
+    // 1. descobre a disciplina do banco
+    const bancoResultado = await pool.query(
+      `SELECT disciplina FROM classifica.banco_questoes WHERE id = $1`,
+      [bancoId]
+    );
+
+    if (bancoResultado.rows.length === 0) {
+      return res.status(404).send("Banco de questões não encontrado");
+    }
+
+    const disciplina = bancoResultado.rows[0].disciplina;
+
+    // 2. lista só as questões da mesma área de conhecimento,
+    //    que ainda não estão nesse banco
     const resultado = await pool.query(
       `SELECT e.id_exercicio AS id, e.enunciado, e.nivel_dificuldade AS tipo
        FROM classifica.exercicio e
-       WHERE e.id_exercicio NOT IN (
-         SELECT exercicio_id FROM classifica.banco_questoes_exercicios WHERE banco_id = $1
-       )
+       JOIN classifica.area_conhecimento a ON a.id_area = e.id_area
+       WHERE TRIM(a.nome_area) ILIKE TRIM($1)
+         AND e.id_exercicio NOT IN (
+           SELECT exercicio_id FROM classifica.banco_questoes_exercicios WHERE banco_id = $2
+         )
        ORDER BY e.id_exercicio`,
-      [bancoId]
+      [disciplina, bancoId]
     );
+
     res.json(resultado.rows);
   } catch (erro) {
     console.error(erro);
@@ -498,15 +549,24 @@ app.post('/criarExercicio', async (req, res) => {
 
     // 3. cria o exercício já com o id_area correto
     const resultado = await pool.query(
-      `INSERT INTO classifica.exercicio
-         (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d,
-          alternativa_correta, nivel_dificuldade, id_area, data_criada, criado_por, dono,
-          total_tentativas, total_acertos)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10, 0, 0)
-       RETURNING id_exercicio AS id`,
-      [enunciado, alternativaA, alternativaB, alternativaC, alternativaD,
-       alternativaCorreta, nivelDificuldade, idArea, criadoPor, criadoPor]
-    );
+  `INSERT INTO classifica.exercicio
+     (enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d,
+      alternativa_correta, nivel_dificuldade, id_area, data_criada, criado_por,
+      total_tentativas, total_acertos)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, 0, 0)
+   RETURNING id_exercicio AS id`,
+  [
+    enunciado,
+    alternativaA,
+    alternativaB,
+    alternativaC,
+    alternativaD,
+    alternativaCorreta,
+    nivelDificuldade,
+    idArea,
+    criadoPor
+  ]
+);
 
     res.json({ id: resultado.rows[0].id });
 
@@ -585,22 +645,19 @@ app.post("/verificarCadastroProf", async (req, res) => {
 });
 
 
-// ===================================================================
-// Cole estas rotas no seu server.js, antes de app.listen(...)
-// Seguem o mesmo padrão das rotas de banco_questoes que você já tem
-// ===================================================================
 
 // ===================== LISTAR SIMULADOS DE UM PROFESSOR =====================
 app.get('/listarSimulados/:professorId', async (req, res) => {
   const { professorId } = req.params;
   try {
     const resultado = await pool.query(
-      `SELECT s.id, s.nome, s.turma, s.data_criacao,
+      `SELECT s.id, s.nome, t.nome AS turma, s.data_criacao,
               COUNT(se.exercicio_id) AS total_questoes
        FROM classifica.simulado s
        LEFT JOIN classifica.simulado_exercicios se ON se.simulado_id = s.id
+       LEFT JOIN classifica.turma t ON t.idturma = s.turma_id
        WHERE s.professor_id = $1 AND s.ativo = true
-       GROUP BY s.id
+       GROUP BY s.id, t.nome
        ORDER BY s.data_criacao DESC`,
       [professorId]
     );
@@ -613,13 +670,13 @@ app.get('/listarSimulados/:professorId', async (req, res) => {
 
 // ===================== CRIAR SIMULADO =====================
 app.post('/criarSimulado', async (req, res) => {
-  const { nome, turma, professorId } = req.body;
+  const { nome, turmaId, professorId } = req.body;
   try {
     const resultado = await pool.query(
-      `INSERT INTO classifica.simulado (nome, turma, professor_id)
+      `INSERT INTO classifica.simulado (nome, turma_id, professor_id)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [nome, turma, professorId]
+      [nome, turmaId, professorId]
     );
     res.json({ id: resultado.rows[0].id });
   } catch (erro) {
@@ -721,4 +778,104 @@ app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
       console.error("ERRO COMPLETO:", erro);
       res.status(500).send(erro.message);
     }
+});
+// ===================== LISTAR ALUNOS DA TURMA =====================
+app.get('/colegasTurma/:idEstudante', async (req, res) => {
+  const { idEstudante } = req.params;
+
+  try {
+
+    const turmaResultado = await pool.query(
+      `
+      SELECT id_turma
+      FROM classifica.estudante
+      WHERE id_estudante = $1
+      `,
+      [idEstudante]
+    );
+
+    if (turmaResultado.rows.length === 0) {
+      return res.json([]);
+    }
+
+    const idTurma =
+      turmaResultado.rows[0].id_turma;
+
+    const colegasResultado = await pool.query(
+      `
+      SELECT
+        id_estudante,
+        nome
+      FROM classifica.estudante
+      WHERE id_turma = $1
+      AND id_estudante <> $2
+      ORDER BY nome
+      `,
+      [idTurma, idEstudante]
+    );
+
+    res.json(colegasResultado.rows);
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send(
+      "Erro ao listar colegas"
+    );
+  }
+});
+// ===================== LISTAR TURMAS DE UM PROFESSOR =====================
+app.get('/listarTurmasProfessor/:professorId', async (req, res) => {
+  const { professorId } = req.params;
+  try {
+    const resultado = await pool.query(
+      `SELECT t.idturma AS id, t.nome AS nome, t.codigo
+       FROM classifica.turma t
+       JOIN classifica.professor_turma pt ON pt.idturma = t.idturma
+       WHERE pt.id_professor = $1
+       ORDER BY t.nome`,
+      [professorId]
+    );
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao listar turmas do professor");
+  }
+});
+// ===================== SIMULADOS DE UMA DISCIPLINA PARA O ALUNO =====================
+app.get('/simuladosParaAluno/:idEstudante/:disciplina', async (req, res) => {
+  const { idEstudante, disciplina } = req.params;
+
+  try {
+    // 1. descobre a turma do aluno
+    const turmaResultado = await pool.query(
+      `SELECT id_turma FROM classifica.estudante WHERE id_estudante = $1`,
+      [idEstudante]
+    );
+
+    if (turmaResultado.rows.length === 0 || !turmaResultado.rows[0].id_turma) {
+      return res.json([]);
+    }
+
+    const idTurma = turmaResultado.rows[0].id_turma;
+
+    // 2. busca os simulados dessa turma, cujo professor leciona essa disciplina
+    const resultado = await pool.query(
+      `SELECT s.id, s.nome, s.data_criacao,
+              COUNT(se.exercicio_id)::int AS total_questoes
+       FROM classifica.simulado s
+       JOIN classifica.professor p ON p.id_professor = s.professor_id
+       LEFT JOIN classifica.simulado_exercicios se ON se.simulado_id = s.id
+       WHERE s.turma_id = $1
+         AND s.ativo = true
+         AND TRIM(p.especialidade) ILIKE TRIM($2)
+       GROUP BY s.id
+       ORDER BY s.data_criacao DESC`,
+      [idTurma, disciplina]
+    );
+
+    res.json(resultado.rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao buscar simulados do aluno");
+  }
 });

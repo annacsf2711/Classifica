@@ -242,8 +242,8 @@
       <div>
         <div class="brand">
           <div class="badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-              <path d="M12 2L4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
             </svg>
           </div>
           <h1>Classifica</h1>
@@ -255,20 +255,26 @@
             Dashboard
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             Sala de Aula
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
-            Meus Simulados
+            <a href="../Meus_Simulados_Professor/Meus_Simulados.html" style="display:flex; align-items:center; gap:14px; color:inherit; text-decoration:none; width:100%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+                Meus Simulados
+             </a>
           </li>
           <li class="active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"/></svg>
-            Banco de Questões
+             <a href="../Banco_Questões_Professor/Tela_Banco_Professor.html" style="display:flex; align-items:center; gap:14px; color:inherit; text-decoration:none; width:100%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Banco de Questões
+            </a>
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-            Configurações
+            <a href="../5ConfiguracoesProf/ConfiguracoesProf.html" style="display:flex; align-items:center; gap:14px; color:inherit; text-decoration:none; width:100%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+                Configurações
+             </a>
           </li>
         </ul>
       </div>
@@ -276,7 +282,7 @@
       <div class="user">
         <div class="avatar">L</div>
         <div class="info">
-          <b>Letícia Pinho</b>
+          <b id="nomeUsuario"></b>
           <span>Professor(a)</span>
         </div>
       </div>
@@ -339,7 +345,10 @@
     <main class="main">
       <a href="Tela_Banco_Professor.html" class="close" style="text-decoration: none;">&times;</a>
 
-      <h2>Meu Banco</h2>
+      <h2 id="tituloBanco">Meu Banco</h2>
+
+      <p id="subtituloBanco"></p>
+
       <div class="divider"></div>
 
       <div class="add-wrap">

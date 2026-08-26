@@ -8,9 +8,9 @@
     // (a URL tem prioridade sobre o localStorage, pra facilitar testes).
     const parametrosUrl = new URLSearchParams(window.location.search);
 
-    const professorId = parametrosUrl.get('id_professor') || localStorage.getItem('professorId');
+    const professorId = parametrosUrl.get('id_professor') || localStorage.getItem('idProfessor');
     const nomeProfessorSalvo = parametrosUrl.get('nome') || localStorage.getItem('nomeProfessor');
-
+    let turmaSelecionada = null;
     let exerciciosDisponiveis = [];
     let selecionadas = new Set();
 
@@ -68,12 +68,13 @@
       document.getElementById('modalOverlay').classList.add('open');
       document.getElementById('nomeSimulado').focus();
       carregarExerciciosDisponiveis();
+      carregarTurmasProfessor();
     }
 
     function fecharModal() {
       document.getElementById('modalOverlay').classList.remove('open');
       document.getElementById('nomeSimulado').value = '';
-      document.getElementById('turmaSimulado').value = '';
+      turmaSelecionada = null;
       selecionadas.clear();
       atualizarContador();
     }
@@ -135,10 +136,13 @@
     // ===================== CRIAR SIMULADO + VINCULAR QUESTÕES =====================
     async function criarSimulado() {
       const nome = document.getElementById('nomeSimulado').value.trim();
-      const turma = document.getElementById('turmaSimulado').value.trim();
 
       if (!nome) {
         alert('Digite um nome para o simulado.');
+        return;
+      }
+      if (!turmaSelecionada) {
+        alert('Selecione uma turma.');
         return;
       }
       if (selecionadas.size === 0) {
@@ -154,13 +158,12 @@
         const criarResponse = await fetch(`${API_URL}/criarSimulado`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, turma, professorId })
+          body: JSON.stringify({ nome, turmaId: turmaSelecionada, professorId })
         });
 
         if (!criarResponse.ok) throw new Error('Erro ao criar simulado');
         const { id: simuladoId } = await criarResponse.json();
 
-        // adiciona cada questão selecionada, uma de cada vez
         for (const exercicioId of selecionadas) {
           await fetch(`${API_URL}/adicionarQuestaoSimulado`, {
             method: 'POST',
@@ -179,4 +182,36 @@
         btn.disabled = false;
         btn.textContent = 'Criar Simulado';
       }
+    }
+        // ===================== CARREGAR TURMAS DO PROFESSOR =====================
+    async function carregarTurmasProfessor() {
+      const picker = document.getElementById('turmasPicker');
+      picker.innerHTML = '<div style="padding:14px; font-size:14px; color:#4a5568;">Carregando turmas...</div>';
+
+      try {
+        const response = await fetch(`${API_URL}/listarTurmasProfessor/${professorId}`);
+        if (!response.ok) throw new Error('Erro ao buscar turmas');
+
+        const turmas = await response.json();
+
+        if (turmas.length === 0) {
+          picker.innerHTML = '<div style="padding:14px; font-size:14px; color:#4a5568;">Você ainda não leciona nenhuma turma.</div>';
+          return;
+        }
+
+        picker.innerHTML = turmas.map(t => `
+          <label class="turma-item">
+            <input type="radio" name="turmaRadio" value="${t.id}" onchange="selecionarTurma(${t.id})" />
+            <span>${t.nome}</span>
+          </label>
+        `).join('');
+
+      } catch (erro) {
+        console.error('Erro:', erro);
+        picker.innerHTML = '<div style="padding:14px; font-size:14px; color:#c0392b;">Erro ao carregar turmas.</div>';
+      }
+    }
+
+    function selecionarTurma(idTurma) {
+      turmaSelecionada = idTurma;
     }

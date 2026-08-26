@@ -4,7 +4,30 @@ const API_URL = 'http://localhost:3000';
 // ID do professor logado.
 // Por enquanto fixo pra teste — depois troque pelo valor real
 // (ex: salvo no localStorage no momento do login).
-const professorId = localStorage.getItem('professorId') || 3;
+const idProfessor = localStorage.getItem('idProfessor') ;
+
+fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
+.then(async resposta => {
+   
+  if (!resposta.ok) {
+    const mensagem = await resposta.text();
+    throw new Error(mensagem);
+  }
+  return resposta.json();
+})
+
+.then(professor => {   // recebe os dados do professor retornados pelo servidor
+
+    
+  console.log("Professor:", professor);
+
+
+  document.getElementById("nomeUsuario").textContent = professor.nome;
+  
+})
+.catch(erro => {
+  console.error("Erro ao buscar professor:", erro);
+});
 
 // elementos da tela
 const listaBancos = document.getElementById('listaBancos');
@@ -27,7 +50,7 @@ async function carregarBancos() {
   listaBancos.innerHTML = '<p class="estado-vazio">Carregando bancos...</p>';
 
   try {
-    const resposta = await fetch(`${API_URL}/listarBancos/${professorId}`);
+    const resposta = await fetch(`${API_URL}/listarBancos/${idProfessor}`);
 
     if (!resposta.ok) {
       throw new Error(`Erro HTTP ${resposta.status}`);
@@ -94,7 +117,7 @@ async function criarBanco() {
     const resposta = await fetch(`${API_URL}/criarBanco`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, disciplina, professorId })
+      body: JSON.stringify({ nome, disciplina, idProfessor })
     });
 
     if (!resposta.ok) {
