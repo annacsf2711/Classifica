@@ -122,7 +122,8 @@ app.put("/estudante/:id_estudante", async (req, res) => {
         res.status(500).send("Erro ao atualizar aluno");
     }
 });
-// ===================== Delete Aluno =====================
+
+// ===================== Desativar Aluno =====================
 app.put("/desativarAluno/:id_estudante", async (req, res) => {
   
   console.log("Rota desativar aluno chamada");
@@ -166,18 +167,37 @@ app.post('/loginProf', async (req, res) => {
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(
-      `SELECT id_professor FROM classifica.professor WHERE email = $1 AND senha = $2 AND ativo = true`,
+      `SELECT id_professor, ativo FROM classifica.professor WHERE email = $1 AND senha = $2`,
       [email, senha]
     );
+    console.log(resultado.rows[0]);
+    console.log("Valor de ativo:", resultado.rows[0].ativo);
 
     const usuarioExiste = resultado.rows.length > 0; // Verifica se retornou algo
-    if (usuarioExiste) { 
-      res.json({  // envia um objeto com + informações
+    if (usuarioExiste) {
+
+      console.log("ativo:", resultado.rows[0].ativo);
+
+      if (resultado.rows[0].ativo == false) {
+        console.log("Conta Desativada");
+
+        return res.status(403).json({
+          usuarioExiste: true,
+          contaDesativada: true,
+          idProfessor: resultado.rows[0].id_professor,
+          mensagem: "Conta desativada"
+        });
+      }
+
+      console.log("Login normal");
+
+      return res.json({  // envia um objeto com + informações
         usuarioExiste: true,
         mensagem: "Login realizado com sucesso!",
         idProfessor: resultado.rows[0].id_professor   // envia o id do professor para o LoginProfessor 
       });
     }
+
     else { 
         res.status(401).json({
         usuarioExiste: false,
@@ -190,6 +210,30 @@ app.post('/loginProf', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
+
+// ===================== Reativar Professor =====================
+app.put('/reativarProfessor/:id_professor', async (req, res) => {
+    const { id_professor } = req.params;
+    try {
+        await pool.query(
+            `UPDATE classifica.professor SET ativo = true WHERE id_professor = $1`,
+            [id_professor]
+        );
+
+        res.json({
+            sucesso: true,
+            mensagem: "Conta reativada com sucesso!"
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao reativar a conta."
+        });
+    }
+});
+
 // ===================== QUESTÕES DO DIAGNOSTICO ====================
 app.get('/api/questoes', async (req, res) => {
   try {

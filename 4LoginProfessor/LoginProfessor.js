@@ -18,13 +18,25 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
         });
         const dados = await resposta.json(); // converte a resposta do servidor para objeto js
 
-        if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
-            localStorage.setItem("idProfessor", dados.idProfessor); // salva o id do professor no navegador
+        if (dados.contaDesativada) {
+            const reativar = confirm("Sua conta está desativada. Deseja reativá-la?");
+
+            if (reativar) {
+                await fetch(`http://localhost:3000/reativarProfessor/${dados.idProfessor}`, {
+                    method: "PUT"
+                });
+                alert("Conta reativada com sucesso! Faça o login novamente.");
+            }
+
+        } else if (dados.usuarioExiste) {
+            localStorage.setItem("idProfessor", dados.idProfessor);
             console.log("Id professor:", dados.idProfessor);
-            window.location.href = "../5ConfiguracoesProf/ConfiguracoesProf.html";        
-        } else { // 
-            alert(dados.mensagem); 
+            window.location.href = "../5ConfiguracoesProf/ConfiguracoesProf.html";
+
+        } else {
+            alert(dados.mensagem);
         }
+        
     } catch (erro) { // executa caso ocorra algum erro na requisição
         console.error(erro); 
         alert("Erro ao conectar com o servidor"); 
