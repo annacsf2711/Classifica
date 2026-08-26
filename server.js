@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -46,19 +46,37 @@ app.post('/cadastrarAluno', async (req, res) => {
 
 // ===================== LOGIN ALUNO =====================
 app.post('/loginAluno', async (req, res) => {
+
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(  
-      `SELECT id_estudante FROM classifica.estudante WHERE email = $1 AND senha = $2`,
+      `SELECT id_estudante, ativo FROM classifica.estudante WHERE email = $1 AND senha = $2`,
       [email, senha]
     ); 
     console.log("Resultado do banco:", resultado)
+    
     const usuarioExiste = resultado.rows.length > 0; // Verifica se retornou algo
 
     if (usuarioExiste) {   
-      res.json({  // envia um objeto com + informações
+
+      console.log("ativo:", resultado.rows[0].ativo);
+
+      if (resultado.rows[0].ativo == false) {
+        console.log("Conta Desativada");
+
+        return res.status(403).json({
+          usuarioExiste: true,
+          contaDesativada: true,
+          idEstudante: resultado.rows[0].id_estudante,
+          mensagem: "Conta desativada"
+        });
+      }
+
+      console.log("Login normal");
+
+      return res.json({  // envia um objeto com + informações
         usuarioExiste: true,
         mensagem: "Login realizado com sucesso!",
         idEstudante: resultado.rows[0].id_estudante   // envia o id do aluno para o LoginAluno
@@ -76,6 +94,7 @@ app.post('/loginAluno', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
+
 
 // ===================== CONFIG ALUNO =====================
 app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os dados de um professor pelo id
@@ -128,7 +147,7 @@ app.put("/desativarAluno/:id_estudante", async (req, res) => {
   
   console.log("Rota desativar aluno chamada");
 
-  const {id_estudante} = req.params;
+  const { id_estudante } = req.params;
   try {
     await pool.query(
     `UPDATE classifica.estudante SET ativo = false WHERE id_estudante = $1`,
@@ -138,6 +157,56 @@ app.put("/desativarAluno/:id_estudante", async (req, res) => {
   } catch (erro) {
     console.error(erro);
     res.status(500).send("Erro ao desativar");
+  }
+});
+
+// ===================== Reativar Aluno =====================
+app.put('/reativarAluno/:id_estudante', async (req, res) => {
+    const { id_estudante } = req.params;
+    try {
+        await pool.query(
+          `UPDATE classifica.estudante SET ativo = true WHERE id_estudante = $1`,
+          [id_estudante]
+        );
+
+        res.json({
+            sucesso: true,
+            mensagem: "Conta reativada com sucesso!"
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao reativar a conta."
+        });
+    }
+});
+
+// ===================== Deletar Aluno =====================
+app.delete("/deletarAluno/:id_estudante", async (req, res) => {
+  const { id_estudante } = req.params;
+
+  try {
+    // Tabelas que possuem FK para aluno
+    await pool.query(
+      `DELETE FROM classifica.estudante
+       WHERE id_estudante = $1`,
+      [id_estudante]
+    );
+
+    // Exclui o aluno
+    await pool.query(
+      `DELETE FROM classifica.estudante
+       WHERE id_estudante = $1`,
+      [id_estudante]
+    );
+
+    res.send("Aluno excluído permanentemente");
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao excluir Aluno");
   }
 });
 

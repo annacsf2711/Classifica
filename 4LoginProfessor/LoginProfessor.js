@@ -2,6 +2,7 @@ import {SenhaVisivel} from "../DataCepCpf.js";
 // ===================== Login =====================
 document.getElementById("formLoginProf").addEventListener("submit", async (evento) => { //selecionar o formulário e escutar o evento
     evento.preventDefault(); //impede que a pag recarregue ao enviar o formulário
+    
     const dadosLoginProf = { //criar um obj com os dados digitados nos inputs
         senha: document.getElementById("senha").value,
         email: document.getElementById("email").value,
@@ -17,6 +18,8 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
             body: JSON.stringify(dadosLoginProf), // enviando os dados
         });
         const dados = await resposta.json(); // converte a resposta do servidor para objeto js
+
+        console.log("Resposta do servidor:", dados);
 
         if (dados.contaDesativada) {
             const reativar = confirm("Sua conta está desativada. Deseja reativá-la?");

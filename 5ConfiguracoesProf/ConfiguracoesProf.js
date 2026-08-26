@@ -40,9 +40,7 @@ document.getElementById("nascimento")
     .addEventListener("input", ColocarBarra);
 
 
-// ===================================== Modificar ===================================================
- 
-
+// ===================================== Modificar ==================================================
 document.getElementById("modificar").addEventListener("click", async () => {
 
   const idProfessor = localStorage.getItem("idProfessor");     
