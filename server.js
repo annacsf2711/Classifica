@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -245,7 +245,7 @@ app.get('/api/diagnostico/status/:id_estudante', async (req, res) => {
 app.post('/api/respostas', async (req, res) => {
     try {
         const { id_estudante, respostas } = req.body;
-        // respostas é um array de objetos: [{ id_exerciciodiag, resposta }]
+        // respostas é um array de objetos: [{ id_exercicio, resposta }]
 
         if (!id_estudante || !respostas || !Array.isArray(respostas)) {
             return res.status(400).send("Dados inválidos");
@@ -255,7 +255,7 @@ app.post('/api/respostas', async (req, res) => {
             // Buscar a alternativa correta da questão diagnóstica
             const questao = await pool.query(
                 `SELECT alternativa_correta FROM classifica.avaliacao_diagnostica WHERE id_enunciadodiag = $1`,
-                [item.id_exerciciodiag]   // usa o id da questão recebido do frontend
+                [item.id_exercicio]   // usa o id da questão recebido do frontend
             );
             if (questao.rows.length === 0) continue;
 

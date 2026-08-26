@@ -346,13 +346,11 @@ const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
 async function carregarDadosAluno() {
     // pega o id do estudante salvo no navegador
     idEstudante = localStorage.getItem('idEstudante');
-if (!idEstudante || idEstudante === 'undefined') {
-    alert('Você não está logado. Faça login novamente.');
-    window.location.href = '../2LoginAluno/LoginAluno.html';
-    return false;
-}
-
-const response = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+    if (!idEstudante || idEstudante === 'undefined') {
+        alert('Você não está logado. Faça login novamente.');
+        window.location.href = '../2LoginAluno/LoginAluno.html';
+        return false;
+    }
 
     try {
         // busca o nome do aluno no banco
@@ -561,7 +559,7 @@ async function enviarRespostas() {
                 'Content-Type': 'application/json', // define o tipo de conteúdo
             },
             body: JSON.stringify({
-                idEstudante : idEstudante ,
+                id_estudante: idEstudante,
                 respostas: dadosParaEnvio
             })
         });
@@ -612,38 +610,32 @@ function mostrarResultadoFinal() { // mostra o resultado final
 }
 
 // ===================== Inicialização =====================
-document.addEventListener('DOMContentLoaded', async () => { // espera o DOM carregar
-  // Verificar se o aluno já fez o diagnóstico
-const idEstudante  = localStorage.getItem('idEstudante ');
-if (!idEstudante ) {
-  window.location.href = '../2LoginAluno/LoginAluno.html';
-  return;
-}
-
-try {
-  const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
-  if (!response.ok) throw new Error('Erro ao verificar');
-  const data = await response.json();
-  if (data.jaFez) {
-    window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
-    return; // interrompe a execução
+document.addEventListener('DOMContentLoaded', async () => {
+  const idEstudanteLocal = localStorage.getItem('idEstudante');
+  if (!idEstudanteLocal || idEstudanteLocal === 'undefined') {
+    window.location.href = '../2LoginAluno/LoginAluno.html';
+    return;
   }
-} catch (erro) {
-  console.error(erro);
-  alert('Erro ao verificar seu progresso.');
-  return;
-}
-    // 1. Carrega dados do aluno (ID e nome)
-    const ok = await carregarDadosAluno();
-    if (!ok) return;
 
-    // 2. Carrega as questões
-    await carregarQuestoes(); // carrega as questões
+  try {
+    const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudanteLocal}`);
+    if (!response.ok) throw new Error('Erro ao verificar');
+    const data = await response.json();
+    if (data.jaFez) {
+      window.location.href = '../6ConfiguracoesAluno/ConfiguracoesAluno.html';
+      return;
+    }
+  } catch (erro) {
+    console.error(erro);
+    alert('Erro ao verificar seu progresso.');
+    return;
+  }
 
-    // 3. Associa o botão à função de verificação
-    document.getElementById('btn-enviar').onclick = verificarResposta; // define o onclick do botão
+  const ok = await carregarDadosAluno();
+  if (!ok) return;
+  await carregarQuestoes();
+  document.getElementById('btn-enviar').onclick = verificarResposta;
 });
-
   </script>
   
 </body>
