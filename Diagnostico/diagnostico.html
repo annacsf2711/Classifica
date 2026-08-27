@@ -333,8 +333,8 @@
   </div>
 
   <script>
-   // Estado da aplicação
-    // ===================== Estado da aplicação =====================
+// Estado da aplicação
+// ===================== Estado da aplicação =====================
 let questoes = []; //array
 let questaoAtual = 0; //contador de qual questão esta
 let alternativaSelecionada = null; //qual a resposta selecionada
@@ -581,7 +581,7 @@ async function enviarRespostas() {
 }
 
 // ===================== Mostrar resultado final =====================
-function mostrarResultadoFinal() { // mostra o resultado final
+async function mostrarResultadoFinal() { // mostra o resultado final
     const totalQuestoes = questoes.length; // tamanho do array e passa para a variavel 
     let acertos = 0; // acertos
 
@@ -609,7 +609,15 @@ function mostrarResultadoFinal() { // mostra o resultado final
     document.getElementById('btn-enviar').style.display = 'none'; // esconde o botão
 
     // Envia as respostas para o banco (somente uma vez)
-    enviarRespostas(); // chama a função para enviar as respostas
+    await enviarRespostas(); // chama a função para enviar as respostas
+
+    // em seguida libera o botão Prosseguir para o aluno clicar quando quiser
+    var btnProsseguir = document.getElementById('btn-prosseguir');
+    btnProsseguir.style.display = 'block';
+
+    btnProsseguir.onclick = function() {
+        obterCodigoFormatado();
+    };
 }
 
 // ===================== Inicialização =====================

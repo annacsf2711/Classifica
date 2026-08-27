@@ -46,19 +46,37 @@ app.post('/cadastrarAluno', async (req, res) => {
 
 // ===================== LOGIN ALUNO =====================
 app.post('/loginAluno', async (req, res) => {
+
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(  
-      `SELECT id_estudante FROM classifica.estudante WHERE email = $1 AND senha = $2`,
+      `SELECT id_estudante, ativo FROM classifica.estudante WHERE email = $1 AND senha = $2`,
       [email, senha]
     ); 
     console.log("Resultado do banco:", resultado)
+    
     const usuarioExiste = resultado.rows.length > 0; // Verifica se retornou algo
 
     if (usuarioExiste) {   
-      res.json({  // envia um objeto com + informações
+
+      console.log("ativo:", resultado.rows[0].ativo);
+
+      if (resultado.rows[0].ativo == false) {
+        console.log("Conta Desativada");
+
+        return res.status(403).json({
+          usuarioExiste: true,
+          contaDesativada: true,
+          idEstudante: resultado.rows[0].id_estudante,
+          mensagem: "Conta desativada"
+        });
+      }
+
+      console.log("Login normal");
+
+      return res.json({  // envia um objeto com + informações
         usuarioExiste: true,
         mensagem: "Login realizado com sucesso!",
         id_estudante: resultado.rows[0].id_estudante   // envia o id do aluno para o LoginAluno
@@ -76,6 +94,7 @@ app.post('/loginAluno', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
+
 
 // ===================== CONFIG ALUNO =====================
 app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os dados de um professor pelo id
@@ -122,12 +141,13 @@ app.put("/estudante/:id_estudante", async (req, res) => {
         res.status(500).send("Erro ao atualizar aluno");
     }
 });
-// ===================== Delete Aluno =====================
+
+// ===================== Desativar Aluno =====================
 app.put("/desativarAluno/:id_estudante", async (req, res) => {
   
   console.log("Rota desativar aluno chamada");
 
-  const {id_estudante} = req.params;
+  const { id_estudante } = req.params;
   try {
     await pool.query(
     `UPDATE classifica.estudante SET ativo = false WHERE id_estudante = $1`,
@@ -137,6 +157,56 @@ app.put("/desativarAluno/:id_estudante", async (req, res) => {
   } catch (erro) {
     console.error(erro);
     res.status(500).send("Erro ao desativar");
+  }
+});
+
+// ===================== Reativar Aluno =====================
+app.put('/reativarAluno/:id_estudante', async (req, res) => {
+    const { id_estudante } = req.params;
+    try {
+        await pool.query(
+          `UPDATE classifica.estudante SET ativo = true WHERE id_estudante = $1`,
+          [id_estudante]
+        );
+
+        res.json({
+            sucesso: true,
+            mensagem: "Conta reativada com sucesso!"
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao reativar a conta."
+        });
+    }
+});
+
+// ===================== Deletar Aluno =====================
+app.delete("/deletarAluno/:id_estudante", async (req, res) => {
+  const { id_estudante } = req.params;
+
+  try {
+    // Tabelas que possuem FK para aluno
+    await pool.query(
+      `DELETE FROM classifica.estudante
+       WHERE id_estudante = $1`,
+      [id_estudante]
+    );
+
+    // Exclui o aluno
+    await pool.query(
+      `DELETE FROM classifica.estudante
+       WHERE id_estudante = $1`,
+      [id_estudante]
+    );
+
+    res.send("Aluno excluído permanentemente");
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao excluir Aluno");
   }
 });
 
@@ -166,18 +236,37 @@ app.post('/loginProf', async (req, res) => {
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(
-      `SELECT id_professor FROM classifica.professor WHERE email = $1 AND senha = $2 AND ativo = true`,
+      `SELECT id_professor, ativo FROM classifica.professor WHERE email = $1 AND senha = $2`,
       [email, senha]
     );
+    console.log(resultado.rows[0]);
+    console.log("Valor de ativo:", resultado.rows[0].ativo);
 
     const usuarioExiste = resultado.rows.length > 0; // Verifica se retornou algo
-    if (usuarioExiste) { 
-      res.json({  // envia um objeto com + informações
+    if (usuarioExiste) {
+
+      console.log("ativo:", resultado.rows[0].ativo);
+
+      if (resultado.rows[0].ativo == false) {
+        console.log("Conta Desativada");
+
+        return res.status(403).json({
+          usuarioExiste: true,
+          contaDesativada: true,
+          idProfessor: resultado.rows[0].id_professor,
+          mensagem: "Conta desativada"
+        });
+      }
+
+      console.log("Login normal");
+
+      return res.json({  // envia um objeto com + informações
         usuarioExiste: true,
         mensagem: "Login realizado com sucesso!",
         idProfessor: resultado.rows[0].id_professor   // envia o id do professor para o LoginProfessor 
       });
     }
+
     else { 
         res.status(401).json({
         usuarioExiste: false,
@@ -190,6 +279,30 @@ app.post('/loginProf', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
+
+// ===================== Reativar Professor =====================
+app.put('/reativarProfessor/:id_professor', async (req, res) => {
+    const { id_professor } = req.params;
+    try {
+        await pool.query(
+            `UPDATE classifica.professor SET ativo = true WHERE id_professor = $1`,
+            [id_professor]
+        );
+
+        res.json({
+            sucesso: true,
+            mensagem: "Conta reativada com sucesso!"
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao reativar a conta."
+        });
+    }
+});
+
 // ===================== QUESTÕES DO DIAGNOSTICO ====================
 app.get('/api/questoes', async (req, res) => {
   try {
@@ -342,7 +455,7 @@ app.get('/listarBancos/:idProfessor', async (req, res) => {
   }
 });
 
-// ===================== Delete PROF =====================
+// ===================== Desativar PROF =====================
 app.put("/desativarProfessor/:id_professor", async (req, res) => {
   
   const {id_professor} = req.params;
@@ -357,6 +470,33 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
     res.status(500).send("Erro ao desativar");
   }
 });
+
+// ===================== Deletar PROF =====================
+app.delete("/deletarProfessor/:id_professor", async (req, res) => {
+  const { id_professor } = req.params;
+
+  try {
+    // Tabelas que possuem FK para professor
+    await pool.query(
+      `DELETE FROM classifica.professor_turma
+       WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    // Exclui o professor
+    await pool.query(
+      `DELETE FROM classifica.professor
+       WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    res.send("Professor excluído permanentemente");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao excluir professor");
+  }
+});
+
 // ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
 app.post('/criarBanco', async (req, res) => {
   const { nome, disciplina, idProfessor } = req.body;
@@ -877,5 +1017,40 @@ app.get('/simuladosParaAluno/:idEstudante/:disciplina', async (req, res) => {
   } catch (erro) {
     console.error(erro);
     res.status(500).send("Erro ao buscar simulados do aluno");
+  }
+});
+// ===================== Código Turma Professor =====================
+app.post('/turmaProf', async (req, res) => {
+  console.log("Dados recebidos da turma", req.body);
+
+  const { codigo } = req.body;
+  try {
+    const resultado = await pool.query(
+    `SELECT pt.id_professor, t.idturma, t.nome
+    FROM classifica.turma t
+    INNER JOIN classifica.professor_turma pt
+    ON pt.idturma = t.idturma
+    WHERE t.codigo = $1`,
+    [codigo]
+  );
+
+    if (resultado.rows.length > 0) {
+      res.json({
+        salaExistente: true,
+        mensagem: "Sala existente",
+        idProfessor: resultado.rows[0].id_professor,
+        idTurma: resultado.rows[0].idturma,
+        nomeTurma: resultado.rows[0].nome
+      });
+    } else {
+      res.status(404).json({
+        salaExistente: false,
+        mensagem: "Sala inexistente"
+      });
+    }
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao processar o código no banco");
   }
 });

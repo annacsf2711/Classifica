@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Entrar na Sala - Classifica</title>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #eef1f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px;
+    background: #f5f1e8;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    min-height: 90vh;
+  }
+
+  /* --- Sidebar --- */
+  .sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+    color: #fff;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .brand { text-align: center; margin-bottom: 40px; }
+  .brand .badge {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .brand h1 { font-size: 28px; font-weight: 700; }
+
+  .nav { list-style: none; }
+
+  .nav li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+
+  .nav li:hover { background: rgba(255,255,255,0.12); }
+  .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+  .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 30px;
+  }
+  .user .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    color: #3aa4e8;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 20px;
+  }
+  .user .info { line-height: 1.3; }
+  .user .info b { display: block; font-size: 15px; }
+  .user .info span { font-size: 13px; opacity: 0.9; }
+
+  /* --- Área Principal --- */
+  .main {
+    flex: 1;
+    padding: 60px 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .join-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px 48px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 580px;
+    text-align: center;
+  }
+
+  .join-card .icon-container {
+    width: 70px;
+    height: 70px;
+    background: #eef1f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+  }
+
+  .join-card h2 {
+    font-size: 26px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .join-card p {
+    color: #6c757d;
+    font-size: 16px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+
+  /* Campo de Código Customizado */
+  .code-input-wrapper {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+
+  .code-input-wrapper input {
+    width: 50px;
+    height: 60px;
+    border: 2px solid #dcdfe4;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    color: #2c3e50;
+    text-transform: uppercase;
+    background: #fff;
+    transition: all 0.2s;
+  }
+
+  .code-input-wrapper input:focus {
+    outline: none;
+    border-color: #3aa4e8;
+    box-shadow: 0 0 0 3px rgba(58, 164, 232, 0.2);
+  }
+
+  /* Botão Principal */
+  .btn-submit {
+    width: 100%;
+    padding: 16px 40px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+  }
+
+  .btn-submit:hover { opacity: 0.9; }
+  .btn-submit:active { transform: scale(0.98); }
+
+  @media (max-width: 900px) {
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .main { padding: 30px 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+            </svg>
+          </div>
+          <h1>Classifica</h1>
+        </div>
+
+        <ul class="nav">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </li>
+          <li class="active">
+            <a href="../7CodigoSala/CodigoSala.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Sala de Aula
+            </a>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+            Meus Simulados
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Banco de Questões
+          </li>
+          
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Configurações
+          </li>
+        </ul>
+      </div>
+
+      <div class="user">
+        <div class="avatar">L</div>
+        <div class="info">
+          <b id="nomeUsuario"></b>
+          <span>Professor(a)</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="join-card">
+        <div class="icon-container">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3aa4e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+        </div>
+        
+        <h2>Entrar numa Sala</h2>
+        <p>Digite o código de 6 dígitos fornecido pelo seu professor para acessar as atividades.</p>
+
+        <div class="code-input-wrapper" id="codeGroup">
+          <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
+          <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
+          <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
+          <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
+          <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
+          <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
+        </div>
+
+        <button class="btn-submit" id="btnEntrar" >
+          Entrar na Sala
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+
+const idProfessor = localStorage.getItem("idProfessor");
+
+  console.log("ID:", idProfessor);
+
+  fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
+
+  .then(async resposta => {
+    if (!resposta.ok) {
+        const mensagem = await resposta.text();
+        throw new Error(mensagem);
+    }
+    return resposta.json();
+    })
+
+
+    async function obterCodigoProf() {
+    const inputs = document.querySelectorAll('.code-input-wrapper input');
+
+    let codigo = "";
+    inputs.forEach(input => {
+        codigo += input.value;
+    });
+
+    try {
+        const resposta = await fetch("http://localhost:3000/turmaProf", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ codigo })
+        });
+
+        const dados = await resposta.json();
+
+        if (dados.salaExistente) {
+            alert(`Bem-vindo à turma ${dados.nomeTurma}`);
+
+            // salvar informações se quiser usar em outras páginas
+            localStorage.setItem("idTurma", dados.idTurma);
+            localStorage.setItem("nomeTurma", dados.nomeTurma);
+            localStorage.setItem("idProfessor", dados.idProfessor);
+
+            window.location.href="../5ConfiguracoesProf/ConfiguracoesProf.html"
+        } else {
+            alert(dados.mensagem);
+        }
+
+    } catch (erro) {
+        console.error("Erro:", erro);
+        alert("Erro ao conectar ao servidor.");
+    }
+
+    return codigo;
+  }
+
+  document.getElementById("btnEntrar").addEventListener("click", obterCodigoProf);
+
+  </script>
+</body>
+</html>
