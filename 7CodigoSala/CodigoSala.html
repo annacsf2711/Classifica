@@ -3,14 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script type="module" src="CodigoSala.html" defer></script>
-<script type="module" src="../6ConfiguracoesAluno/ConfiguracoesAluno.html" defer></script>
-
-
 <title>Entrar na Sala - Classifica</title>
-<script type="module" src="CodigoSala.html" defer></script>
-<script type="module" src="../8SalaDeAulaAluno/SalaAulaAluno.html" defer></script>
-
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -234,7 +227,7 @@
       <div class="user">
         <div class="avatar">L</div>
         <div class="info">
-          <b id="nomeUsuario">Carregando...</b>
+          <b id="nomeUsuario"></b>
           <span>Estudante</span>
         </div>
       </div>
@@ -269,36 +262,38 @@
     </main>
   </div>
 
-  <script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Captura o botão do DOM
+      const btnEntrar = document.getElementById("btnEntrar");
 
-    const id = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
+      // 2. Adiciona o evento de clique
+      if (btnEntrar) {
+        btnEntrar.addEventListener("click", () => {
+          obterCodigoFormatado();
+        });
+      }
 
-    console.log("ID:", idEstudante);
+      // Outras verificações (como o fetch do estudante) continuam aqui...
+    });
 
-    fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
-    .then(async resposta => {
-    
-    if (!resposta.ok) {
-        const mensagem = await resposta.text();
-        throw new Error(mensagem);
-    }
-    return resposta.json();
-    })
-
-
+    // Função chamada pelo botão
     function obterCodigoFormatado() {
       const inputs = document.querySelectorAll('.code-input-wrapper input');
       let codigo = "";
-      inputs.forEach(input => { codigo += input.value; });
+      
+      inputs.forEach((input) => { 
+        codigo += input.value.trim(); 
+      });
 
       if (codigo === "111111") {
-          window.location.href = "../6ConfiguracoesAluno/ConfiguracoesAluno.html";
+        window.location.href = "../Sala_de_Aula_Aluno/Sala_de_Aula.html";
       } else {
-          alert("Código inválido!");
+        alert("Código inválido!");
       }
 
       return codigo;
-  }
+    }
   </script>
 </body>
 </html>

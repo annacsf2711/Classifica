@@ -18,27 +18,32 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
             body: JSON.stringify(dadosLoginAluno),
         });
 
-        const dados = await resposta.json(); // converte a resposta do servidor para objeto js
+        const dados = await resposta.json();
 
+        console.log("Resposta do servidor:", dados);
 
         if (dados && dados.usuarioExiste) {
-            localStorage.setItem("idEstudante", dados.id_estudante); // usa o nome retornado pelo servidor
-            console.log("Id aluno:", dados.id_estudante);
+            console.log("ID recebido:", dados.id_estudante);
+
+            localStorage.setItem("idEstudante", dados.id_estudante);
+
+            console.log("ID salvo:", localStorage.getItem("idEstudante"));
+
             window.location.href = "../Diagnostico/telainicialdiag.html";
         }
         if (dados.contaDesativada) {
             const reativar = confirm("Sua conta está desativada. Deseja reativá-la?");
 
             if (reativar) {
-                await fetch(`http://localhost:3000/reativarAluno/${dados.idEstudante}`, {
+                await fetch(`http://localhost:3000/reativarAluno/${dados.id_estudante}`, {
                     method: "PUT"
                 });
                 alert("Conta reativada com sucesso! Faça o login novamente.");
             }
 
         } else if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
-            localStorage.setItem("idEstudante", dados.idEstudante); // salva o id do aluno no navegador
-            console.log("Id aluno:", dados.idEstudante);
+            localStorage.setItem("idEstudante", dados.id_estudante); // salva o id do aluno no navegador
+            console.log("Id aluno:", dados.id_estudante);
             console.log("Vou redirecionar");
             window.location.href = "http://127.0.0.1:5500/TCC---Classifica/Diagnostico/telainicialdiag.html";        
         } else {

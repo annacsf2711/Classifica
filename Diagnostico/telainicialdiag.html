@@ -63,7 +63,7 @@
     <button class="btn" onclick="window.location.href='diagnostico.html'">
       Iniciar Diagnóstico
     </button>
-  </div>~
+  </div>
  <script>
 document.addEventListener('DOMContentLoaded', async () => {
     const idEstudante = localStorage.getItem('idEstudante');
@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
+        console.log("ID do estudante:", idEstudante);
         if (!response.ok) {
             const erro = await response.json();
             throw new Error(erro.erro || 'Erro ao verificar');
