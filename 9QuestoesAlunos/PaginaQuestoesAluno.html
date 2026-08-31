@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questões</title>
+    <style>
+            /* Configurações Gerais da Página */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    /* Cartão Principal da Questão */
+    #questionCard {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    /* Título e Progresso */
+    #questaoNumero {
+        color: #333;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    /* Container da Barra de Progresso */
+    #questionCard > div:nth-child(2) {
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    #barraProgresso {
+        transition: width 0.3s ease-in-out;
+    }
+
+    /* Enunciado */
+    #enunciadoBox {
+        font-size: 1.1rem;
+        color: #444;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    /* Container das Alternativas */
+    #alternativesContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+
+    /* Linha da Alternativa (Opção de Resposta) */
+    .alternative-row {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: #fafafa;
+    }
+
+    .alternative-row:hover {
+        border-color: #4CAF50;
+        background-color: #f0fdf4;
+    }
+
+    /* Alternativa Selecionada pelo Aluno */
+    .alternative-row.selected {
+        border-color: #4CAF50;
+        background-color: #e8f5e9;
+        font-weight: bold;
+    }
+
+    /* Emblema com a Letra (A, B, C, D) */
+    .alternative-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .alternative-row.selected .alternative-badge {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    /* Botão de Próxima Questão / Finalizar */
+    #btn-enviar {
+        width: 100%;
+        padding: 14px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    #btn-enviar:hover {
+        background-color: #45a049;
+    }
+    </style>
+</head>
+<body>
+
+    <!-- Indicador de carregamento -->
+    <div id="loading" style="display: none; text-align: center;">
+        <p>Carregando questões...</p>
+    </div>
+
+    <!-- Cartão principal da questão -->
+    <div id="questionCard">
+        
+        <!-- Número da questão (ex: Questão 1 de 10) -->
+        <h2 id="questaoNumero"></h2>
+
+        <!-- Barra de progresso visual -->
+        <div style="width: 100%; background-color: #e0e0e0; height: 10px; margin-bottom: 20px;">
+            <div id="barraProgresso" style="width: 0%; height: 100%; background-color: #4CAF50;"></div>
+        </div>
+
+        <!-- Caixa onde entra o enunciado da questão -->
+        <div id="enunciadoBox"></div>
+
+        <!-- Container onde as alternativas A, B, C, D serão desenhadas -->
+        <div id="alternativesContainer"></div>
+
+        <!-- Botão de ação (Próxima questão / Finalizar) -->
+        <button id="btn-enviar" onclick="proximaQuestao()">Próxima questão</button>
+
+    </div>
+
+    <!-- Importante: Chama o seu arquivo JS no final da página -->
+    <script src="QuestoesAlunos.js"></script>
+
+</body>
+</html>

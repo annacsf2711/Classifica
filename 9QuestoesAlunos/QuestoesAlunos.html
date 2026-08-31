@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script title="module" src="QuestoesAlunos.js"></script>
+  <title>Questões - Classifica</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #eef1f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1600px;
+      background: #f5f1e8;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      min-height: 90vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+      color: #fff;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .brand { text-align: center; margin-bottom: 40px; }
+    .brand .badge {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .brand h1 { font-size: 28px; font-weight: 700; }
+
+    .nav { list-style: none; }
+    .nav li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .nav li:hover { background: rgba(255,255,255,0.12); }
+    .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 30px;
+    }
+    .user .avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      color: #3aa4e8;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 20px;
+    }
+    .user .info { line-height: 1.3; }
+    .user .info b { display: block; font-size: 15px; }
+    .user .info span { font-size: 13px; opacity: 0.9; }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 60px 70px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-content {
+      margin-bottom: 30px;
+    }
+
+    .header-content h2 {
+      font-size: 28px;
+      color: #2c3e50;
+      margin-bottom: 6px;
+    }
+
+    .header-content p {
+      color: #7f8c8d;
+      font-size: 16px;
+    }
+
+    /* Grid de Disciplinas (Blocos Grandes) */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin-top: 10px;
+    }
+
+    .subject-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 35px 30px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+    }
+
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 8px;
+    }
+
+    /* Cores Temáticas para as bordas superiores */
+    .subject-card.math::before { background: linear-gradient(90deg, #ff7675, #d63031); }
+    .subject-card.port::before { background: linear-gradient(90deg, #74b9ff, #0984e3); }
+    .subject-card.nature::before { background: linear-gradient(90deg, #55efc4, #00b894); }
+    .subject-card.human::before { background: linear-gradient(90deg, #ffeaa7, #fdcb6e); }
+
+    .subject-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .subject-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .subject-card.math .subject-icon { background: #ffeae8; color: #d63031; }
+    .subject-card.port .subject-icon { background: #e8f4fe; color: #0984e3; }
+    .subject-card.nature .subject-icon { background: #e6faf5; color: #00b894; }
+    .subject-card.human .subject-icon { background: #fff8e6; color: #d68910; }
+
+    .subject-title {
+      font-size: 22px;
+      color: #2c3e50;
+      font-weight: 700;
+    }
+
+    .subject-desc {
+      font-size: 14px;
+      color: #7f8c8d;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .subject-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-practice {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .subject-card.math .btn-practice { background: #d63031; color: #fff; }
+    .subject-card.port .btn-practice { background: #0984e3; color: #fff; }
+    .subject-card.nature .btn-practice { background: #00b894; color: #fff; }
+    .subject-card.human .btn-practice { background: #f39c12; color: #fff; }
+
+    .btn-practice:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+            </svg>
+          </div>
+          <h1>Classifica</h1>
+        </div>
+
+        <ul class="nav">
+          <li>Dashboard</li>
+          <li>Sala de Aula</li>
+          <li class="active">Questões</li>
+          <li>Desempenho</li>
+          <li>
+            <a href="../6ConfiguracoesAluno/ConfiguracoesAluno.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+              Configurações
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="user">
+        <div class="avatar">L</div>
+        <div class="info">
+          <b id="nomeUsuario">Aluno</b>
+          <span>Estudante</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="header-content">
+        <h2>Praticar Questões</h2>
+        <p>Escolha uma área de conhecimento para começar a resolver exercícios.</p>
+      </div>
+
+      <div class="subjects-grid">
+        <div class="subject-card math">
+          <div>
+            <div class="subject-header">
+              <div class="subject-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
+              <div class="subject-title">Matemática</div>
+            </div>
+            <p class="subject-desc">Álgebra, Geometria, Estatística, Trigonometria e Resolução de Problemas.</p>
+          </div>
+          <div class="subject-footer">
+            <button class="btn-practice" onclick="iniciarQuestoes('matematica')">Acessar Questões</button>
+          </div>
+        </div>
+
+        <div class="subject-card port">
+          <div>
+            <div class="subject-header">
+              <div class="subject-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+              <div class="subject-title">Português</div>
+            </div>
+            <p class="subject-desc">Gramática, Interpretação de Texto, Literatura e Redação.</p>
+          </div>
+          <div class="subject-footer">
+            <button class="btn-practice" onclick="iniciarQuestoes('portugues')">Acessar Questões</button>
+          </div>
+        </div>
+
+        <div class="subject-card nature">
+          <div>
+            <div class="subject-header">
+              <div class="subject-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div class="subject-title">Ciências da Natureza</div>
+            </div>
+            <p class="subject-desc">Física, Química e Biologia com foco em conceitos e aplicações práticas.</p>
+          </div>
+          <div class="subject-footer">
+            <button class="btn-practice" onclick="iniciarQuestoes('natureza')">Acessar Questões</button>
+          </div>
+        </div>
+
+        <div class="subject-card human">
+          <div>
+            <div class="subject-header">
+              <div class="subject-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </div>
+              <div class="subject-title">Ciências Humanas</div>
+            </div>
+            <p class="subject-desc">História, Geografia, Filosofia e Sociologia.</p>
+          </div>
+          <div class="subject-footer">
+            <button class="btn-practice" onclick="iniciarQuestoes('humanas')">Acessar Questões</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    
+    function iniciarQuestoes(materia) {
+      window.location.href = `PaginaQuestoesAluno.html?materia=${materia}`;
+    }
+  </script>
+</body>
+</html>
