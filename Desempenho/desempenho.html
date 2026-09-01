@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desempenho - Classifica</title>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         * {
             margin: 0;
@@ -16,76 +16,163 @@
         }
 
         body {
-            background-color: #f4f7fc;
-            display: flex;
+            background: #eef1f5;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
+        /* ===== Container geral (mesmo padrão visual das demais telas do aluno) ===== */
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1600px;
+            background: #f5f1e8;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            min-height: 90vh;
+        }
+
+        /* ===== Sidebar (idêntica à das demais telas, para manter a navegação consistente) ===== */
         .sidebar {
-            width: 230px;
-            background: #ffffff;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            padding: 30px 20px;
+            width: 280px;
+            background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+            color: #fff;
+            padding: 40px 24px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            border-right: 1px solid #e9edf4;
+            justify-content: space-between;
+            flex-shrink: 0;
         }
 
-        .sidebar .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2d3b4e;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
+        .brand { text-align: center; margin-bottom: 40px; }
+        .brand .badge {
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center; justify-content: center;
+            margin-bottom: 12px;
         }
-        .sidebar .logo span {
-            color: #4a7cf7;
-        }
+        .brand h1 { font-size: 28px; font-weight: 700; }
 
-        .sidebar a {
-            text-decoration: none;
-            color: #5a6b7c;
-            font-size: 16px;
-            padding: 12px 16px;
+        .nav { list-style: none; }
+        .nav li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
             border-radius: 10px;
-            transition: 0.2s;
+            font-size: 17px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .nav li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+        .nav li:hover { background: rgba(255,255,255,0.12); }
+        .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+        .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+        .user {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 500;
+            padding: 14px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 30px;
         }
-        .sidebar a:hover {
-            background: #eef3fc;
-            color: #1f2a3a;
+        .user .avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            color: #3aa4e8;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 20px;
         }
-        .sidebar a.active {
-            background: #4a7cf7;
-            color: #fff;
-            box-shadow: 0 4px 10px rgba(74, 124, 247, 0.3);
-        }
-        .sidebar a i {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-        }
+        .user .info { line-height: 1.3; }
+        .user .info b { display: block; font-size: 15px; }
+        .user .info span { font-size: 13px; opacity: 0.9; }
 
+        /* ===== Área principal ===== */
         .main {
             flex: 1;
-            padding: 40px 50px;
-            max-width: calc(100% - 230px);
+            padding: 50px 60px;
+            overflow-y: auto;
         }
 
         .main h1 {
             font-size: 28px;
             color: #1f2a3a;
-            margin-bottom: 30px;
-            font-weight: 600;
+            margin-bottom: 25px;
+            font-weight: 700;
         }
 
+        .titulo-bar {
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+
+        /* ===== Cards de resumo (substituem XP e Sequência: aqui ficam os índices de Diagnóstico e Simulado) ===== */
+        .resumo-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .resumo-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #eef2f8;
+        }
+
+        .resumo-card .icone {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .resumo-card.diagnostico .icone { background: #e6f7f0; color: #3ec98a; }
+        .resumo-card.simulado .icone { background: #eaf1ff; color: #3aa4e8; }
+
+        .resumo-card .texto span {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7d90;
+            letter-spacing: 0.3px;
+        }
+        .resumo-card .texto strong {
+            font-size: 26px;
+            color: #1f2a3a;
+            font-weight: 700;
+        }
+
+        /* ===== Card geral (índice geral de desempenho) ===== */
         .card-geral {
             background: #ffffff;
             border-radius: 20px;
@@ -93,48 +180,54 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.04);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 40px;
             margin-bottom: 40px;
             border: 1px solid #eef2f8;
         }
 
-        .card-geral .info {
+        .card-geral .anel {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            flex-shrink: 0;
+        }
+        .card-geral .anel svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .card-geral .anel .valor-central {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        .card-geral .info h2 {
-            font-size: 18px;
-            font-weight: 500;
-            color: #6b7d90;
-            letter-spacing: 0.5px;
-        }
-        .card-geral .info .taxa {
-            font-size: 52px;
+        .card-geral .anel .valor-central .taxa {
+            font-size: 32px;
             font-weight: 700;
             color: #1f2a3a;
-            margin-top: 4px;
         }
-        .card-geral .info .taxa span {
-            font-size: 28px;
-            font-weight: 400;
-            color: #8a9aa8;
-        }
-        .card-geral .classificacao {
-            background: #e6f0ff;
-            color: #4a7cf7;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-size: 20px;
-            font-weight: 600;
+        .card-geral .anel .valor-central .classificacao {
+            font-size: 13px;
+            font-weight: 700;
+            color: #3ec98a;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
-        .card-geral .parabens {
-            margin-top: 8px;
-            font-size: 15px;
-            color: #5a6b7c;
+        .card-geral .info h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6b7d90;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .card-geral .info .parabens {
+            font-size: 17px;
+            color: #3d4d5e;
+            line-height: 1.5;
         }
 
+        /* ===== Grid de matérias/áreas ===== */
         .grid-areas {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -170,17 +263,9 @@
             color: #3d4d5e;
             border-bottom: 1px solid #f0f4fa;
         }
-        .card-area .item:last-child {
-            border-bottom: none;
-        }
-        .card-area .item .label {
-            font-weight: 400;
-            color: #6b7d90;
-        }
-        .card-area .item .valor {
-            font-weight: 600;
-            color: #1f2a3a;
-        }
+        .card-area .item:last-child { border-bottom: none; }
+        .card-area .item .label { font-weight: 400; color: #6b7d90; }
+        .card-area .item .valor { font-weight: 600; color: #1f2a3a; }
 
         .card-area .taxa-destaque {
             font-size: 28px;
@@ -202,67 +287,123 @@
             color: #4a7cf7;
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-                padding: 20px 10px;
-            }
-            .sidebar .logo {
-                font-size: 18px;
-                text-align: center;
-            }
-            .sidebar a span {
-                display: none;
-            }
-            .main {
-                padding: 20px;
-                max-width: 100%;
-            }
-            .card-geral {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            .grid-areas {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .main { padding: 30px; }
+            .resumo-cards { grid-template-columns: 1fr; }
+            .card-geral { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="logo">Classi<span>fica</span></div>
-        <a href="#"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
-        <a href="#"><i class="fas fa-users"></i> <span>Sala de Aula</span></a>
-        <a href="#"><i class="fas fa-question-circle"></i> <span>Questões</span></a>
-        <a href="#" class="active"><i class="fas fa-chart-line"></i> <span>Desempenho</span></a>
-        <a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a>
-    </aside>
+    <div class="container">
+        <!-- ===== Sidebar (mesma estrutura das demais telas do aluno, com navegação funcional) ===== -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="badge">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                            <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+                        </svg>
+                    </div>
+                    <h1>Classifica</h1>
+                </div>
 
-    <main class="main">
-        <h1>Desempenho</h1>
+                <ul class="nav">
+                    <li>
+                        <a href="../7CodigoSala/CodigoSala.html">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../Sala_de_Aula_Aluno/Sala_de_Aula.html">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            Sala de Aula
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../Diagnostico/diagnostico.html">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+                            Questões
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../Desempenho/desempenho.html">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            Desempenho
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../6ConfiguracoesAluno/ConfiguracoesAluno.html">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            Configurações
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-        <div class="card-geral" id="cardGeral">
-            <div class="info">
-                <h2>ÍNDICE GERAL DE DESEMPENHO</h2>
-                <div class="taxa" id="taxaGeral">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        Carregando...
+            <div class="user">
+                <div class="avatar" id="avatarUsuario">L</div>
+                <div class="info">
+                    <b id="nomeUsuario">Carregando...</b>
+                    <span>Estudante</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== Conteúdo principal ===== -->
+        <main class="main">
+            <h1>DESEMPENHO</h1>
+            <div class="titulo-bar"></div>
+
+            <!-- ===== Cards de resumo: no lugar de XP total e sequência de dias,
+                 aqui ficam o índice de acerto da avaliação diagnóstica e o índice do simulado ===== -->
+            <div class="resumo-cards">
+                <div class="resumo-card diagnostico">
+                    <div class="icone"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="texto">
+                        <span>ÍNDICE DA AVALIAÇÃO DIAGNÓSTICA</span>
+                        <strong id="taxaDiagnostico">--%</strong>
                     </div>
                 </div>
-                <div class="parabens" id="mensagemParabens">Aguarde...</div>
+                <div class="resumo-card simulado">
+                    <div class="icone"><i class="fas fa-file-signature"></i></div>
+                    <div class="texto">
+                        <span>ÍNDICE DO SIMULADO</span>
+                        <strong id="taxaSimulado">--%</strong>
+                    </div>
+                </div>
             </div>
-            <div class="classificacao" id="classificacaoGeral">--</div>
-        </div>
 
-        <div class="grid-areas" id="gridAreas">
-            <div class="loading" style="grid-column: 1/-1;">
-                <i class="fas fa-spinner fa-spin"></i>
-                Carregando dados...
+            <!-- ===== Índice geral de desempenho ===== -->
+            <div class="card-geral" id="cardGeral">
+                <div class="anel">
+                    <svg viewBox="0 0 160 160">
+                        <circle cx="80" cy="80" r="70" fill="none" stroke="#eef2f8" stroke-width="14"/>
+                        <circle id="circuloProgresso" cx="80" cy="80" r="70" fill="none" stroke="#3ec98a" stroke-width="14"
+                                stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440"/>
+                    </svg>
+                    <div class="valor-central">
+                        <div class="taxa" id="taxaGeral">--%</div>
+                        <div class="classificacao" id="classificacaoGeral">--</div>
+                    </div>
+                </div>
+                <div class="info">
+                    <h2>Índice Geral de Desempenho</h2>
+                    <div class="parabens" id="mensagemParabens">Carregando seus dados...</div>
+                </div>
             </div>
-        </div>
-    </main>
+
+            <div class="grid-areas" id="gridAreas">
+                <div class="loading" style="grid-column: 1/-1;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Carregando dados...
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
         // ===== CONFIGURAÇÃO =====
@@ -270,22 +411,33 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página de desempenho carregada');
-            
-            // ===== CORREÇÃO: Usar a mesma chave do login =====
-            // O login salva como "idEstudante" (com E maiúsculo)
+
+            // O login salva o id do estudante logado como "idEstudante" (com E maiúsculo)
             const idEstudante = localStorage.getItem('idEstudante');
-            
+
             console.log('ID do Estudante (do localStorage):', idEstudante);
-            
-            // Mostra todos os dados do localStorage para debug
-            console.log('Todos os dados do localStorage:', localStorage);
 
             if (!idEstudante || idEstudante === 'undefined' || idEstudante === 'null') {
                 mostrarErro('Faça login para ver seu desempenho.');
                 return;
             }
 
-            // Faz a requisição para o backend
+            // Busca o nome do aluno logado para exibir na sidebar
+            fetch(API_URL + '/estudante/' + idEstudante)
+                .then(function(res) { return res.ok ? res.json() : null; })
+                .then(function(dados) {
+                    if (dados && dados.nome) {
+                        document.getElementById('nomeUsuario').textContent = dados.nome;
+                        document.getElementById('avatarUsuario').textContent = dados.nome.charAt(0).toUpperCase();
+                    } else {
+                        document.getElementById('nomeUsuario').textContent = 'Aluno';
+                    }
+                })
+                .catch(function() {
+                    document.getElementById('nomeUsuario').textContent = 'Aluno';
+                });
+
+            // Faz a requisição do desempenho, calculado com base no id do aluno logado
             const url = API_URL + '/api/desempenho/' + idEstudante;
             console.log('URL da requisição:', url);
 
@@ -309,29 +461,58 @@
 
         function preencherDados(data) {
             var geral = data.geral;
-            var areas = data.areas;
-            
-            document.getElementById('taxaGeral').innerHTML = geral.taxa + '<span>%</span>';
+            var diagnostico = data.diagnostico;
+            var simulado = data.simulado;
+
+            // ===== Preenche o índice geral =====
+            document.getElementById('taxaGeral').textContent = geral.taxa + '%';
             document.getElementById('classificacaoGeral').textContent = geral.classificacao;
-            
+            atualizarAnelProgresso(geral.taxa);
+
             var mensagem = 'Que tal revisar os conteúdos? Você pode melhorar!';
             if (geral.taxa >= 80) {
                 mensagem = 'Parabéns! Você está acima da média e mantendo seu desempenho.';
             } else if (geral.taxa >= 60) {
                 mensagem = 'Bom desempenho! Continue praticando para melhorar.';
+            } else if (geral.taxa === 0 && geral.classificacao === 'Sem dados') {
+                mensagem = 'Você ainda não respondeu nenhuma questão. Faça a avaliação diagnóstica para ver seu desempenho.';
             }
             document.getElementById('mensagemParabens').textContent = mensagem;
-            
+
+            // ===== Preenche os dois cards de resumo (diagnóstico e simulado) =====
+            document.getElementById('taxaDiagnostico').textContent =
+                diagnostico.classificacao === 'Sem dados' ? '--%' : diagnostico.taxa + '%';
+
+            document.getElementById('taxaSimulado').textContent =
+                simulado.classificacao === 'Sem dados' ? '--%' : simulado.taxa + '%';
+
+            // ===== Monta o grid de matérias/áreas =====
             var grid = document.getElementById('gridAreas');
             grid.innerHTML = '';
-            
-            if (!areas || areas.length === 0) {
-                grid.innerHTML = 
+
+            var areas = [];
+            if (diagnostico.respondidas > 0) {
+                areas.push({
+                    nome: 'Avaliação Diagnóstica',
+                    taxa: diagnostico.taxa,
+                    respondidas: diagnostico.respondidas
+                });
+            }
+            if (simulado.respondidas > 0) {
+                areas.push({
+                    nome: 'Simulado',
+                    taxa: simulado.taxa,
+                    respondidas: simulado.respondidas
+                });
+            }
+
+            if (areas.length === 0) {
+                grid.innerHTML =
                     '<p style="grid-column: 1/-1; color: #6b7d90; text-align: center; padding: 40px;">' +
-                    'Nenhuma questão respondida no diagnóstico. Faça o diagnóstico para ver seu desempenho.</p>';
+                    'Nenhuma questão respondida ainda. Faça o diagnóstico para ver seu desempenho.</p>';
                 return;
             }
-            
+
             areas.forEach(function(area) {
                 var card = document.createElement('div');
                 card.className = 'card-area';
@@ -351,11 +532,21 @@
             });
         }
 
+        // Atualiza o preenchimento do anel de progresso (círculo) de acordo com a taxa geral
+        function atualizarAnelProgresso(taxa) {
+            var circulo = document.getElementById('circuloProgresso');
+            var perimetro = 440; // 2 * PI * raio (raio = 70)
+            var offset = perimetro - (perimetro * taxa / 100);
+            circulo.style.strokeDashoffset = offset;
+        }
+
         function mostrarErro(mensagem) {
-            document.getElementById('taxaGeral').innerHTML = '--<span>%</span>';
+            document.getElementById('taxaGeral').textContent = '--%';
             document.getElementById('mensagemParabens').textContent = mensagem;
             document.getElementById('classificacaoGeral').textContent = 'Erro';
-            document.getElementById('gridAreas').innerHTML = 
+            document.getElementById('taxaDiagnostico').textContent = '--%';
+            document.getElementById('taxaSimulado').textContent = '--%';
+            document.getElementById('gridAreas').innerHTML =
                 '<p style="grid-column: 1/-1; color: #d32f2f; text-align: center; padding: 40px;">' +
                 mensagem + '</p>';
         }

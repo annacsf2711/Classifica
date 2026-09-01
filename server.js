@@ -1058,7 +1058,7 @@ app.get('/api/desempenho/:id_estudante', async (req, res) => {
   const { id_estudante } = req.params;
 
   try {
-    // Busca todas as tentativas do diagnóstico do aluno
+    // Busca todas as tentativas do diagnóstico do aluno (usa o id do estudante logado)
     const resultado = await pool.query(
       `SELECT correto, id_exercicio
        FROM classifica.tentativa_diagnostico
@@ -1066,45 +1066,39 @@ app.get('/api/desempenho/:id_estudante', async (req, res) => {
       [id_estudante]
     );
 
-    if (resultado.rows.length === 0) {
-      return res.json({
-        geral: { taxa: 0, classificacao: "Sem dados" },
-        areas: []
-      });
+    // ===== Calcula o índice da avaliação diagnóstica =====
+    let diagnostico = { taxa: 0, respondidas: 0, classificacao: "Sem dados" };
+
+    if (resultado.rows.length > 0) {
+      const tentativas = resultado.rows;
+      const totalGeral = tentativas.length;
+      const acertosGeral = tentativas.filter(t => t.correto === true).length;
+      const taxaGeral = Math.round((acertosGeral / totalGeral) * 100);
+
+      let classificacao = 'Ruim';
+      if (taxaGeral >= 80) classificacao = 'Excelente';
+      else if (taxaGeral >= 60) classificacao = 'Bom';
+      else if (taxaGeral >= 40) classificacao = 'Regular';
+
+      diagnostico = { taxa: taxaGeral, respondidas: totalGeral, classificacao };
     }
 
-    const tentativas = resultado.rows;
-    const totalGeral = tentativas.length;
-    const acertosGeral = tentativas.filter(t => t.correto === true).length;
-    const taxaGeral = Math.round((acertosGeral / totalGeral) * 100);
+    // ===== Calcula o índice do simulado =====
+    // A funcionalidade de simulado (com correção de respostas) ainda não foi implementada,
+    // ou seja, ainda não existe uma tabela de tentativas de simulado no banco.
+    // Por enquanto retornamos "sem dados" para não travar a tela de desempenho.
+    // Quando a tabela existir (ex: classifica.tentativa_simulado), basta repetir aqui
+    // a mesma lógica usada acima para o diagnóstico, filtrando por id_estudante.
+    let simulado = { taxa: 0, respondidas: 0, classificacao: "Sem dados" };
 
-    let classificacao = 'Ruim';
-    if (taxaGeral >= 80) classificacao = 'Excelente';
-    else if (taxaGeral >= 60) classificacao = 'Bom';
-    else if (taxaGeral >= 40) classificacao = 'Regular';
-
-    // Agrupa por exercício (ou pode agrupar por uma área fixa)
-    const areasMap = new Map();
-    // Se quiser agrupar tudo em uma única área "Geral", faça:
-    areasMap.set('Geral', { total: totalGeral, acertos: acertosGeral });
-    // Ou, se quiser agrupar por id_exercicio (não recomendado), mas aqui vai um exemplo:
-    // tentativas.forEach(t => {
-    //   const key = 'Exercício ' + t.id_exercicio;
-    //   if (!areasMap.has(key)) areasMap.set(key, { total: 0, acertos: 0 });
-    //   const dados = areasMap.get(key);
-    //   dados.total += 1;
-    //   if (t.correto) dados.acertos += 1;
-    // });
-
-    const areas = Array.from(areasMap.entries()).map(([nome, dados]) => ({
-      nome,
-      taxa: Math.round((dados.acertos / dados.total) * 100),
-      respondidas: dados.total
-    }));
+    // Mantém a estrutura "geral" (compatível com o que a tela já usava) e adiciona
+    // os dois índices pedidos: diagnostico e simulado.
+    const geral = diagnostico; // índice geral = índice do diagnóstico (única avaliação implementada até então)
 
     res.json({
-      geral: { taxa: taxaGeral, classificacao },
-      areas
+      geral,
+      diagnostico,
+      simulado
     });
 
   } catch (erro) {
