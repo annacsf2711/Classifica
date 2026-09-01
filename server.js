@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -1123,5 +1123,36 @@ app.get('/api/questoes/:materia', async (req, res) => {
         res.status(500).send('Erro interno do servidor');
     }
 });
-
 app.use(express.static('9QuestoesAlunos'));
+
+// ===================== SALVAR RESPOSTAS DAS QUESTÕES =====================
+app.post('/api/respostasQuestoes', async (req, res) => {
+    try { const { id_estudante, respostas } = req.body;
+      if (!id_estudante || !respostas || !Array.isArray(respostas)) {
+          return res.status(400).send("Dados inválidos");
+      }
+
+      for (const item of respostas) {
+        const questao = await pool.query(
+          `SELECT alternativa_correta FROM classifica.exercicio
+            WHERE id_exercicio = $1`,
+            [item.id_exercicio]
+        );
+        if (questao.rows.length === 0) continue;
+          const correta = questao.rows[0].alternativa_correta;
+          const correto =
+                item.resposta &&
+                item.resposta.toLowerCase() === correta.toLowerCase();
+          await pool.query(
+                `INSERT INTO classifica.tentativa
+                (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa)
+                VALUES ($1,$2,$3, $4,NOW()) `,
+                [id_estudante, item.id_exercicio,item.resposta,correto]
+            );
+        }
+        res.status(200).send("Respostas salvas com sucesso!");
+    } catch (erro) {
+      console.error("Erro ao salvar respostas:", erro);
+      res.status(500).send("Erro ao salvar respostas no banco");
+    }
+});

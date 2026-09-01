@@ -1,5 +1,4 @@
 import { SenhaVisivel } from "../DataCepCpf.js";
-
 // ===================== Login =====================
 document.getElementById("formLoginAluno").addEventListener("submit", async (evento) => {
     evento.preventDefault();

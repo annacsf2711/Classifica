@@ -1,6 +1,6 @@
 import { ColocarBarra,TransformarDataBr, conferirDataBR} from "../DataCepCpf.js";
 // ================================ Preencher o campo da Configuração =========================================
-const idEstudante = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
+const idEstudante = localStorage.getItem("idEstudante"); 
 
 console.log("ID:", idEstudante);
 
