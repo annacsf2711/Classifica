@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -1105,4 +1105,91 @@ app.get('/api/desempenho/:id_estudante', async (req, res) => {
     console.error('Erro ao calcular desempenho:', erro);
     res.status(500).json({ erro: 'Erro ao buscar desempenho' });
   }
+});
+// ===================== SALVAR RESPOSTAS DO SIMULADO ====================
+app.post('/api/simulado/respostas', async (req, res) => {
+    try {
+        const { id_estudante, id_simulado, respostas } = req.body;
+        // respostas é um array de objetos: [{ id_exercicio, resposta }]
+
+        if (!id_estudante || !id_simulado || !respostas || !Array.isArray(respostas)) {
+            return res.status(400).send("Dados inválidos");
+        }
+
+        for (const item of respostas) {
+            // Busca a alternativa correta do exercício
+            const questao = await pool.query(
+                `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
+                [item.id_exercicio]
+            );
+            if (questao.rows.length === 0) continue;
+
+            const correta = questao.rows[0].alternativa_correta;
+            const correto = item.resposta
+                ? item.resposta.toLowerCase() === correta.toLowerCase()
+                : false;
+
+            await pool.query(
+                `INSERT INTO classifica.tentativa
+                    (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa, id_simulado)
+                 VALUES ($1, $2, $3, $4, NOW(), $5)`,
+                [id_estudante, item.id_exercicio, item.resposta, correto, id_simulado]
+            );
+        }
+
+        res.status(200).send("Respostas do simulado salvas com sucesso!");
+    } catch (erro) {
+        console.error("Erro ao salvar respostas do simulado:", erro);
+        res.status(500).send("Erro ao salvar respostas do simulado no banco");
+    }
+});
+
+// ===================== VERIFICAR SE O ALUNO JÁ FEZ ESSE SIMULADO ====================
+app.get('/api/simulado/status/:idEstudante/:idSimulado', async (req, res) => {
+    const { idEstudante, idSimulado } = req.params;
+    try {
+        const resultado = await pool.query(
+            `SELECT COUNT(*) AS total
+             FROM classifica.tentativa
+             WHERE id_estudante = $1 AND id_simulado = $2`,
+            [idEstudante, idSimulado]
+        );
+
+        const jaFez = Number(resultado.rows[0].total) > 0;
+        res.json({ jaFez });
+    } catch (erro) {
+        console.error('Erro ao verificar status do simulado:', erro);
+        res.status(500).send("Erro ao verificar status do simulado");
+    }
+});
+
+// ===================== BUSCAR RESPOSTAS QUE O ALUNO JÁ DEU NESSE SIMULADO ====================
+app.get('/api/simulado/minhasRespostas/:idEstudante/:idSimulado', async (req, res) => {
+    const { idEstudante, idSimulado } = req.params;
+    try {
+        const resultado = await pool.query(
+            `SELECT
+                e.id_exercicio AS id,
+                e.enunciado,
+                e.alternativa_a,
+                e.alternativa_b,
+                e.alternativa_c,
+                e.alternativa_d,
+                e.alternativa_correta,
+                t.resposta_marcada,
+                t.correto
+             FROM classifica.tentativa t
+             JOIN classifica.exercicio e ON e.id_exercicio = t.id_exercicio
+             LEFT JOIN classifica.simulado_exercicios se
+                ON se.exercicio_id = e.id_exercicio AND se.simulado_id = t.id_simulado
+             WHERE t.id_estudante = $1 AND t.id_simulado = $2
+             ORDER BY se.ordem NULLS LAST, t.id_tentativa`,
+            [idEstudante, idSimulado]
+        );
+
+        res.json(resultado.rows);
+    } catch (erro) {
+        console.error('Erro ao buscar respostas do aluno no simulado:', erro);
+        res.status(500).send("Erro ao buscar respostas do aluno no simulado");
+    }
 });

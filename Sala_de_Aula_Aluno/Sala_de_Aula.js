@@ -148,7 +148,7 @@ async function abrirSimulados(disciplina) {
 
     lista.querySelectorAll('.simulado-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        window.location.href = `../SimuladoAluno/SimuladoAluno.html?idSimulado=${btn.dataset.id}`;
+        window.location.href = `../Simulado/Simulado.html?idSimulado=${btn.dataset.id}`;
       });
     });
 
