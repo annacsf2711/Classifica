@@ -304,16 +304,16 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
             Dashboard
           </li>
-          <li>
+          <li class="active">
             <a href="../Sala_de_Aula_Aluno/Sala_de_Aula.html"
               style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               Sala de Aula
             </a>
           </li>
-          <li class="active">
+          <li >
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
-            Simulados
+            Questões
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -391,7 +391,7 @@ const API_URL = `${BASE_URL}/api`;
 
 function obterIdSimuladoDaURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+    return params.get('idSimulado');
 }
 
 // ===================== Carregar dados do aluno =====================
