@@ -1,6 +1,6 @@
-import { ColocarBarra,TransformarDataBr, conferirDataBR } from "../DataCepCpf.js";
+import { ColocarBarra,TransformarDataBr, conferirDataBR} from "../DataCepCpf.js";
 // ================================ Preencher o campo da Configuração =========================================
-const idEstudante = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
+const idEstudante = localStorage.getItem("idEstudante"); 
 
 console.log("ID:", idEstudante);
 
@@ -150,4 +150,24 @@ document.getElementById("deletar").addEventListener("click", async () => {
     }
 });
 
+// ===================================== Abrir Sala De Aula ===================================================
+window.abrirSalaDeAula = async function(event) {
+    event.preventDefault();
+    const idEstudante = localStorage.getItem("idEstudante");
+    try {
+        const idTurma = localStorage.getItem("idTurma");
+        const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+        const dados = await resposta.json();
 
+        if (idTurma && idTurma !== "null") {
+            localStorage.setItem("idTurma", dados.id_turma);
+            window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
+        } else {
+            window.location.href = "../7CodigoSala/CodigoSalaAluno.html";
+        }
+
+    } catch (erro) {
+        console.error(erro);
+        alert("Erro ao verificar turma.");
+    }
+}

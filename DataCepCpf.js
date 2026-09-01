@@ -1,4 +1,3 @@
-
 // ===================== Colocar Barra======================================================
 export function ColocarBarra(data) {
     let v = data.target.value.replace(/\D/g, '').slice(0, 8);
@@ -229,3 +228,4 @@ export function validarCPF(cpf) {
     // Se passou por todas as verificações, o CPF é válido
     return true;
 }
+

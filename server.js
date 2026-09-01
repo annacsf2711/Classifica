@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -52,7 +52,7 @@ app.post('/loginAluno', async (req, res) => {
   try {
     // Executa a busca no banco de dados para ver se o usuário existe
     const resultado = await pool.query(  
-      `SELECT id_estudante, ativo FROM classifica.estudante WHERE email = $1 AND senha = $2`,
+      `SELECT id_estudante, ativo, id_turma FROM classifica.estudante WHERE email = $1 AND senha = $2`,
       [email, senha]
     ); 
     console.log("Resultado do banco:", resultado)
@@ -70,16 +70,16 @@ app.post('/loginAluno', async (req, res) => {
           usuarioExiste: true,
           contaDesativada: true,
           idEstudante: resultado.rows[0].id_estudante,
+          id_turma: resultado.rows[0].id_turma,
           mensagem: "Conta desativada"
         });
       }
 
-      console.log("Login normal");
-
       return res.json({  // envia um objeto com + informações
         usuarioExiste: true,
         mensagem: "Login realizado com sucesso!",
-        id_estudante: resultado.rows[0].id_estudante   // envia o id do aluno para o LoginAluno
+        id_estudante: resultado.rows[0].id_estudante,   // envia o id do aluno para o LoginAluno
+        id_turma: resultado.rows[0].id_turma
       });
     }
     else { 
@@ -566,7 +566,6 @@ app.get('/buscarBanco/:bancoId', async (req, res) => {
     );
   }
 });
-// ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
 // ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
 app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
@@ -1191,5 +1190,108 @@ app.get('/api/simulado/minhasRespostas/:idEstudante/:idSimulado', async (req, re
     } catch (erro) {
         console.error('Erro ao buscar respostas do aluno no simulado:', erro);
         res.status(500).send("Erro ao buscar respostas do aluno no simulado");
+    }
+});
+
+// ===================== Código Turma Aluno =====================
+app.post('/turmaEstudante', async (req, res) => {
+  const { codigo, idEstudante } = req.body;
+
+  try {
+    const turma = await pool.query(
+      `SELECT idturma, nome FROM classifica.turma
+       WHERE codigo = $1`,
+      [codigo]
+    );
+
+    if (turma.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: "Turma não encontrada"
+      });
+    }
+
+    const idTurma = turma.rows[0].idturma;
+
+    await pool.query(
+      `UPDATE classifica.estudante SET id_turma = $1
+       WHERE id_estudante = $2`,
+      [idTurma, idEstudante]
+    );
+
+    res.json({
+      salaExistente: true,
+      mensagem: "Aluno entrou na turma",
+      idTurma: idTurma,
+      nomeTurma: turma.rows[0].nome
+    });
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao entrar na turma");
+  }
+});
+
+// ===================== QUESTÕES POR MATÉRIA =====================
+app.get('/api/questoes/:materia', async (req, res) => {
+    const { materia } = req.params;
+
+    try {
+        const mapaAreas = {
+            'matematica': 'Matemática',
+            'portugues': 'Português',
+            'natureza': 'Ciências da Natureza',
+            'humanas': 'Ciências Humanas'
+        };
+
+        const nomeArea = mapaAreas[materia] || materia;
+
+        // Query corrigida usando o schema 'classifica' e as colunas reais do seu banco
+        const query = `
+            SELECT e.* 
+            FROM classifica.exercicio e
+            INNER JOIN classifica.area_conhecimento a ON e.id_area = a.id_area
+            WHERE LOWER(a.nome_area) LIKE LOWER($1)
+            LIMIT 15
+        `;
+
+        const { rows } = await pool.query(query, [`%${nomeArea}%`]);
+        res.json(rows);
+    } catch (error) {
+        console.error('Erro ao buscar questões por área:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+app.use(express.static('9QuestoesAlunos'));
+
+// ===================== SALVAR RESPOSTAS DAS QUESTÕES =====================
+app.post('/api/respostasQuestoes', async (req, res) => {
+    try { const { id_estudante, respostas } = req.body;
+      if (!id_estudante || !respostas || !Array.isArray(respostas)) {
+          return res.status(400).send("Dados inválidos");
+      }
+
+      for (const item of respostas) {
+        const questao = await pool.query(
+          `SELECT alternativa_correta FROM classifica.exercicio
+            WHERE id_exercicio = $1`,
+            [item.id_exercicio]
+        );
+        if (questao.rows.length === 0) continue;
+          const correta = questao.rows[0].alternativa_correta;
+          const correto =
+                item.resposta &&
+                item.resposta.toLowerCase() === correta.toLowerCase();
+          await pool.query(
+                `INSERT INTO classifica.tentativa
+                (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa)
+                VALUES ($1,$2,$3, $4,NOW()) `,
+                [id_estudante, item.id_exercicio,item.resposta,correto]
+            );
+        }
+        res.status(200).send("Respostas salvas com sucesso!");
+    } catch (erro) {
+      console.error("Erro ao salvar respostas:", erro);
+      res.status(500).send("Erro ao salvar respostas no banco");
     }
 });

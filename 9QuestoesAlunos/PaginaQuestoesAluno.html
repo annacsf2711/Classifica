@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="module" src="QuestoesAlunos.js"></script>
+
+<title>Questões</title>
+    <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Configurações Gerais da Página */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #eef1f5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .container {
+        display: flex;
+        width: 100%;
+        max-width: 1600px;
+        background: #f5f1e8;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        min-height: 90vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+        color: #fff;
+        padding: 40px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .brand { text-align: center; margin-bottom: 40px; }
+    .brand .badge {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        margin-bottom: 12px;
+    }
+    .brand h1 { font-size: 28px; font-weight: 700; }
+
+    .nav { list-style: none; }
+    .nav li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        font-size: 17px;
+        cursor: pointer;
+        transition: background .2s;
+    }
+    .nav li:hover { background: rgba(255,255,255,0.12); }
+    .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+    .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+    .user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 30px;
+    }
+    .user .avatar {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: #fff;
+        color: #3aa4e8;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 20px;
+    }
+    .user .info { line-height: 1.3; }
+    .user .info b { display: block; font-size: 15px; }
+    .user .info span { font-size: 13px; opacity: 0.9; }
+
+    .main {
+        flex: 1;
+        padding: 60px 70px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        border: none;
+        border-radius: 50%;
+        background-color: #e74c3c;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .close-btn:hover {
+        background-color: #c0392b;
+}
+
+    /* Cartão Principal da Questão */
+    #questionCard {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        padding: 40px 50px;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    @media (max-width: 900px) {
+        .container { flex-direction: column; }
+        .sidebar { width: 100%; }
+        .main { padding: 30px; }
+        #questionCard { padding: 25px; }
+    }
+
+    /* Título e Progresso */
+    #questaoNumero {
+        color: #333;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    /* Container da Barra de Progresso */
+    #questionCard > div:nth-child(2) {
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    #barraProgresso {
+        transition: width 0.3s ease-in-out;
+    }
+
+    /* Enunciado */
+    #enunciadoBox {
+        font-size: 1.1rem;
+        color: #444;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    /* Container das Alternativas */
+    #alternativesContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+
+    /* Linha da Alternativa (Opção de Resposta) */
+    .alternative-row {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: #fafafa;
+    }
+
+    .alternative-row:hover {
+        border-color: #4CAF50;
+        background-color: #f0fdf4;
+    }
+
+    /* Alternativa Selecionada pelo Aluno */
+    .alternative-row.selected {
+        border-color: #4CAF50;
+        background-color: #e8f5e9;
+        font-weight: bold;
+    }
+
+    /* Emblema com a Letra (A, B, C, D) */
+    .alternative-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .alternative-row.selected .alternative-badge {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    /* Botão de Próxima Questão / Finalizar */
+    #btn-enviar {
+        width: 100%;
+        padding: 14px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    #btn-enviar:hover {
+        background-color: #45a049;
+    }
+    </style>
+</head>
+<body>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/>
+            </svg>
+          </div>
+          <h1>Classifica</h1>
+        </div>
+
+        <ul class="nav">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Sala de Aula
+          </li>
+          <li class="active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+            Questões
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Desempenho
+          </li>
+          <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Configurações
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="user">
+        <div class="avatar">L</div>
+        <div class="info">
+          <b id="nomeUsuario"></b>
+          <span>Estudante</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <button class="close-btn" onclick="fecharPagina()">×</button>
+      <div id="loading" style="display: none; text-align: center;">
+          <p>Carregando questões...</p>
+      </div>
+
+      <!-- Cartão principal da questão -->
+      <div id="questionCard">
+          
+          <!-- Número da questão (ex: Questão 1 de 10) -->
+          <h2 id="questaoNumero"></h2>
+
+          <!-- Barra de progresso visual -->
+          <div style="width: 100%; background-color: #e0e0e0; height: 10px; margin-bottom: 20px;">
+              <div id="barraProgresso" style="width: 0%; height: 100%; background-color: #4CAF50;"></div>
+          </div>
+
+          <!-- Caixa onde entra o enunciado da questão -->
+          <div id="enunciadoBox"></div>
+
+          <!-- Container onde as alternativas A, B, C, D serão desenhadas -->
+          <div id="alternativesContainer"></div>
+
+          <!-- Botão de ação (Próxima questão / Finalizar) -->
+          <button id="btn-enviar" onclick="proximaQuestao()">Próxima questão</button>
+
+      </div>
+    </main>
+  </div>
+    <script>
+    // ===================================== Pegar ID ===================================================
+        const idEstudante = localStorage.getItem("idEstudante");
+
+        console.log("ID:", idEstudante);
+
+        fetch(`http://localhost:3000/estudante/${idEstudante}`)
+        .then(async resposta => {
+
+            if (!resposta.ok) {
+                const mensagem = await resposta.text();
+                throw new Error(mensagem);
+            }
+
+            return resposta.json();
+        })
+        .then(estudante => {
+
+            console.log("Estudante:", estudante);
+
+            document.getElementById("nomeUsuario").textContent =
+                estudante.nome || estudante.nome_estudante;
+
+        })
+        .catch(error => {
+            console.error("Erro:", error);
+        });
+    // ===================================== Fechar Página (X)===================================================
+        function fecharPagina() {
+            const confirmar = confirm(
+                "Deseja realmente sair?\n\nA sua resposta atual não será salva."
+            );
+            if (!confirmar) {
+                return;
+            }
+            window.location.href = "QuestoesAlunos.html";
+        }
+</script>
+</body>
+</html>

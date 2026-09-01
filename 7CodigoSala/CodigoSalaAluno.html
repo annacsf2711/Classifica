@@ -261,39 +261,61 @@
       </div>
     </main>
   </div>
+<script>
+  const idEstudante = localStorage.getItem("idEstudante");
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // 1. Captura o botão do DOM
-      const btnEntrar = document.getElementById("btnEntrar");
+  console.log("ID:", idEstudante);
 
-      // 2. Adiciona o evento de clique
-      if (btnEntrar) {
-        btnEntrar.addEventListener("click", () => {
-          obterCodigoFormatado();
-        });
-      }
+  fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
 
-      // Outras verificações (como o fetch do estudante) continuam aqui...
+  .then(async resposta => {
+    if (!resposta.ok) {
+        const mensagem = await resposta.text();
+        throw new Error(mensagem);
+    }
+    return resposta.json();
+    })
+
+
+    async function obterCodigoAluno() {
+    const inputs = document.querySelectorAll('.code-input-wrapper input');
+
+    let codigo = "";
+    inputs.forEach(input => {
+        codigo += input.value;
     });
 
-    // Função chamada pelo botão
-    function obterCodigoFormatado() {
-      const inputs = document.querySelectorAll('.code-input-wrapper input');
-      let codigo = "";
-      
-      inputs.forEach((input) => { 
-        codigo += input.value.trim(); 
-      });
+    try {
+        const resposta = await fetch("http://localhost:3000/turmaEstudante", { // 
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ codigo, idEstudante })
+        });
 
-      if (codigo === "111111") {
-        window.location.href = "../Sala_de_Aula_Aluno/Sala_de_Aula.html";
-      } else {
-        alert("Código inválido!");
-      }
+        const dados = await resposta.json();
 
-      return codigo;
+        if (dados.salaExistente) {
+            alert(`Bem-vindo à turma ${dados.nomeTurma}`);
+
+            // salvar informações se quiser usar em outras páginas
+            localStorage.setItem("idTurma", dados.idTurma);
+            localStorage.setItem("nomeTurma", dados.nomeTurma);
+
+            window.location.href="../Sala_de_Aula_Aluno/Sala_De_Aula.html"
+        } else {
+            alert(dados.mensagem);
+        }
+
+    } catch (erro) {
+        console.error("Erro:", erro);
+        alert("Erro ao conectar ao servidor.");
     }
+
+    return codigo;
+  }
+
+  document.getElementById("btnEntrar").addEventListener("click", obterCodigoAluno);
+
   </script>
 </body>
 </html>
