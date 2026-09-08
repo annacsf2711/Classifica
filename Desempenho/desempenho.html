@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desempenho - Classifica</title>
+    <script type="module" src="desempenho.js" defer></script>
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -312,28 +314,24 @@
 
                 <ul class="nav">
                     <li>
-                        <a href="../7CodigoSala/CodigoSala.html">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                            Dashboard
-                        </a>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        Dashboard
                     </li>
                     <li>
-                        <a href="../Sala_de_Aula_Aluno/Sala_de_Aula.html">
+                        <a href="#" onclick="abrirSalaDeAula(event)" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                             Sala de Aula
                         </a>
                     </li>
                     <li>
-                        <a href="../Diagnostico/diagnostico.html">
+                        <a href="../9QuestoesAlunos/QuestoesAlunos.html">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
                             Questões
                         </a>
                     </li>
                     <li class="active">
-                        <a href="../Desempenho/desempenho.html">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                            Desempenho
-                        </a>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        Desempenho
                     </li>
                     <li>
                         <a href="../6ConfiguracoesAluno/ConfiguracoesAluno.html">
@@ -345,7 +343,7 @@
             </div>
 
             <div class="user">
-                <div class="avatar" id="avatarUsuario">L</div>
+                <div class="avatar" id="avatarUsuario"></div>
                 <div class="info">
                     <b id="nomeUsuario">Carregando...</b>
                     <span>Estudante</span>
@@ -550,6 +548,31 @@
                 '<p style="grid-column: 1/-1; color: #d32f2f; text-align: center; padding: 40px;">' +
                 mensagem + '</p>';
         }
+
+// ===================================== Abrir Sala De Aula ===================================================
+  window.abrirSalaDeAula = async function(event) {
+    event.preventDefault();
+
+    const idEstudante = localStorage.getItem("idEstudante");
+    try {
+        const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+        const dados = await resposta.json();
+
+        console.log("Dados Recebidos", dados);
+        console.log("id_turma: ", dados.id_turma);
+
+        if (dados.id_turma != null) {
+            localStorage.setItem("idTurma", dados.id_turma);
+            window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
+        } else {
+            window.location.href = "../7CodigoSala/CodigoSalaAluno.html";
+        }
+
+    } catch (erro) {
+        console.error("Erro:", erro);
+        alert("Erro ao verificar turma.");
+    }
+  }
     </script>
 </body>
 </html>

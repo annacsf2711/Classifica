@@ -21,26 +21,18 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
 
         console.log("Resposta do servidor:", dados);
 
-        if (dados && dados.usuarioExiste) {
-            console.log("ID recebido:", dados.id_estudante);
-
-            localStorage.setItem("idEstudante", dados.id_estudante);
-
-            console.log("ID salvo:", localStorage.getItem("idEstudante"));
-
-            window.location.href = "../Diagnostico/telainicialdiag.html";
-        }
         if (dados.contaDesativada) {
             const reativar = confirm("Sua conta está desativada. Deseja reativá-la?");
 
             if (reativar) {
-                await fetch(`http://localhost:3000/reativarAluno/${dados.id_estudante}`, {
+                await fetch(`http://localhost:3000/reativarAluno/${dados.idEstudante}`, {
                     method: "PUT"
                 });
                 alert("Conta reativada com sucesso! Faça o login novamente.");
+                window.location.href = "LoginAluno.html";        
             }
-
-        } else if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
+        
+        }else if (dados.usuarioExiste) { // verifica se o login foi realizado com sucesso
             localStorage.setItem("idEstudante", dados.id_estudante); // salva o id do aluno no navegador
             console.log("Id aluno:", dados.id_estudante);
             console.log("Vou redirecionar");

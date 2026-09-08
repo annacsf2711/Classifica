@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -42,8 +42,6 @@ app.post('/cadastrarAluno', async (req, res) => {
     res.status(500).send("Erro ao salvar no banco");
   }
 });
-
-
 // ===================== LOGIN ALUNO =====================
 app.post('/loginAluno', async (req, res) => {
 
@@ -94,8 +92,6 @@ app.post('/loginAluno', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
-
-
 // ===================== CONFIG ALUNO =====================
 app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_estudante} = req.params;   // pega o id 
@@ -103,7 +99,7 @@ app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os
   try {
     const resultado = await pool.query(     // consulta os dados do professor no banco
 
-      `SELECT id_estudante, nome, cpf, cep, data_nasc, email, senha
+      `SELECT id_estudante,id_turma, nome, cpf, cep, data_nasc, email, senha
       FROM classifica.estudante WHERE id_estudante = $1`,
       [id_estudante]
     );
@@ -119,8 +115,6 @@ app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os
     res.status(500).send("Erro ao buscar aluno");
   }
 });
-
-console.log("Rota PUT carregada");
 app.put("/estudante/:id_estudante", async (req, res) => {
   
     console.log(req.params);
@@ -141,7 +135,6 @@ app.put("/estudante/:id_estudante", async (req, res) => {
         res.status(500).send("Erro ao atualizar aluno");
     }
 });
-
 // ===================== Desativar Aluno =====================
 app.put("/desativarAluno/:id_estudante", async (req, res) => {
   
@@ -159,16 +152,16 @@ app.put("/desativarAluno/:id_estudante", async (req, res) => {
     res.status(500).send("Erro ao desativar");
   }
 });
-
 // ===================== Reativar Aluno =====================
 app.put('/reativarAluno/:id_estudante', async (req, res) => {
     const { id_estudante } = req.params;
     try {
-        await pool.query(
+        const resultado = await pool.query(
           `UPDATE classifica.estudante SET ativo = true WHERE id_estudante = $1`,
           [id_estudante]
         );
 
+        console.log("Linhas alteradas:", resultado.rowCount);
         res.json({
             sucesso: true,
             mensagem: "Conta reativada com sucesso!"
@@ -182,7 +175,6 @@ app.put('/reativarAluno/:id_estudante', async (req, res) => {
         });
     }
 });
-
 // ===================== Deletar Aluno =====================
 app.delete("/deletarAluno/:id_estudante", async (req, res) => {
   const { id_estudante } = req.params;
@@ -209,6 +201,172 @@ app.delete("/deletarAluno/:id_estudante", async (req, res) => {
     res.status(500).send("Erro ao excluir Aluno");
   }
 });
+// ===================== Código Turma Aluno =====================
+app.post('/turmaEstudante', async (req, res) => {
+  const { codigo, idEstudante } = req.body;
+
+  try {
+    const turma = await pool.query(
+      `SELECT idturma, nome FROM classifica.turma
+       WHERE codigo = $1`,
+      [codigo]
+    );
+
+    if (turma.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: "Turma não encontrada"
+      });
+    }
+
+    const idTurma = turma.rows[0].idturma;
+
+    await pool.query(
+      `UPDATE classifica.estudante SET id_turma = $1
+       WHERE id_estudante = $2`,
+      [idTurma, idEstudante]
+    );
+
+    res.json({
+      salaExistente: true,
+      mensagem: "Aluno entrou na turma",
+      idTurma: idTurma,
+      nomeTurma: turma.rows[0].nome
+    });
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao entrar na turma");
+  }
+});
+// ===================== QUESTÕES POR MATÉRIA ALUNO =====================
+app.get('/api/questoes/:materia', async (req, res) => {
+    const { materia } = req.params;
+
+    try {
+        const mapaAreas = {
+            'matematica': 'Matemática',
+            'portugues': 'Português',
+            'natureza': 'Ciências da Natureza',
+            'humanas': 'Ciências Humanas'
+        };
+
+        const nomeArea = mapaAreas[materia] || materia;
+
+        // Query corrigida usando o schema 'classifica' e as colunas reais do seu banco
+        const query = `
+            SELECT e.* 
+            FROM classifica.exercicio e
+            INNER JOIN classifica.area_conhecimento a ON e.id_area = a.id_area
+            WHERE LOWER(a.nome_area) LIKE LOWER($1)
+            LIMIT 15
+        `;
+
+        const { rows } = await pool.query(query, [`%${nomeArea}%`]);
+        res.json(rows);
+    } catch (error) {
+        console.error('Erro ao buscar questões por área:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+app.use(express.static('9QuestoesAlunos'));
+// ===================== SALVAR RESPOSTAS DAS QUESTÕES ALUNO =====================
+app.post('/api/respostasQuestoes', async (req, res) => {
+    try { const { id_estudante, respostas } = req.body;
+      if (!id_estudante || !respostas || !Array.isArray(respostas)) {
+          return res.status(400).send("Dados inválidos");
+      }
+
+      for (const item of respostas) {
+        const questao = await pool.query(
+          `SELECT alternativa_correta FROM classifica.exercicio
+            WHERE id_exercicio = $1`,
+            [item.id_exercicio]
+        );
+        if (questao.rows.length === 0) continue;
+          const correta = questao.rows[0].alternativa_correta;
+          const correto =
+                item.resposta &&
+                item.resposta.toLowerCase() === correta.toLowerCase();
+          await pool.query(
+                `INSERT INTO classifica.tentativa
+                (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa)
+                VALUES ($1,$2,$3, $4,NOW()) `,
+                [id_estudante, item.id_exercicio,item.resposta,correto]
+            );
+        }
+        res.status(200).send("Respostas salvas com sucesso!");
+    } catch (erro) {
+      console.error("Erro ao salvar respostas:", erro);
+      res.status(500).send("Erro ao salvar respostas no banco");
+    }
+});
+
+// ===================== CPF e E-mail conferir se existem =====================
+app.post("/verificarCadastroAluno", async (req, res) => {
+    // Recebe CPF e e-mail enviados pelo frontend
+    const { cpf, email } = req.body;
+    try {
+      // Consulta no PostgreSQL
+      const resultado = await pool.query(
+        `SELECT id_estudante, cpf, email FROM classifica.estudante
+          WHERE cpf = $1 OR email = $2`,
+          [cpf, email]
+        );
+        // Verifica se o CPF existe
+        const cpfExiste = resultado.rows.some(function(estudante) {
+            return estudante.cpf === cpf;
+        });
+        // Verifica se o e-mail existe
+        const emailExiste = resultado.rows.some(function(estudante) {
+            return estudante.email === email;
+        });
+        // Retorna para o frontend
+        res.json({
+            cpfExiste,
+            emailExiste
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            erro: true,
+            mensagem: "Erro ao consultar CPF e e-mail"
+        });
+    }
+});
+app.post("/verificarCadastroProf", async (req, res) => {
+    // Recebe CPF e e-mail enviados pelo frontend
+    const { cpf, email } = req.body;
+    try {
+      // Consulta no PostgreSQL
+      const resultado = await pool.query(
+        `SELECT id_professor, cpf, email FROM classifica.professor
+          WHERE cpf = $1 OR email = $2`,
+          [cpf, email]
+        );
+        // Verifica se o CPF existe
+        const cpfExiste = resultado.rows.some(function(professor) {
+            return professor.cpf === cpf;
+        });
+        // Verifica se o e-mail existe
+        const emailExiste = resultado.rows.some(function(professor) {
+            return professor.email === email;
+        });
+        // Retorna para o frontend
+        res.json({
+            cpfExiste,
+            emailExiste
+        });
+
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            erro: true,
+            mensagem: "Erro ao consultar CPF e e-mail"
+        });
+    }
+});
 
 // ===================== CADASTRAR PROF =====================
 app.post('/cadastrarProf', async (req, res) => {
@@ -228,7 +386,6 @@ app.post('/cadastrarProf', async (req, res) => {
     res.status(500).send("Erro ao salvar no banco");
   }
 });
-
 // ===================== LOGIN PROF =====================
 app.post('/loginProf', async (req, res) => {
   console.log("Dados recebidos no login", req.body);
@@ -279,7 +436,68 @@ app.post('/loginProf', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
+// ===================== CONFIG PROF =====================
+app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
+  const {id_professor} = req.params;   // pega o id 
 
+  try {
+    const resultado = await pool.query(     // consulta os dados do professor no banco
+
+      `SELECT id_professor, nome, cpf, cep, data_nasc, email, especialidade, senha
+      FROM classifica.professor WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).send("Professor não encontrado");
+    }
+    res.json(resultado.rows[0]); // pegar o primeira elemento
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao buscar professor");
+  }
+});
+// ===================== Desativar PROF =====================
+app.put("/desativarProfessor/:id_professor", async (req, res) => {
+  
+  const {id_professor} = req.params;
+  try {
+    await pool.query(
+    `UPDATE classifica.professor SET ativo = false WHERE id_professor = $1`,
+    [id_professor]
+  );
+  res.send("Professor desativado");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao desativar");
+  }
+});
+// ===================== Deletar PROF =====================
+app.delete("/deletarProfessor/:id_professor", async (req, res) => {
+  const { id_professor } = req.params;
+
+  try {
+    // Tabelas que possuem FK para professor
+    await pool.query(
+      `DELETE FROM classifica.professor_turma
+       WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    // Exclui o professor
+    await pool.query(
+      `DELETE FROM classifica.professor
+       WHERE id_professor = $1`,
+      [id_professor]
+    );
+
+    res.send("Professor excluído permanentemente");
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao excluir professor");
+  }
+});
 // ===================== Reativar Professor =====================
 app.put('/reativarProfessor/:id_professor', async (req, res) => {
     const { id_professor } = req.params;
@@ -302,6 +520,73 @@ app.put('/reativarProfessor/:id_professor', async (req, res) => {
         });
     }
 });
+// ===================== Código Turma Professor =====================
+app.post('/turmaProf', async (req, res) => {
+  console.log("Dados recebidos da turma", req.body);
+
+  const { codigo } = req.body;
+  try {
+    const resultado = await pool.query(
+    `SELECT pt.id_professor, t.idturma, t.nome
+    FROM classifica.turma t
+    INNER JOIN classifica.professor_turma pt
+    ON pt.idturma = t.idturma
+    WHERE t.codigo = $1`,
+    [codigo]
+  );
+
+    if (resultado.rows.length > 0) {
+      res.json({
+        salaExistente: true,
+        mensagem: "Sala existente",
+        idProfessor: resultado.rows[0].id_professor,
+        idTurma: resultado.rows[0].idturma,
+        nomeTurma: resultado.rows[0].nome
+      });
+    } else {
+      res.status(404).json({
+        salaExistente: false,
+        mensagem: "Sala inexistente"
+      });
+    }
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao processar o código no banco");
+  }
+});
+// ===================== ENTRAR TURMA PROFESSOR =====================
+app.get('/professor/:id/turma', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const resultado = await pool.query(
+            `SELECT idturma FROM classifica.professor_turma
+             WHERE id_professor = $1`,
+            [id]
+        );
+        if (resultado.rows.length === 0) {
+            return res.json({
+                possuiTurma: false
+            });
+        }
+        res.json({
+            possuiTurma: true,
+            id_turma: resultado.rows[0].idturma
+        });
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({
+            erro: "Erro ao buscar turma"
+        });
+    }
+});
+
+
+
+
+
+
 
 // ===================== QUESTÕES DO DIAGNOSTICO ====================
 app.get('/api/questoes', async (req, res) => {
@@ -328,11 +613,10 @@ app.get('/api/questoes', async (req, res) => {
     res.status(500).send("Erro ao buscar questões");
   }
 });
-
 // ===================== VERIFICAR SE ALUNO JÁ FEZ DIAGNÓSTICO ====================
 app.get('/api/diagnostico/status/:id_estudante', async (req, res) => {
   const { id_estudante } = req.params;
-
+  
   if (!id_estudante || id_estudante === 'undefined') {
     return res.status(400).json({ erro: 'ID do estudante não informado' });
   }
@@ -352,8 +636,6 @@ app.get('/api/diagnostico/status/:id_estudante', async (req, res) => {
     return res.status(500).send("Erro ao verificar diagnóstico");
   }
 });
-
-
 // ===================== SALVAR RESPOSTAS DO DIAGNÓSTICO ====================
 app.post('/api/respostas', async (req, res) => {
     try {
@@ -389,30 +671,6 @@ app.post('/api/respostas', async (req, res) => {
         res.status(500).send("Erro ao salvar respostas no banco");
     }
 });
-
-// ===================== CONFIG PROF =====================
-app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
-  const {id_professor} = req.params;   // pega o id 
-
-  try {
-    const resultado = await pool.query(     // consulta os dados do professor no banco
-
-      `SELECT id_professor, nome, cpf, cep, data_nasc, email, especialidade, senha
-      FROM classifica.professor WHERE id_professor = $1`,
-      [id_professor]
-    );
-
-    if (resultado.rows.length === 0) {
-      return res.status(404).send("Professor não encontrado");
-    }
-    res.json(resultado.rows[0]); // pegar o primeira elemento
-
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao buscar professor");
-  }
-});
-
 app.put("/professor/:id_professor", async (req, res) => { // mudando dados
   
     console.log(req.params);
@@ -433,7 +691,6 @@ app.put("/professor/:id_professor", async (req, res) => { // mudando dados
         res.status(500).send("Erro ao atualizar professor");
     }
 });
-
 // ===================== LISTAR BANCOS DE QUESTÕES DE UM PROFESSOR =====================
 app.get('/listarBancos/:idProfessor', async (req, res) => {
   const { idProfessor } = req.params;
@@ -454,49 +711,6 @@ app.get('/listarBancos/:idProfessor', async (req, res) => {
     res.status(500).send("Erro ao listar bancos de questões");
   }
 });
-
-// ===================== Desativar PROF =====================
-app.put("/desativarProfessor/:id_professor", async (req, res) => {
-  
-  const {id_professor} = req.params;
-  try {
-    await pool.query(
-    `UPDATE classifica.professor SET ativo = false WHERE id_professor = $1`,
-    [id_professor]
-  );
-  res.send("Professor desativado");
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao desativar");
-  }
-});
-
-// ===================== Deletar PROF =====================
-app.delete("/deletarProfessor/:id_professor", async (req, res) => {
-  const { id_professor } = req.params;
-
-  try {
-    // Tabelas que possuem FK para professor
-    await pool.query(
-      `DELETE FROM classifica.professor_turma
-       WHERE id_professor = $1`,
-      [id_professor]
-    );
-
-    // Exclui o professor
-    await pool.query(
-      `DELETE FROM classifica.professor
-       WHERE id_professor = $1`,
-      [id_professor]
-    );
-
-    res.send("Professor excluído permanentemente");
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao excluir professor");
-  }
-});
-
 // ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
 app.post('/criarBanco', async (req, res) => {
   const { nome, disciplina, idProfessor } = req.body;
@@ -513,7 +727,6 @@ app.post('/criarBanco', async (req, res) => {
     res.status(500).send("Erro ao criar banco de questões");
   }
 });
-
 // ===================== LISTAR QUESTÕES DE UM BANCO =====================
 app.get('/listarQuestoesBanco/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
@@ -602,7 +815,6 @@ app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
     res.status(500).send("Erro ao listar exercícios disponíveis");
   }
 });
-
 // ===================== ADICIONAR QUESTÃO AO BANCO =====================
 app.post('/adicionarQuestaoBanco', async (req, res) => {
   const { bancoId, exercicioId } = req.body;
@@ -714,77 +926,6 @@ app.post('/criarExercicio', async (req, res) => {
     res.status(500).send("Erro ao criar exercício");
   }
 });
-
-
-// ===================== CPF e E-mail conferir se existem =====================
-app.post("/verificarCadastroAluno", async (req, res) => {
-    // Recebe CPF e e-mail enviados pelo frontend
-    const { cpf, email } = req.body;
-    try {
-      // Consulta no PostgreSQL
-      const resultado = await pool.query(
-        `SELECT id_estudante, cpf, email FROM classifica.estudante
-          WHERE cpf = $1 OR email = $2`,
-          [cpf, email]
-        );
-        // Verifica se o CPF existe
-        const cpfExiste = resultado.rows.some(function(estudante) {
-            return estudante.cpf === cpf;
-        });
-        // Verifica se o e-mail existe
-        const emailExiste = resultado.rows.some(function(estudante) {
-            return estudante.email === email;
-        });
-        // Retorna para o frontend
-        res.json({
-            cpfExiste,
-            emailExiste
-        });
-
-    } catch (erro) {
-        console.error(erro);
-        res.status(500).json({
-            erro: true,
-            mensagem: "Erro ao consultar CPF e e-mail"
-        });
-    }
-});
-
-app.post("/verificarCadastroProf", async (req, res) => {
-    // Recebe CPF e e-mail enviados pelo frontend
-    const { cpf, email } = req.body;
-    try {
-      // Consulta no PostgreSQL
-      const resultado = await pool.query(
-        `SELECT id_professor, cpf, email FROM classifica.professor
-          WHERE cpf = $1 OR email = $2`,
-          [cpf, email]
-        );
-        // Verifica se o CPF existe
-        const cpfExiste = resultado.rows.some(function(professor) {
-            return professor.cpf === cpf;
-        });
-        // Verifica se o e-mail existe
-        const emailExiste = resultado.rows.some(function(professor) {
-            return professor.email === email;
-        });
-        // Retorna para o frontend
-        res.json({
-            cpfExiste,
-            emailExiste
-        });
-
-    } catch (erro) {
-        console.error(erro);
-        res.status(500).json({
-            erro: true,
-            mensagem: "Erro ao consultar CPF e e-mail"
-        });
-    }
-});
-
-
-
 // ===================== LISTAR SIMULADOS DE UM PROFESSOR =====================
 app.get('/listarSimulados/:professorId', async (req, res) => {
   const { professorId } = req.params;
@@ -806,7 +947,6 @@ app.get('/listarSimulados/:professorId', async (req, res) => {
     res.status(500).send("Erro ao listar simulados");
   }
 });
-
 // ===================== CRIAR SIMULADO =====================
 app.post('/criarSimulado', async (req, res) => {
   const { nome, turmaId, professorId } = req.body;
@@ -823,7 +963,6 @@ app.post('/criarSimulado', async (req, res) => {
     res.status(500).send("Erro ao criar simulado");
   }
 });
-
 // ===================== ADICIONAR QUESTÃO AO SIMULADO =====================
 app.post('/adicionarQuestaoSimulado', async (req, res) => {
   const { simuladoId, exercicioId } = req.body;
@@ -848,7 +987,6 @@ app.post('/adicionarQuestaoSimulado', async (req, res) => {
     res.status(500).send("Erro ao adicionar questão ao simulado");
   }
 });
-
 // ===================== REMOVER QUESTÃO DO SIMULADO =====================
 app.delete('/removerQuestaoSimulado/:simuladoId/:exercicioId', async (req, res) => {
   const { simuladoId, exercicioId } = req.params;
@@ -863,7 +1001,6 @@ app.delete('/removerQuestaoSimulado/:simuladoId/:exercicioId', async (req, res) 
     res.status(500).send("Erro ao remover questão do simulado");
   }
 });
-
 // ===================== LISTAR QUESTÕES DE UM SIMULADO (para o aluno abrir/responder) =====================
 app.get('/listarQuestoesSimulado/:simuladoId', async (req, res) => {
   const { simuladoId } = req.params;
@@ -884,7 +1021,6 @@ app.get('/listarQuestoesSimulado/:simuladoId', async (req, res) => {
     res.status(500).send("Erro ao listar questões do simulado");
   }
 });
-
 // ===================== LISTAR QUESTÕES DA MATÉRIA DO PROFESSOR (para escolher no modal "Adicionar Simulado") =====================
 app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
   const { professorId } = req.params;
@@ -1018,41 +1154,92 @@ app.get('/simuladosParaAluno/:idEstudante/:disciplina', async (req, res) => {
     res.status(500).send("Erro ao buscar simulados do aluno");
   }
 });
-// ===================== Código Turma Professor =====================
-app.post('/turmaProf', async (req, res) => {
-  console.log("Dados recebidos da turma", req.body);
+// ===================== SALVAR RESPOSTAS DO SIMULADO ====================
+app.post('/api/simulado/respostas', async (req, res) => {
+    try {
+        const { id_estudante, id_simulado, respostas } = req.body;
+        // respostas é um array de objetos: [{ id_exercicio, resposta }]
 
-  const { codigo } = req.body;
-  try {
-    const resultado = await pool.query(
-    `SELECT pt.id_professor, t.idturma, t.nome
-    FROM classifica.turma t
-    INNER JOIN classifica.professor_turma pt
-    ON pt.idturma = t.idturma
-    WHERE t.codigo = $1`,
-    [codigo]
-  );
+        if (!id_estudante || !id_simulado || !respostas || !Array.isArray(respostas)) {
+            return res.status(400).send("Dados inválidos");
+        }
 
-    if (resultado.rows.length > 0) {
-      res.json({
-        salaExistente: true,
-        mensagem: "Sala existente",
-        idProfessor: resultado.rows[0].id_professor,
-        idTurma: resultado.rows[0].idturma,
-        nomeTurma: resultado.rows[0].nome
-      });
-    } else {
-      res.status(404).json({
-        salaExistente: false,
-        mensagem: "Sala inexistente"
-      });
+        for (const item of respostas) {
+            // Busca a alternativa correta do exercício
+            const questao = await pool.query(
+                `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
+                [item.id_exercicio]
+            );
+            if (questao.rows.length === 0) continue;
+
+            const correta = questao.rows[0].alternativa_correta;
+            const correto = item.resposta
+                ? item.resposta.toLowerCase() === correta.toLowerCase()
+                : false;
+
+            await pool.query(
+                `INSERT INTO classifica.tentativa
+                    (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa, id_simulado)
+                 VALUES ($1, $2, $3, $4, NOW(), $5)`,
+                [id_estudante, item.id_exercicio, item.resposta, correto, id_simulado]
+            );
+        }
+
+        res.status(200).send("Respostas do simulado salvas com sucesso!");
+    } catch (erro) {
+        console.error("Erro ao salvar respostas do simulado:", erro);
+        res.status(500).send("Erro ao salvar respostas do simulado no banco");
     }
-
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao processar o código no banco");
-  }
 });
+// ===================== VERIFICAR SE O ALUNO JÁ FEZ ESSE SIMULADO ====================
+app.get('/api/simulado/status/:idEstudante/:idSimulado', async (req, res) => {
+    const { idEstudante, idSimulado } = req.params;
+    try {
+        const resultado = await pool.query(
+            `SELECT COUNT(*) AS total
+             FROM classifica.tentativa
+             WHERE id_estudante = $1 AND id_simulado = $2`,
+            [idEstudante, idSimulado]
+        );
+
+        const jaFez = Number(resultado.rows[0].total) > 0;
+        res.json({ jaFez });
+    } catch (erro) {
+        console.error('Erro ao verificar status do simulado:', erro);
+        res.status(500).send("Erro ao verificar status do simulado");
+    }
+});
+// ===================== BUSCAR RESPOSTAS QUE O ALUNO JÁ DEU NESSE SIMULADO ====================
+app.get('/api/simulado/minhasRespostas/:idEstudante/:idSimulado', async (req, res) => {
+    const { idEstudante, idSimulado } = req.params;
+    try {
+        const resultado = await pool.query(
+            `SELECT
+                e.id_exercicio AS id,
+                e.enunciado,
+                e.alternativa_a,
+                e.alternativa_b,
+                e.alternativa_c,
+                e.alternativa_d,
+                e.alternativa_correta,
+                t.resposta_marcada,
+                t.correto
+             FROM classifica.tentativa t
+             JOIN classifica.exercicio e ON e.id_exercicio = t.id_exercicio
+             LEFT JOIN classifica.simulado_exercicios se
+                ON se.exercicio_id = e.id_exercicio AND se.simulado_id = t.id_simulado
+             WHERE t.id_estudante = $1 AND t.id_simulado = $2
+             ORDER BY se.ordem NULLS LAST, t.id_tentativa`,
+            [idEstudante, idSimulado]
+        );
+
+        res.json(resultado.rows);
+    } catch (erro) {
+        console.error('Erro ao buscar respostas do aluno no simulado:', erro);
+        res.status(500).send("Erro ao buscar respostas do aluno no simulado");
+    }
+});
+// ===================== DESEMPENHO =====================
 app.get('/api/desempenho/:id_estudante', async (req, res) => {
   const { id_estudante } = req.params;
 
@@ -1104,194 +1291,4 @@ app.get('/api/desempenho/:id_estudante', async (req, res) => {
     console.error('Erro ao calcular desempenho:', erro);
     res.status(500).json({ erro: 'Erro ao buscar desempenho' });
   }
-});
-// ===================== SALVAR RESPOSTAS DO SIMULADO ====================
-app.post('/api/simulado/respostas', async (req, res) => {
-    try {
-        const { id_estudante, id_simulado, respostas } = req.body;
-        // respostas é um array de objetos: [{ id_exercicio, resposta }]
-
-        if (!id_estudante || !id_simulado || !respostas || !Array.isArray(respostas)) {
-            return res.status(400).send("Dados inválidos");
-        }
-
-        for (const item of respostas) {
-            // Busca a alternativa correta do exercício
-            const questao = await pool.query(
-                `SELECT alternativa_correta FROM classifica.exercicio WHERE id_exercicio = $1`,
-                [item.id_exercicio]
-            );
-            if (questao.rows.length === 0) continue;
-
-            const correta = questao.rows[0].alternativa_correta;
-            const correto = item.resposta
-                ? item.resposta.toLowerCase() === correta.toLowerCase()
-                : false;
-
-            await pool.query(
-                `INSERT INTO classifica.tentativa
-                    (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa, id_simulado)
-                 VALUES ($1, $2, $3, $4, NOW(), $5)`,
-                [id_estudante, item.id_exercicio, item.resposta, correto, id_simulado]
-            );
-        }
-
-        res.status(200).send("Respostas do simulado salvas com sucesso!");
-    } catch (erro) {
-        console.error("Erro ao salvar respostas do simulado:", erro);
-        res.status(500).send("Erro ao salvar respostas do simulado no banco");
-    }
-});
-
-// ===================== VERIFICAR SE O ALUNO JÁ FEZ ESSE SIMULADO ====================
-app.get('/api/simulado/status/:idEstudante/:idSimulado', async (req, res) => {
-    const { idEstudante, idSimulado } = req.params;
-    try {
-        const resultado = await pool.query(
-            `SELECT COUNT(*) AS total
-             FROM classifica.tentativa
-             WHERE id_estudante = $1 AND id_simulado = $2`,
-            [idEstudante, idSimulado]
-        );
-
-        const jaFez = Number(resultado.rows[0].total) > 0;
-        res.json({ jaFez });
-    } catch (erro) {
-        console.error('Erro ao verificar status do simulado:', erro);
-        res.status(500).send("Erro ao verificar status do simulado");
-    }
-});
-
-// ===================== BUSCAR RESPOSTAS QUE O ALUNO JÁ DEU NESSE SIMULADO ====================
-app.get('/api/simulado/minhasRespostas/:idEstudante/:idSimulado', async (req, res) => {
-    const { idEstudante, idSimulado } = req.params;
-    try {
-        const resultado = await pool.query(
-            `SELECT
-                e.id_exercicio AS id,
-                e.enunciado,
-                e.alternativa_a,
-                e.alternativa_b,
-                e.alternativa_c,
-                e.alternativa_d,
-                e.alternativa_correta,
-                t.resposta_marcada,
-                t.correto
-             FROM classifica.tentativa t
-             JOIN classifica.exercicio e ON e.id_exercicio = t.id_exercicio
-             LEFT JOIN classifica.simulado_exercicios se
-                ON se.exercicio_id = e.id_exercicio AND se.simulado_id = t.id_simulado
-             WHERE t.id_estudante = $1 AND t.id_simulado = $2
-             ORDER BY se.ordem NULLS LAST, t.id_tentativa`,
-            [idEstudante, idSimulado]
-        );
-
-        res.json(resultado.rows);
-    } catch (erro) {
-        console.error('Erro ao buscar respostas do aluno no simulado:', erro);
-        res.status(500).send("Erro ao buscar respostas do aluno no simulado");
-    }
-});
-
-// ===================== Código Turma Aluno =====================
-app.post('/turmaEstudante', async (req, res) => {
-  const { codigo, idEstudante } = req.body;
-
-  try {
-    const turma = await pool.query(
-      `SELECT idturma, nome FROM classifica.turma
-       WHERE codigo = $1`,
-      [codigo]
-    );
-
-    if (turma.rows.length === 0) {
-      return res.status(404).json({
-        sucesso: false,
-        mensagem: "Turma não encontrada"
-      });
-    }
-
-    const idTurma = turma.rows[0].idturma;
-
-    await pool.query(
-      `UPDATE classifica.estudante SET id_turma = $1
-       WHERE id_estudante = $2`,
-      [idTurma, idEstudante]
-    );
-
-    res.json({
-      salaExistente: true,
-      mensagem: "Aluno entrou na turma",
-      idTurma: idTurma,
-      nomeTurma: turma.rows[0].nome
-    });
-
-  } catch (erro) {
-    console.error(erro);
-    res.status(500).send("Erro ao entrar na turma");
-  }
-});
-
-// ===================== QUESTÕES POR MATÉRIA =====================
-app.get('/api/questoes/:materia', async (req, res) => {
-    const { materia } = req.params;
-
-    try {
-        const mapaAreas = {
-            'matematica': 'Matemática',
-            'portugues': 'Português',
-            'natureza': 'Ciências da Natureza',
-            'humanas': 'Ciências Humanas'
-        };
-
-        const nomeArea = mapaAreas[materia] || materia;
-
-        // Query corrigida usando o schema 'classifica' e as colunas reais do seu banco
-        const query = `
-            SELECT e.* 
-            FROM classifica.exercicio e
-            INNER JOIN classifica.area_conhecimento a ON e.id_area = a.id_area
-            WHERE LOWER(a.nome_area) LIKE LOWER($1)
-            LIMIT 15
-        `;
-
-        const { rows } = await pool.query(query, [`%${nomeArea}%`]);
-        res.json(rows);
-    } catch (error) {
-        console.error('Erro ao buscar questões por área:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-app.use(express.static('9QuestoesAlunos'));
-
-// ===================== SALVAR RESPOSTAS DAS QUESTÕES =====================
-app.post('/api/respostasQuestoes', async (req, res) => {
-    try { const { id_estudante, respostas } = req.body;
-      if (!id_estudante || !respostas || !Array.isArray(respostas)) {
-          return res.status(400).send("Dados inválidos");
-      }
-
-      for (const item of respostas) {
-        const questao = await pool.query(
-          `SELECT alternativa_correta FROM classifica.exercicio
-            WHERE id_exercicio = $1`,
-            [item.id_exercicio]
-        );
-        if (questao.rows.length === 0) continue;
-          const correta = questao.rows[0].alternativa_correta;
-          const correto =
-                item.resposta &&
-                item.resposta.toLowerCase() === correta.toLowerCase();
-          await pool.query(
-                `INSERT INTO classifica.tentativa
-                (id_estudante, id_exercicio, resposta_marcada, correto, data_tentativa)
-                VALUES ($1,$2,$3, $4,NOW()) `,
-                [id_estudante, item.id_exercicio,item.resposta,correto]
-            );
-        }
-        res.status(200).send("Respostas salvas com sucesso!");
-    } catch (erro) {
-      console.error("Erro ao salvar respostas:", erro);
-      res.status(500).send("Erro ao salvar respostas no banco");
-    }
 });

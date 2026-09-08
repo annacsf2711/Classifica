@@ -262,26 +262,28 @@ async function mostrarResultadoFinal() {
 // ===================================== Poder Clicar ===================================================
 window.selecionarAlternativa = selecionarAlternativa;
 window.proximaQuestao = proximaQuestao;
-window.abrirSalaDeAula = abrirSalaDeAula;
 
 // ===================================== Abrir Sala De Aula ===================================================
-async function abrirSalaDeAula(event) {
-    event.preventDefault();
-    const idEstudante = localStorage.getItem("idEstudante");
-    try {
-        const idTurma = localStorage.getItem("idTurma");
-        const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
-        const dados = await resposta.json();
+window.abrirSalaDeAula = async function(event) {
+  event.preventDefault();
 
-        if (idTurma && idTurma !== "null") {
-            localStorage.setItem("idTurma", dados.id_turma);
-            window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
-        } else {
-            window.location.href = "../7CodigoSala/CodigoSalaAluno.html";
-        }
+  const idEstudante = localStorage.getItem("idEstudante");
+  try {
+    const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+    const dados = await resposta.json();
 
-    } catch (erro) {
-        console.error(erro);
-        alert("Erro ao verificar turma.");
+    console.log("Dados Recebidos", dados);
+    console.log("id_turma: ", dados.id_turma);
+
+    if (dados.id_turma != null) {
+        localStorage.setItem("idTurma", dados.id_turma);
+        window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
+    } else {
+        window.location.href = "../7CodigoSala/CodigoSalaAluno.html";
     }
+
+  } catch (erro) {
+      console.error("Erro:", erro);
+      alert("Erro ao verificar turma.");
+  }
 }

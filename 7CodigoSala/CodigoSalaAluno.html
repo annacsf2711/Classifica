@@ -263,19 +263,34 @@
   </div>
 <script>
   const idEstudante = localStorage.getItem("idEstudante");
+  const idTurma = localStorage.getItem("idTurma");
+
 
   console.log("ID:", idEstudante);
+  console.log("Sala:", idTurma);
 
+  
   fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
 
-  .then(async resposta => {
-    if (!resposta.ok) {
-        const mensagem = await resposta.text();
-        throw new Error(mensagem);
-    }
-    return resposta.json();
-    })
-
+    .then(async resposta => {
+      if (!resposta.ok) {
+          const mensagem = await resposta.text();
+          throw new Error(mensagem);
+      }
+        return resposta.json();
+      })
+      
+      .then(dados => {
+        console.log("Dados do aluno:", dados);
+        // Atualiza o localStorage com o valor do banco
+        if (dados.id_turma) {
+          localStorage.setItem("idTurma", dados.id_turma);
+          window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
+        }
+      })
+      .catch(erro => {
+        console.error("Erro:", erro);
+      });
 
     async function obterCodigoAluno() {
     const inputs = document.querySelectorAll('.code-input-wrapper input');

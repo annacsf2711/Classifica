@@ -152,3 +152,28 @@ document.getElementById("deletar").addEventListener("click", async () => {
     }
 });
 
+// ===================================== Abrir Sala De Aula ===================================================
+window.abrirSalaDeAula = async function(event) {
+    event.preventDefault();
+    const idProfessor = localStorage.getItem("idProfessor");
+
+    try {
+      const resposta = await fetch(`http://localhost:3000/professor/${idProfessor}/turma`);
+      const dados = await resposta.json();
+      console.log("Dados recebidos:", dados);
+
+      if (dados.possuiTurma) {
+        localStorage.setItem(
+          "idTurma",
+          dados.id_turma
+        );
+        window.location.href = "../8SalaDeAulaProfessor/SalaAulaProfessor.html";
+      }else {
+          window.location.href = "../7CodigoSala/CodigoSalaProf.html";
+        }
+
+    }catch (erro) {
+      console.error(erro);
+      alert("Erro ao verificar turma.");
+    }
+};
