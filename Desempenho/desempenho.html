@@ -1,18 +1,10 @@
 
-
-Desempenho · HTML
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desempenho - Classifica</title>
-    <!-- ALTERADO: a tag <script src="desempenho.js"> foi removida.
-         Ela carregava um arquivo externo (Desempenho/desempenho.js) com uma lógica
-         antiga/duplicada (usava localStorage "id_estudante" em vez de "idEstudante"),
-         que nunca funcionava e ficava rodando em paralelo com o script inline no fim
-         desta página. Toda a lógica agora vive só no <script> no final do arquivo,
-         igual ao restante do código já existente aqui. -->
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -33,19 +25,17 @@ Desempenho · HTML
             padding: 20px;
         }
 
-        /* ===== Container geral (mesmo padrão visual das demais telas do aluno) ===== */
         .container {
-            display: flex;
-            width: 100%;
-            max-width: 1600px;
-            background: #f5f1e8;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            min-height: 90vh;
+        display: flex;
+        width: 100%;
+        max-width: 1600px;
+        background: #f5f1e8;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        height: 90vh;               
         }
 
-        /* ===== Sidebar (idêntica à das demais telas, para manter a navegação consistente) ===== */
         .sidebar {
             width: 280px;
             background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
@@ -113,11 +103,13 @@ Desempenho · HTML
         .user .info b { display: block; font-size: 15px; }
         .user .info span { font-size: 13px; opacity: 0.9; }
 
-        /* ===== Área principal ===== */
-        .main {
-            flex: 1;
-            padding: 50px 60px;
-            overflow-y: auto;
+      .main {
+        flex: 1;
+        padding: 40px 60px;           
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;           
         }
 
         .main h1 {
@@ -165,29 +157,21 @@ Desempenho · HTML
             flex-shrink: 0;
         }
 
-        /* ALTERADO: a classe ".diagnostico" virou ".questoes", pois o card de cima
-           não mostra mais o índice do Diagnóstico e sim o índice das Questões
-           de recomendação (feitas em 9QuestoesAlunos). A cor verde foi mantida. */
         .resumo-card.questoes .icone { background: #e6f7f0; color: #3ec98a; }
         .resumo-card.simulado .icone { background: #eaf1ff; color: #3aa4e8; }
-
-        /* NOVO: título de cada seção (bloco "Simulados" e bloco "Questões de Recomendação")
-           que fica acima da grade de 4 disciplinas de cada bloco. */
-        .secao-desempenho { margin-bottom: 40px; }               /* espaço entre uma seção e outra */
+        .secao-desempenho { margin-bottom: 40px; }               
         .secao-desempenho h2 {
-            font-size: 20px;                                     /* tamanho do título da seção */
-            font-weight: 700;                                    /* negrito, para destacar do restante */
-            color: #1f2a3a;                                      /* mesma cor escura usada nos outros títulos */
-            margin-bottom: 6px;                                  /* espaço entre o título e o subtítulo */
+            font-size: 20px;                                    
+            font-weight: 700;                                    
+            color: #1f2a3a;                                      
+            margin-bottom: 6px;                                  
         }
         .secao-desempenho .subtitulo {
-            font-size: 14px;                                     /* texto auxiliar, menor que o título */
-            color: #6b7d90;                                      /* cinza, igual aos rótulos dos cards */
-            margin-bottom: 20px;                                 /* espaço até a grade de cards */
+            font-size: 14px;                                     
+            color: #6b7d90;                                      
+            margin-bottom: 20px;                                 
         }
 
-        /* NOVO: ícone de disciplina dentro de cada card de área (mesmo padrão visual
-           usado na tela "Sala de Aula", reaproveitando as mesmas 4 cores/ícones). */
         .disciplina-icone {
             width: 40px;                                         /* tamanho do círculo do ícone */
             height: 40px;
@@ -197,8 +181,7 @@ Desempenho · HTML
             justify-content: center;
             margin-bottom: 14px;                                 /* espaço entre o ícone e o título da disciplina */
         }
-        /* NOVO: cores de fundo de cada disciplina — iguais às usadas em Sala_de_Aula.html,
-           para manter o mesmo modelo visual em todo o sistema. */
+        
         .icon-matematica { background: #e7f1fd; }
         .icon-portugues  { background: #e5f7ee; }
         .icon-natureza   { background: #f2ebfd; }
@@ -394,14 +377,9 @@ Desempenho · HTML
             </div>
         </aside>
 
-        <!-- ===== Conteúdo principal ===== -->
         <main class="main">
             <h1>DESEMPENHO</h1>
             <div class="titulo-bar"></div>
-
-            <!-- ALTERADO: o card da Avaliação Diagnóstica foi removido (ela não existe mais
-                 na tela de Desempenho). No lugar dele, este card mostra o índice das
-                 Questões de recomendação, respondidas na página Questões (9QuestoesAluno). ===== -->
             <div class="resumo-cards">
                 <div class="resumo-card questoes">
                     <div class="icone"><i class="fas fa-lightbulb"></i></div>
@@ -438,12 +416,6 @@ Desempenho · HTML
                 </div>
             </div>
 
-            <!-- ALTERADO: no lugar de um único grid "gridAreas" com Diagnóstico/Simulado,
-                 agora existem DUAS seções separadas, cada uma com 4 cards fixos
-                 (Matemática, Português, Ciências da Natureza, Ciências Humanas). -->
-
-            <!-- NOVO: seção com o índice dos SIMULADOS (aplicados na Sala de Aula),
-                 separado por disciplina. -->
             <section class="secao-desempenho">
                 <h2>Simulados por Disciplina</h2>
                 <span class="subtitulo">Desempenho nos simulados aplicados na Sala de Aula</span>
@@ -455,8 +427,7 @@ Desempenho · HTML
                 </div>
             </section>
 
-            <!-- NOVO: seção com o índice das QUESTÕES DE RECOMENDAÇÃO
-                 (respondidas na página Questões), separado por disciplina. -->
+
             <section class="secao-desempenho">
                 <h2>Questões de Recomendação por Disciplina</h2>
                 <span class="subtitulo">Desempenho nas questões recomendadas, respondidas em Questões</span>
@@ -474,11 +445,6 @@ Desempenho · HTML
         // ===== CONFIGURAÇÃO =====
         const API_URL = 'http://localhost:3000';
 
-        // NOVO: metadados visuais (nome de exibição, classe de cor e ícone SVG) de cada
-        // uma das 4 disciplinas fixas do sistema. Usa exatamente os mesmos ícones/cores
-        // já usados na tela "Sala de Aula", para manter o mesmo modelo de interface.
-        // As chaves ('matematica', 'portugues', 'natureza', 'humanas') são as mesmas
-        // chaves devolvidas pelo backend em /api/desempenho/:id_estudante.
         const DISCIPLINAS_UI = {
             matematica: {
                 nome: 'Matemática', // nome exibido no card
