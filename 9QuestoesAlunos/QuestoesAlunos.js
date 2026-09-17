@@ -87,7 +87,7 @@ function renderizarQuestao() {
     document.getElementById('barraProgresso').style.width = `${progresso}%`;
 
     // Exibe o enunciado da questão
-    document.getElementById('enunciadoBox').innerHTML =`<p>${questao.enunciado}</p>`;
+    document.getElementById('enunciadoBox').innerHTML = questao.enunciado.replace(/\n/g, '<br>');
 
     // Obtém o container onde serão colocadas as alternativas
     const alternativesContainer = document.getElementById('alternativesContainer');
