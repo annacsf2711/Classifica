@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -259,7 +259,6 @@ app.get('/api/questoes/:materia', async (req, res) => {
             FROM classifica.exercicio e
             INNER JOIN classifica.area_conhecimento a ON e.id_area = a.id_area
             WHERE LOWER(a.nome_area) LIKE LOWER($1)
-            LIMIT 15
         `;
 
         const { rows } = await pool.query(query, [`%${nomeArea}%`]);

@@ -174,3 +174,8 @@ window.abrirSalaDeAula = async function(event) {
       alert("Erro ao verificar turma.");
   }
 }
+
+// ===================================== Voltar Tela de início ===================================================
+window.voltarLogin = function () {
+    window.location.href = "../2LoginAluno/LoginAluno.html";
+};

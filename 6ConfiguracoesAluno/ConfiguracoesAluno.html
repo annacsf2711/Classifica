@@ -282,6 +282,33 @@
     border-color: #fed7d7;
   }
 
+  .config-card{
+    position: relative;
+  }
+
+  .btn-fechar{
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+  }
+
+  .btn-fechar:hover{
+      color: #dc2626;
+  }
+
+  .btn-fechar .material-symbols-outlined{
+      font-size: 34px;
+  }
+
+
   /* Responsive */
   @media (max-width: 900px) {
     .container { flex-direction: column; }
@@ -401,6 +428,14 @@
           <button type="button" class="btn-submit" id="modificar">Modificar</button>
           <button type="button" class="btn-desativar" id="desativar" title="Desativa a conta. Seus dados permanecem salvos e você poderá reativá-la futuramente.">Desativar Usuário</button>
           <button type="button" class="btn-delete" id="deletar" title="Exclui permanentemente a conta e todos os dados associados. Esta ação não poderá ser desfeita.">Excluir Usuário</button>
+          <button
+            class="btn-fechar"
+            type="button"
+            onclick="voltarLogin()">
+
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        
         </div>
       </div>
     </main>
