@@ -7,11 +7,15 @@ const app = express(); // cria o servidor
 // permitir comunicação com o navegador
 app.use(cors());
 app.use(express.json());
+// para adicionar imagem nas questões 
+app.use('/Imagens', express.static('Imagens'));
+
+
 
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -602,6 +606,7 @@ app.get('/api/questoes', async (req, res) => {
         alternativa_c,
         alternativa_d,
         alternativa_correta
+        imagem
        FROM classifica.avaliacao_diagnostica 
        LIMIT $1`,
       [limite]
