@@ -605,7 +605,7 @@ app.get('/api/questoes', async (req, res) => {
         alternativa_b,
         alternativa_c,
         alternativa_d,
-        alternativa_correta
+        alternativa_correta,
         imagem
        FROM classifica.avaliacao_diagnostica 
        LIMIT $1`,
