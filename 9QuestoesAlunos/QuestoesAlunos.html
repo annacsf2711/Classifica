@@ -214,6 +214,28 @@
 
     .btn-practice:hover { opacity: 0.9; }
 
+    .btn-fechar{
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+    }
+
+    .btn-fechar:hover{
+        color: #dc2626;
+    }
+
+    .btn-fechar .material-symbols-outlined{
+        font-size: 34px;
+    }
+
   </style>
 </head>
 <body>
@@ -350,11 +372,21 @@
           </div>
         </div>
       </div>
+        <button
+          class="btn-fechar"
+          type="button"
+          onclick="voltarLogin()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
     </main>
   </div>
 
   <script>
-    
+  // ===================================== Voltar Tela de início ===================================================
+  window.voltarLogin = function () {
+      window.location.href = "../2LoginAluno/LoginAluno.html";
+  };
+
     function iniciarQuestoes(materia) {
       window.location.href = `PaginaQuestoesAluno.html?materia=${materia}`;
     }
