@@ -1,105 +1,120 @@
-const API_URL = 'http://localhost:3000';
+const idTurma = localStorage.getItem('idTurma');
+const idProfessor = localStorage.getItem('idProfessor');
 
-// pega o id da turma que veio na URL (?idTurma=123)
-const params = new URLSearchParams(window.location.search);
-const idTurma = params.get('idTurma');
+async function buscarJSON(url) { // Função genérica para fazer requisições GET e retornar JSON
+  const resposta = await fetch(url); // Faz a requisição para a URL informada
 
-// pega o id do professor logado, salvo no navegador após o login
-const idProfessor = localStorage.getItem("idProfessor");
-
-console.log("ID Turma:", idTurma);
-
-// ---- Nome do professor (mesmo padrão da tela de turmas) ----
-if (idProfessor) {
-  fetch(`${API_URL}/professor/${idProfessor}`)
-    .then(async resposta => {
-      if (!resposta.ok) {
-        const mensagem = await resposta.text();
-        throw new Error(mensagem);
-      }
-      return resposta.json();
-    })
-    .then(professor => {
-      document.getElementById("nomeProfessor").textContent = professor.nome;
-      document.getElementById("avatarInicial").textContent = professor.nome.charAt(0).toUpperCase();
-    })
-    .catch(erro => console.error("Erro ao buscar professor:", erro));
+  if (!resposta.ok) {
+    throw new Error(await resposta.text());
+  }
+  return resposta.json();
 }
 
-// ---- Dados da turma (nome, disciplina, código) ----
-async function carregarTurma() {
+// ==================== CARREGAR DADOS DO PROFESSOR ====================
+async function carregarProfessor() {
+  // Se não houver professor logado, encerra a função
+  if (!idProfessor) return;
+
   try {
-    const resposta = await fetch(`${API_URL}/turma/${idTurma}`);
+    const professor = await buscarJSON(`http://localhost:3000/professor/${idProfessor}`);
 
-    if (!resposta.ok) {
-      const mensagem = await resposta.text();
-      throw new Error(mensagem);
-    }
-
-    const turma = await resposta.json();
-
-    document.getElementById("nomeTurmaTitulo").textContent = turma.nome;
-    document.getElementById("disciplinaTurma").textContent = `Disciplina: ${turma.disciplina}`;
-    document.getElementById("codigoTurma").textContent = `Código: ${turma.codigo}`;
+    document.getElementById('nomeProfessor').textContent = professor.nome; // Exibe o nome do professor na tela
+    document.getElementById('avatarInicial').textContent = professor.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
 
   } catch (erro) {
-    console.error("Erro ao buscar turma:", erro);
-    document.getElementById("nomeTurmaTitulo").textContent = "Turma";
+    console.error('Erro ao buscar professor:', erro);
   }
 }
 
-// ---- Lista de alunos da turma, no mesmo estilo do "Seus Colegas" do aluno ----
-async function carregarAlunosDaTurma() {
-  const grid = document.getElementById('alunosGrid');
+// ==================== CARREGAR DADOS DA TURMA ====================
+async function carregarTurma() {
 
   try {
-    // ajuste esta rota para o endpoint real do seu backend, se o nome for diferente
-    const resposta = await fetch(`${API_URL}/alunosTurma/${idTurma}`);
+    // Busca as informações da turma
+    const turma = await buscarJSON(`http://localhost:3000/turma/${idTurma}?idProfessor=${encodeURIComponent(idProfessor)}`);
 
-    if (!resposta.ok) {
-      const mensagem = await resposta.text();
-      throw new Error(mensagem);
-    }
+    document.getElementById('nomeTurmaTitulo').textContent = turma.nome; // Exibe o título com o nome da turma
+    document.getElementById('codigoTurma').textContent = `Código: ${turma.codigo}`;// Exibe o código da turma
+    document.getElementById('disciplinaTurma').textContent =`Disciplina: ${turma.especialidade}`;
+    
+  } catch (erro) {
+    console.error('Erro ao buscar turma:', erro);
+    document.getElementById('nomeTurmaTitulo').textContent = 'Turma não encontrada';
+    document.getElementById('metaDisciplina').style.display = 'none'; // ocultar disciplina
+  }
+}
 
-    const alunos = await resposta.json();
+// ==================== EXIBIR MENSAGEM NA GRADE ====================
+function mostrarMensagemGrade(grade, texto) {
 
-    document.getElementById("quantidadeAlunos").textContent =
-      `${alunos.length} aluno${alunos.length === 1 ? '' : 's'}`;
+  grade.innerHTML = ''; // Limpa o conteúdo atual do grid
+
+  const div = document.createElement('div'); // Cria um elemento para mostrar a mensagem
+  div.className = 'estado-vazio-alunos'; // Define a classe CSS
+  div.style.gridColumn = '1 / -1'; // Faz a mensagem ocupar todas as colunas
+  div.textContent = texto; // Define o texto da mensagem
+  grade.appendChild(div); // Adiciona a mensagem na grade
+}
+
+// ==================== CARREGAR ALUNOS DA TURMA ====================
+async function carregarAlunosDaTurma() {
+
+  const grade = document.getElementById('alunosGrade'); // Obtém o container dos alunos
+
+  try {
+    const alunos = await buscarJSON(`http://localhost:3000/alunosTurma/${idTurma}`); // Busca os alunos vinculados à turma
+
+    // Atualiza a quantidade de alunos
+    document.getElementById('quantidadeAlunos').textContent = `${alunos.length} aluno${alunos.length === 1 ? '' : 's'}`;
 
     if (alunos.length === 0) {
-      grid.innerHTML = `
-        <div class="estado-vazio-alunos" style="grid-column: 1 / -1;">
-          Nenhum aluno entrou nessa turma ainda. Compartilhe o código com eles!
-        </div>`;
+      // Exibe mensagem de turma vazia
+      mostrarMensagemGrade(grade, 'Nenhum aluno entrou nessa turma ainda. Compartilhe o código com eles!');
       return;
     }
 
-    grid.innerHTML = '';
+    grade.innerHTML = ''; // Limpa o grid antes de preencher
 
-    alunos.forEach(aluno => {
-      const div = document.createElement('div');
-      div.classList.add('colega-card');
+    alunos.forEach(aluno => {// Percorre todos os alunos encontrados
+      const card = document.createElement('div'); // Cria o card do aluno
+      card.className = 'colega-card'; // Define a classe CSS do card
 
-      div.innerHTML = `
-        <div class="colega-avatar">
-          ${aluno.nome.charAt(0).toUpperCase()}
-        </div>
-        <div class="colega-name">
-          ${aluno.nome}
-        </div>
-      `;
+      const avatar = document.createElement('div');// Cria o avatar
+      avatar.className = 'colega-avatar'; // Define a classe CSS do avatar
 
-      grid.appendChild(div);
+      avatar.textContent = aluno.nome.charAt(0).toUpperCase(); // Mostra a primeira letra do nome
+      const nome = document.createElement('div'); // Cria o elemento do nome
+      nome.className = 'colega-name'; // Define a classe CSS do nome
+      nome.textContent = aluno.nome;  // Exibe o nome do aluno
+      card.append(avatar, nome); // Adiciona avatar e nome ao card
+
+      grade.appendChild(card);// Adiciona o card ao grade
     });
 
   } catch (erro) {
     console.error('Erro ao carregar alunos da turma:', erro);
-    grid.innerHTML = `
-      <div class="estado-vazio-alunos" style="grid-column: 1 / -1;">
-        Erro ao carregar os alunos. Tente novamente.
-      </div>`;
+    mostrarMensagemGrade(grade, 'Erro ao carregar os alunos. Tente novamente.');
   }
 }
 
-carregarTurma();
-carregarAlunosDaTurma();
+// ==================== INICIALIZAÇÃO DA PÁGINA ====================
+
+carregarProfessor();
+
+if (!idTurma || !idProfessor) {// Verifica se existe professor logado e turma selecionada
+  document.getElementById('nomeTurmaTitulo').textContent ='Turma não encontrada';
+  document.getElementById('metaDisciplina').style.display ='none'; // Oculta a disciplina
+  mostrarMensagemGrade(
+    document.getElementById('alunosGrade'),
+    'Abra esta tela a partir de "Minhas Turmas" e faça login como professor.'
+  );
+
+} else {
+  carregarTurma();
+  carregarAlunosDaTurma();
+}
+
+// ===================================== Voltar Tela de início ===================================================
+window.voltarLogin = function () {
+    window.location.href = "../4LoginProfessor/LoginProfessor.html";
+};

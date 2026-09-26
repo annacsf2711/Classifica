@@ -26,7 +26,10 @@ fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o s
   document.getElementById("cep").value = estudante.cep;
   document.getElementById("email").value = estudante.email;
   document.getElementById("senha").value = estudante.senha;
+  
   document.getElementById("nomeUsuario").textContent = estudante.nome;
+  document.getElementById('avatarInicial').textContent = estudante.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
+
   
 })
 .catch(erro => {

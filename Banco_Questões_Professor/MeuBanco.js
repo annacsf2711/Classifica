@@ -24,6 +24,8 @@ fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o s
 
 
   document.getElementById("nomeUsuario").textContent = professor.nome;
+  document.getElementById('avatarInicial').textContent = professor.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
+
   
 })
 .catch(erro => {

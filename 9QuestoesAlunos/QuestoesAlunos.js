@@ -13,7 +13,8 @@ fetch(`http://localhost:3000/estudante/${idEstudante}`)
 .then(estudante => {
     console.log("Estudante:", estudante);
     document.getElementById("nomeUsuario").textContent = estudante.nome || estudante.nome_estudante;
-    })
+    document.getElementById('avatarInicial').textContent = estudante.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
+})
     .catch(error => {
         console.error("Erro:", error);
     });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 <title>Entrar na Sala - Classifica</title>
 
 <style>
@@ -180,6 +180,21 @@
 
   .btn-submit:hover { opacity: 0.9; }
   .btn-submit:active { transform: scale(0.98); }
+  .btn-fechar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+  }
+  .btn-fechar:hover { color: #dc2626; }
+  .btn-fechar .material-symbols-outlined { font-size: 34px; }
 
   @media (max-width: 900px) {
     .container { flex-direction: column; }
@@ -207,34 +222,40 @@
             Dashboard
           </li>
           <li class="active">
-            <a href="../7CodigoSala/CodigoSala.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+            <a href="../8SalaDeAulaProfessor/Turmas.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               Sala de Aula
             </a>
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
-            Meus Simulados
+            <a href="../Meus_Simulados_Professor/Meus_Simulados.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+              Meus Simulados
+            </a>
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            Banco de Questões
+            <a href="../Banco_Questões_Professor/Tela_Banco_Professor.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Banco de Questões
+            </a>
           </li>
           
           <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Configurações
+            <a href="../5ConfiguracoesProf/ConfiguracoesProf.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 14px; width: 100%; height: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Configurações
+            </a>
           </li>
         </ul>
       </div>
 
       <div class="user">
-        <div class="avatar">L</div>
-        <div class="info">
-          <b id="nomeUsuario"></b>
-          <span>Professor(a)</span>
+          <div class="avatar" id="avatarInicial">P</div>
+          <div class="info">
+              <b id="nomeProfessor"></b>
+              <span>Professor(a)</span>
+          </div>
         </div>
-      </div>
     </aside>
 
     <main class="main">
@@ -259,70 +280,88 @@
           <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required autocomplete="off">
         </div>
 
-        <button class="btn-submit" id="btnEntrar" >
+        <button class="btn-submit" id="btnEntrarProf" >
           Entrar na Sala
         </button>
+        <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
       </div>
     </main>
   </div>
 
   <script>
+  const idProfessor = localStorage.getItem("idProfessor");
 
-const idProfessor = localStorage.getItem("idProfessor");
-
-  console.log("ID:", idProfessor);
-
-  fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
-
-  .then(async resposta => {
+  async function buscarJSON(url) {// Faz uma requisição HTTP para a URL informada
+    const resposta = await fetch(url);
     if (!resposta.ok) {
-        const mensagem = await resposta.text();
-        throw new Error(mensagem);
+      throw new Error(await resposta.text());
     }
     return resposta.json();
-    })
+  }
 
+  //CARREGAR PROFESSOR
+  async function carregarProfessor() {
+    if (!idProfessor) return;// Se não houver professor logado, encerra a função
 
-    async function obterCodigoProf() {
+    try {
+      // Busca os dados do professor no servidor
+      const professor = await buscarJSON(`http://localhost:3000/professor/${idProfessor}`);
+      document.getElementById("nomeProfessor").textContent = professor.nome;
+      document.getElementById("avatarInicial").textContent = professor.nome.charAt(0).toUpperCase();
+    } catch (erro) {
+      console.error(erro);
+    }
+  }
+
+  //PEGAR O CÓDIGO DIGITADO PELO PROFESSOR
+  async function obterCodigoProf() {
     const inputs = document.querySelectorAll('.code-input-wrapper input');
 
     let codigo = "";
     inputs.forEach(input => {
-        codigo += input.value;
+      codigo += input.value;
     });
 
     try {
-        const resposta = await fetch("http://localhost:3000/turmaProf", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ codigo })
+        const resposta = await fetch("http://localhost:3000/turmaProf", { // 
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ codigo, idProfessor })
         });
 
         const dados = await resposta.json();
 
         if (dados.salaExistente) {
-            alert(`Bem-vindo à turma ${dados.nomeTurma}`);
+          alert(`Bem-vindo à turma ${dados.nomeTurma}`);
 
-            // salvar informações se quiser usar em outras páginas
-            localStorage.setItem("idTurma", dados.idTurma);
-            localStorage.setItem("nomeTurma", dados.nomeTurma);
-            localStorage.setItem("idProfessor", dados.idProfessor);
+          // salvar informações se quiser usar em outras páginas
+          localStorage.setItem("idTurma", dados.idTurma);
+          localStorage.setItem("nomeTurma", dados.nomeTurma);
 
-            window.location.href="../8SalaDeAulaProfessor/SalaAulaProfessor.html"
+           window.location.href = "../8SalaAulaProfessor/SalaAulaProfessor.html";
+
         } else {
-            alert(dados.mensagem);
+          alert(dados.mensagem);
         }
 
     } catch (erro) {
-        console.error("Erro:", erro);
-        alert("Erro ao conectar ao servidor.");
+      console.error("Erro:", erro);
+      alert("Erro ao conectar ao servidor.");
     }
 
     return codigo;
   }
 
-  document.getElementById("btnEntrar").addEventListener("click", obterCodigoProf);
+  document.getElementById("btnEntrarProf").addEventListener("click", obterCodigoProf);
 
+// ===================================== Carregar===================================================
+  window.addEventListener("DOMContentLoaded", () => {
+    carregarProfessor();
+  });
+  // ===================================== Voltar Tela de início ===================================================
+  window.voltarLogin = function () {
+      window.location.href = "../4LoginProfessor/LoginProfessor.html";
+  };
   </script>
 </body>
 </html>

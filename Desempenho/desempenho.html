@@ -6,288 +6,309 @@
     <title>Desempenho - Classifica</title>
     <script type="module" src="desempenho.js" defer></script>
 
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            background: #eef1f5;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+    body {
+        background: #eef1f5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
 
-        /* ===== Container geral (mesmo padrão visual das demais telas do aluno) ===== */
-        .container {
-            display: flex;
-            width: 100%;
-            max-width: 1600px;
-            background: #f5f1e8;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            min-height: 90vh;
-        }
+    /* ===== Container geral (mesmo padrão visual das demais telas do aluno) ===== */
+    .container {
+        display: flex;
+        width: 100%;
+        max-width: 1600px;
+        background: #f5f1e8;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        min-height: 90vh;
+    }
 
-        /* ===== Sidebar (idêntica à das demais telas, para manter a navegação consistente) ===== */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
-            color: #fff;
-            padding: 40px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
+    /* ===== Sidebar (idêntica à das demais telas, para manter a navegação consistente) ===== */
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #3aa4e8 0%, #3ec98a 100%);
+        color: #fff;
+        padding: 40px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
 
-        .brand { text-align: center; margin-bottom: 40px; }
-        .brand .badge {
-            width: 44px; height: 44px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center; justify-content: center;
-            margin-bottom: 12px;
-        }
-        .brand h1 { font-size: 28px; font-weight: 700; }
+    .brand { text-align: center; margin-bottom: 40px; }
+    .brand .badge {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        margin-bottom: 12px;
+    }
+    .brand h1 { font-size: 28px; font-weight: 700; }
 
-        .nav { list-style: none; }
-        .nav li {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 18px;
-            margin-bottom: 8px;
-            border-radius: 10px;
-            font-size: 17px;
-            cursor: pointer;
-            transition: background .2s;
-        }
-        .nav li a {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            width: 100%;
-            height: 100%;
-            color: inherit;
-            text-decoration: none;
-        }
-        .nav li:hover { background: rgba(255,255,255,0.12); }
-        .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
-        .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
+    .nav { list-style: none; }
+    .nav li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        font-size: 17px;
+        cursor: pointer;
+        transition: background .2s;
+    }
+    .nav li a {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+        height: 100%;
+        color: inherit;
+        text-decoration: none;
+    }
+    .nav li:hover { background: rgba(255,255,255,0.12); }
+    .nav li.active { background: rgba(255,255,255,0.22); font-weight: 600; }
+    .nav li svg { width: 22px; height: 22px; flex-shrink: 0; }
 
-        .user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 30px;
-        }
-        .user .avatar {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            background: #fff;
-            color: #3aa4e8;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 20px;
-        }
-        .user .info { line-height: 1.3; }
-        .user .info b { display: block; font-size: 15px; }
-        .user .info span { font-size: 13px; opacity: 0.9; }
+    .user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 30px;
+    }
+    .user .avatar {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: #fff;
+        color: #3aa4e8;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 20px;
+    }
+    .user .info { line-height: 1.3; }
+    .user .info b { display: block; font-size: 15px; }
+    .user .info span { font-size: 13px; opacity: 0.9; }
 
-        /* ===== Área principal ===== */
-        .main {
-            flex: 1;
-            padding: 50px 60px;
-            overflow-y: auto;
-        }
+    /* ===== Área principal ===== */
+    .main {
+        flex: 1;
+        padding: 50px 60px;
+        overflow-y: auto;
+    }
 
-        .main h1 {
-            font-size: 28px;
-            color: #1f2a3a;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
+    .main h1 {
+        font-size: 28px;
+        color: #1f2a3a;
+        margin-bottom: 25px;
+        font-weight: 700;
+    }
 
-        .titulo-bar {
-            width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, #3aa4e8, #3ec98a);
-            border-radius: 4px;
-            margin-bottom: 30px;
-        }
+    .titulo-bar {
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #3aa4e8, #3ec98a);
+        border-radius: 4px;
+        margin-bottom: 30px;
+    }
 
-        /* ===== Cards de resumo (substituem XP e Sequência: aqui ficam os índices de Diagnóstico e Simulado) ===== */
-        .resumo-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 35px;
-        }
+    /* ===== Cards de resumo (substituem XP e Sequência: aqui ficam os índices de Diagnóstico e Simulado) ===== */
+    .resumo-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 35px;
+    }
 
-        .resumo-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid #eef2f8;
-        }
+    .resumo-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        border: 1px solid #eef2f8;
+    }
 
-        .resumo-card .icone {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
+    .resumo-card .icone {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
 
-        .resumo-card.diagnostico .icone { background: #e6f7f0; color: #3ec98a; }
-        .resumo-card.simulado .icone { background: #eaf1ff; color: #3aa4e8; }
+    .resumo-card.diagnostico .icone { background: #e6f7f0; color: #3ec98a; }
+    .resumo-card.simulado .icone { background: #eaf1ff; color: #3aa4e8; }
 
-        .resumo-card .texto span {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #6b7d90;
-            letter-spacing: 0.3px;
-        }
-        .resumo-card .texto strong {
-            font-size: 26px;
-            color: #1f2a3a;
-            font-weight: 700;
-        }
+    .resumo-card .texto span {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7d90;
+        letter-spacing: 0.3px;
+    }
+    .resumo-card .texto strong {
+        font-size: 26px;
+        color: #1f2a3a;
+        font-weight: 700;
+    }
 
-        /* ===== Card geral (índice geral de desempenho) ===== */
-        .card-geral {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 30px 40px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            margin-bottom: 40px;
-            border: 1px solid #eef2f8;
-        }
+    /* ===== Card geral (índice geral de desempenho) ===== */
+    .card-geral {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px 40px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        margin-bottom: 40px;
+        border: 1px solid #eef2f8;
+    }
 
-        .card-geral .anel {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            flex-shrink: 0;
-        }
-        .card-geral .anel svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-        .card-geral .anel .valor-central {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .card-geral .anel .valor-central .taxa {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1f2a3a;
-        }
-        .card-geral .anel .valor-central .classificacao {
-            font-size: 13px;
-            font-weight: 700;
-            color: #3ec98a;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+    .card-geral .anel {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        flex-shrink: 0;
+    }
+    .card-geral .anel svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .card-geral .anel .valor-central {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-geral .anel .valor-central .taxa {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1f2a3a;
+    }
+    .card-geral .anel .valor-central .classificacao {
+        font-size: 13px;
+        font-weight: 700;
+        color: #3ec98a;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
 
-        .card-geral .info h2 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #6b7d90;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .card-geral .info .parabens {
-            font-size: 17px;
-            color: #3d4d5e;
-            line-height: 1.5;
-        }
+    .card-geral .info h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #6b7d90;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+    .card-geral .info .parabens {
+        font-size: 17px;
+        color: #3d4d5e;
+        line-height: 1.5;
+    }
 
-        /* ===== Grid de matérias/áreas ===== */
-        .grid-areas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-        }
+    /* ===== Grid de matérias/áreas ===== */
+    .grid-areas {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+    }
 
-        .card-area {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px 28px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid #eef2f8;
-            transition: transform 0.2s;
-        }
-        .card-area:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-        }
+    .card-area {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px 28px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border: 1px solid #eef2f8;
+        transition: transform 0.2s;
+    }
+    .card-area:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
 
-        .card-area h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2a3a;
-            margin-bottom: 16px;
-            letter-spacing: 0.3px;
-        }
+    .card-area h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2a3a;
+        margin-bottom: 16px;
+        letter-spacing: 0.3px;
+    }
 
-        .card-area .item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 15px;
-            color: #3d4d5e;
-            border-bottom: 1px solid #f0f4fa;
-        }
-        .card-area .item:last-child { border-bottom: none; }
-        .card-area .item .label { font-weight: 400; color: #6b7d90; }
-        .card-area .item .valor { font-weight: 600; color: #1f2a3a; }
+    .card-area .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 15px;
+        color: #3d4d5e;
+        border-bottom: 1px solid #f0f4fa;
+    }
+    .card-area .item:last-child { border-bottom: none; }
+    .card-area .item .label { font-weight: 400; color: #6b7d90; }
+    .card-area .item .valor { font-weight: 600; color: #1f2a3a; }
 
-        .card-area .taxa-destaque {
-            font-size: 28px;
-            font-weight: 700;
-            color: #4a7cf7;
-            margin: 8px 0 12px 0;
-        }
+    .card-area .taxa-destaque {
+        font-size: 28px;
+        font-weight: 700;
+        color: #4a7cf7;
+        margin: 8px 0 12px 0;
+    }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #6b7d90;
-            font-size: 18px;
-        }
-        .loading i {
-            font-size: 32px;
-            margin-bottom: 12px;
-            display: block;
-            color: #4a7cf7;
-        }
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #6b7d90;
+        font-size: 18px;
+    }
+    .loading i {
+        font-size: 32px;
+        margin-bottom: 12px;
+        display: block;
+        color: #4a7cf7;
+    }
+    .btn-fechar{
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+    }
+
+    .btn-fechar:hover{
+        color: #dc2626;
+    }
+
+    .btn-fechar .material-symbols-outlined{
+        font-size: 34px;
+    }
 
         @media (max-width: 900px) {
             .container { flex-direction: column; }
@@ -400,6 +421,7 @@
                     Carregando dados...
                 </div>
             </div>
+            <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
         </main>
     </div>
 

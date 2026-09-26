@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Turma - Classifica</title>
 <script type="module" src="SalaAulaProfessor.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -198,6 +199,22 @@
     color: #7c8698;
   }
 
+  .btn-fechar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+  }
+  .btn-fechar:hover { color: #dc2626; }
+  .btn-fechar .material-symbols-outlined { font-size: 34px; }
+
   @media (max-width: 1000px) {
     .colegas-grid { grid-template-columns: repeat(3, 1fr); }
   }
@@ -225,14 +242,18 @@
 
         <ul class="nav">
           <li>
-            <a href="Tela_Turmas.html">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-              Dashboard
-            </a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
           </li>
           <li class="active">
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             Sala de Aula
+          </li>
+          <li>
+            <a href="../Meus_Simulados_Professor/Meus_Simulados.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6M5 6h14v16H5z"/></svg>
+              Meus Simulados
+            </a>
           </li>
           <li>
             <a href="../Banco_Questões_Professor/Tela_Banco_Professor.html">
@@ -259,7 +280,7 @@
     </aside>
 
     <main class="main">
-      <a class="voltar" href="Tela_Turmas.html">
+      <a class="voltar" href="Turmas.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         Voltar para Minhas Turmas
       </a>
@@ -277,8 +298,10 @@
 
       <h2 class="section-title">Alunos da Turma</h2>
       <div class="colegas-panel">
-        <div class="colegas-grid" id="alunosGrid"></div>
+        <div class="colegas-grid" id="alunosGrade"></div>
       </div>
+      <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
+
     </main>
   </div>
 

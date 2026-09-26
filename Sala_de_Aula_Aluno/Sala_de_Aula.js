@@ -22,6 +22,8 @@ fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o s
 
 
   document.getElementById("nomeUsuario").textContent = estudante.nome;
+  document.getElementById('avatarInicial').textContent = estudante.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
+
   
 })
 .catch(erro => {
@@ -169,3 +171,7 @@ document.getElementById('modalSimulados').addEventListener('click', (e) => {
 });
 
 carregarDisciplinas();
+// ===================================== Voltar Tela de início ===================================================
+window.voltarLogin = function () {
+    window.location.href = "../2LoginAluno/LoginAluno.html";
+};

@@ -7,10 +7,7 @@
 <script type="module" src="ConfiguracoesAluno.js" defer></script>
 <script type="module" src="../DataCepCpf.js" defer></script>
 
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -365,7 +362,7 @@
       </div>
 
       <div class="user">
-        <div class="avatar">L</div>
+        <div class="avatar" id="avatarInicial">?</div>
         <div class="info">
           <b id="nomeUsuario"></b>
           <span>Estudante</span>
@@ -427,17 +424,10 @@
         <div class="form-actions">
           <button type="button" class="btn-submit" id="modificar">Modificar</button>
           <button type="button" class="btn-desativar" id="desativar" title="Desativa a conta. Seus dados permanecem salvos e você poderá reativá-la futuramente.">Desativar Usuário</button>
-          <button type="button" class="btn-delete" id="deletar" title="Exclui permanentemente a conta e todos os dados associados. Esta ação não poderá ser desfeita.">Excluir Usuário</button>
-          <button
-            class="btn-fechar"
-            type="button"
-            onclick="voltarLogin()">
-
-            <span class="material-symbols-outlined">close</span>
-          </button>
-        
+          <button type="button" class="btn-delete" id="deletar" title="Exclui permanentemente a conta e todos os dados associados. Esta ação não poderá ser desfeita.">Excluir Usuário</button>        
         </div>
       </div>
+      <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
     </main>
   </div>
 </body>

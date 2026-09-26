@@ -27,7 +27,9 @@ fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o s
   document.getElementById("email").value = professor.email;
   document.getElementById("disciplina").value = professor.especialidade;
   document.getElementById("senha").value = professor.senha;
+  
   document.getElementById("nomeUsuario").textContent = professor.nome;
+  document.getElementById('avatarInicial').textContent = professor.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
   
 })
 .catch(erro => {
@@ -176,4 +178,9 @@ window.abrirSalaDeAula = async function(event) {
       console.error(erro);
       alert("Erro ao verificar turma.");
     }
+};
+
+// ===================================== Voltar Tela de início ===================================================
+window.voltarLogin = function () {
+    window.location.href = "../4LoginProfessor/LoginProfessor.html";
 };

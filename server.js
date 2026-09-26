@@ -11,7 +11,7 @@ app.use(express.json());
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -42,7 +42,7 @@ app.post('/cadastrarAluno', async (req, res) => {
     res.status(500).send("Erro ao salvar no banco");
   }
 });
-// ===================== LOGIN ALUNO =====================
+// ===================== LOGIN ALUNO =========================
 app.post('/loginAluno', async (req, res) => {
 
   console.log("Dados recebidos no login", req.body);
@@ -92,7 +92,7 @@ app.post('/loginAluno', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
-// ===================== CONFIG ALUNO =====================
+// ===================== CONFIG ALUNO ========================
 app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_estudante} = req.params;   // pega o id 
 
@@ -239,7 +239,7 @@ app.post('/turmaEstudante', async (req, res) => {
     res.status(500).send("Erro ao entrar na turma");
   }
 });
-// ===================== QUESTÕES POR MATÉRIA ALUNO =====================
+// ===================== QUESTÕES POR MATÉRIA ALUNO ===============
 app.get('/api/questoes/:materia', async (req, res) => {
     const { materia } = req.params;
 
@@ -259,6 +259,7 @@ app.get('/api/questoes/:materia', async (req, res) => {
             FROM classifica.exercicio e
             INNER JOIN classifica.area_conhecimento a ON e.id_area = a.id_area
             WHERE LOWER(a.nome_area) LIKE LOWER($1)
+            ORDER BY e.id_exercicio
         `;
 
         const { rows } = await pool.query(query, [`%${nomeArea}%`]);
@@ -269,7 +270,7 @@ app.get('/api/questoes/:materia', async (req, res) => {
     }
 });
 app.use(express.static('9QuestoesAlunos'));
-// ===================== SALVAR RESPOSTAS DAS QUESTÕES ALUNO =====================
+// ===================== SALVAR RESPOSTAS DAS QUESTÕES ALUNO ======
 app.post('/api/respostasQuestoes', async (req, res) => {
     try { const { id_estudante, respostas } = req.body;
       if (!id_estudante || !respostas || !Array.isArray(respostas)) {
@@ -301,7 +302,7 @@ app.post('/api/respostasQuestoes', async (req, res) => {
     }
 });
 
-// ===================== CPF e E-mail conferir se existem =====================
+// ===================== CPF e E-mail conferir se existem =========
 app.post("/verificarCadastroAluno", async (req, res) => {
     // Recebe CPF e e-mail enviados pelo frontend
     const { cpf, email } = req.body;
@@ -367,7 +368,7 @@ app.post("/verificarCadastroProf", async (req, res) => {
     }
 });
 
-// ===================== CADASTRAR PROF =====================
+// ===================== CADASTRAR PROF ===========================
 app.post('/cadastrarProf', async (req, res) => {
   console.log("Dados recebidos no servidor:", req.body);
   const { nome, cep, cpf, disciplina, dataNascimento, email, senha } = req.body;
@@ -385,7 +386,7 @@ app.post('/cadastrarProf', async (req, res) => {
     res.status(500).send("Erro ao salvar no banco");
   }
 });
-// ===================== LOGIN PROF =====================
+// ===================== LOGIN PROF ==============================
 app.post('/loginProf', async (req, res) => {
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
@@ -435,7 +436,7 @@ app.post('/loginProf', async (req, res) => {
     res.status(500).send("Erro ao processar o login no banco");
   }
 });
-// ===================== CONFIG PROF =====================
+// ===================== CONFIG PROF ==============================
 app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_professor} = req.params;   // pega o id 
 
@@ -457,7 +458,7 @@ app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os
     res.status(500).send("Erro ao buscar professor");
   }
 });
-// ===================== Desativar PROF =====================
+// ======='============== Desativar PROF ===========================
 app.put("/desativarProfessor/:id_professor", async (req, res) => {
   
   const {id_professor} = req.params;
@@ -472,7 +473,7 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
     res.status(500).send("Erro ao desativar");
   }
 });
-// ===================== Deletar PROF =====================
+// ===================== Deletar PROF ==============================
 app.delete("/deletarProfessor/:id_professor", async (req, res) => {
   const { id_professor } = req.params;
 
@@ -497,7 +498,7 @@ app.delete("/deletarProfessor/:id_professor", async (req, res) => {
     res.status(500).send("Erro ao excluir professor");
   }
 });
-// ===================== Reativar Professor =====================
+// ===================== Reativar Professor ========================
 app.put('/reativarProfessor/:id_professor', async (req, res) => {
     const { id_professor } = req.params;
     try {
@@ -521,68 +522,133 @@ app.put('/reativarProfessor/:id_professor', async (req, res) => {
 });
 // ===================== Código Turma Professor =====================
 app.post('/turmaProf', async (req, res) => {
-  console.log("Dados recebidos da turma", req.body);
+  const { codigo, idProfessor } = req.body;
 
-  const { codigo } = req.body;
   try {
-    const resultado = await pool.query(
-    `SELECT pt.id_professor, t.idturma, t.nome
-    FROM classifica.turma t
-    INNER JOIN classifica.professor_turma pt
-    ON pt.idturma = t.idturma
-    WHERE t.codigo = $1`,
-    [codigo]
-  );
+    const turma = await pool.query(
+      `SELECT idturma, nome
+       FROM classifica.turma
+       WHERE codigo = $1`,
+      [codigo]
+    );
 
-    if (resultado.rows.length > 0) {
-      res.json({
-        salaExistente: true,
-        mensagem: "Sala existente",
-        idProfessor: resultado.rows[0].id_professor,
-        idTurma: resultado.rows[0].idturma,
-        nomeTurma: resultado.rows[0].nome
-      });
-    } else {
-      res.status(404).json({
+    if (turma.rows.length === 0) {
+      return res.status(404).json({
         salaExistente: false,
         mensagem: "Sala inexistente"
       });
     }
 
+    const idTurma = turma.rows[0].idturma;
+
+    await pool.query(
+      `INSERT INTO classifica.professor_turma
+       (id_professor, idturma)
+       VALUES ($1, $2)`,
+      [idProfessor, idTurma]
+    );
+
+    res.json({
+      salaExistente: true,
+      mensagem: "Professor vinculado à turma",
+      idProfessor,
+      idTurma,
+      nomeTurma: turma.rows[0].nome
+    });
+
   } catch (erro) {
     console.error(erro);
-    res.status(500).send("Erro ao processar o código no banco");
+    res.status(500).send("Erro ao entrar na turma");
   }
 });
 // ===================== ENTRAR TURMA PROFESSOR =====================
 app.get('/professor/:id/turma', async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const resultado = await pool.query(
-            `SELECT idturma FROM classifica.professor_turma
-             WHERE id_professor = $1`,
-            [id]
-        );
-        if (resultado.rows.length === 0) {
-            return res.json({
-                possuiTurma: false
-            });
-        }
-        res.json({
-            possuiTurma: true,
-            id_turma: resultado.rows[0].idturma
-        });
-    } catch (erro) {
-        console.error(erro);
-        res.status(500).json({
-            erro: "Erro ao buscar turma"
-        });
+  try {
+    const resultado = await pool.query(
+      `SELECT idturma
+       FROM classifica.professor_turma
+       WHERE id_professor = $1`,
+      [id]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.json({
+        possuiTurma: false
+      });
     }
+
+    res.json({
+      possuiTurma: true,
+      id_turma: resultado.rows[0].idturma
+    });
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).json({
+      erro: "Erro ao buscar turma"
+    });
+  }
 });
+// ============ TURMA PROFESSORES ===================================
+app.get('/turmasProfessor/:idProfessor', async (req, res) => {
+  const idProfessor = Number(req.params.idProfessor);
+  if (!idProfessor) return res.status(400).send('ID inválido');
 
+  try {
+    const { rows } = await pool.query(
+      `SELECT t.idturma, t.codigo, t.nome
+         FROM classifica.turma t
+         JOIN classifica.professor_turma pt ON pt.idturma = t.idturma
+        WHERE pt.id_professor = $1
+        ORDER BY t.nome`,
+      [idProfessor]
+    );
+    res.json(rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send('Erro ao buscar turmas');
+  }
+});
+// ================= BUSCANDO TURMAS ================================
+app.get('/turma/:idTurma', async (req, res) => {
+  const idTurma = Number(req.params.idTurma);
+  const idProfessor = Number(req.query.idProfessor);
+  if (!idTurma || !idProfessor) return res.status(400).send('ID inválido');
 
+  try {
+    const { rows } = await pool.query(
+      `SELECT t.idturma,t.codigo, t.nome, p.especialidade
+      FROM classifica.turma t
+      JOIN classifica.professor_turma pt ON pt.idturma = t.idturma
+      JOIN classifica.professor p ON p.id_professor = pt.id_professor
+      WHERE t.idturma = $1 AND pt.id_professor = $2`,
+      [idTurma, idProfessor]
+    );
+    if (rows.length === 0) return res.status(404).send('Turma não encontrada');
+    res.json(rows[0]);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send('Erro ao buscar turma');
+  }
+});
+// ============== PEGANDO ALUNOS DA TURMA ===========================
+app.get('/alunosTurma/:idTurma', async (req, res) => {
+  const idTurma = Number(req.params.idTurma);
+  if (!idTurma) return res.status(400).send('ID inválido');
 
+  try {
+    const { rows } = await pool.query(
+      'SELECT nome FROM classifica.estudante WHERE id_turma = $1 ORDER BY nome',
+      [idTurma]
+    );
+    res.json(rows);
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send('Erro ao buscar alunos');
+  }
+});
 
 
 

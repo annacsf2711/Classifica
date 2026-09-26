@@ -215,3 +215,8 @@
     function selecionarTurma(idTurma) {
       turmaSelecionada = idTurma;
     }
+
+// ===================================== Voltar Tela de início ===================================================
+window.voltarLogin = function () {
+    window.location.href = "../4LoginProfessor/LoginProfessor.html";
+};

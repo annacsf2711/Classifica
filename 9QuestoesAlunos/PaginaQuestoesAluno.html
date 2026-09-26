@@ -281,7 +281,7 @@
       </div>
 
       <div class="user">
-        <div class="avatar">L</div>
+        <div class="avatar" id="avatarInicial">?</div>
         <div class="info">
           <b id="nomeUsuario"></b>
           <span>Estudante</span>
@@ -319,7 +319,7 @@
     </main>
   </div>
     <script>
-    // ===================================== Pegar ID ===================================================
+ // ===================================== Pegar ID ===================================================
         const idEstudante = localStorage.getItem("idEstudante");
 
         console.log("ID:", idEstudante);
@@ -338,8 +338,8 @@
 
             console.log("Estudante:", estudante);
 
-            document.getElementById("nomeUsuario").textContent =
-                estudante.nome || estudante.nome_estudante;
+            document.getElementById("nomeUsuario").textContent = estudante.nome || estudante.nome_estudante;
+            document.getElementById('avatarInicial').textContent = estudante.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
 
         })
         .catch(error => {

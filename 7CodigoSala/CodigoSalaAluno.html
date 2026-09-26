@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Entrar na Sala - Classifica</title>
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -180,6 +180,23 @@
   .btn-submit:hover { opacity: 0.9; }
   .btn-submit:active { transform: scale(0.98); }
 
+  .btn-fechar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  }
+  .btn-fechar:hover { color: #dc2626; }
+  .btn-fechar .material-symbols-outlined { font-size: 34px; }
+
+
   @media (max-width: 900px) {
     .container { flex-direction: column; }
     .sidebar { width: 100%; }
@@ -294,6 +311,7 @@
                 close
             </span>
         </button>
+        <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
       </div>
     </main>
   </div>

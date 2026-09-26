@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Classifica - Sala de Aula</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -413,6 +414,27 @@
   .colega-btn:hover {
     background: #d7deff;
   }
+  .btn-fechar{
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+  }
+
+  .btn-fechar:hover{
+      color: #dc2626;
+  }
+
+  .btn-fechar .material-symbols-outlined{
+      font-size: 34px;
+  }
 
   @media (max-width: 1000px) {
     .disciplinas-grid { grid-template-columns: repeat(2, 1fr); }
@@ -476,7 +498,7 @@
     </div>
 
     <div class="user">
-      <div class="avatar">L</div>
+      <div class="avatar" id="avatarInicial">?</div>
       <div class="info">
         <b id="nomeUsuario"></b>
         <span>Estudante</span>
@@ -540,6 +562,8 @@
     <div class="modal-body" id="listaSimulados"></div>
   </div>
 </div>
+<button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
+
 
 <script src="Sala_de_Aula.js"></script>
 </body>
