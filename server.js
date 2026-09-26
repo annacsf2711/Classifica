@@ -7,6 +7,10 @@ const app = express(); // cria o servidor
 // permitir comunicação com o navegador
 app.use(cors());
 app.use(express.json());
+// para adicionar imagem nas questões 
+app.use('/Imagens', express.static('Imagens'));
+
+
 
 // conexão com PostgreSQL
 const pool = new Pool({
@@ -666,7 +670,8 @@ app.get('/api/questoes', async (req, res) => {
         alternativa_b,
         alternativa_c,
         alternativa_d,
-        alternativa_correta
+        alternativa_correta,
+        imagem
        FROM classifica.avaliacao_diagnostica 
        LIMIT $1`,
       [limite]
@@ -1305,51 +1310,141 @@ app.get('/api/simulado/minhasRespostas/:idEstudante/:idSimulado', async (req, re
     }
 });
 // ===================== DESEMPENHO =====================
+// ALTERADO: a rota não usa mais "classifica.tentativa_diagnostico" (a Avaliação
+// Diagnóstica saiu da tela de Desempenho). Agora ela lê a tabela "classifica.tentativa",
+// que guarda tanto as respostas dos SIMULADOS (quando "id_simulado" está preenchido)
+// quanto as respostas das QUESTÕES DE RECOMENDAÇÃO da página Questões (quando
+// "id_simulado" é nulo — ver rota POST /api/respostasQuestoes acima), e agrupa cada
+// um desses dois blocos pelas 4 disciplinas: Matemática, Português, Ciências da
+// Natureza e Ciências Humanas.
+
+// NOVO: lista fixa das 4 disciplinas usadas em todo o sistema (mesmos nomes já
+// usados em /api/questoes/:materia e na tela Sala de Aula), com uma "chave" curta
+// para usar como identificador no JSON de resposta.
+const DISCIPLINAS_PADRAO = [
+  { chave: 'matematica', nome: 'Matemática' },
+  { chave: 'portugues', nome: 'Português' },
+  { chave: 'natureza', nome: 'Ciências da Natureza' },
+  { chave: 'humanas', nome: 'Ciências Humanas' }
+];
+
+// NOVO: remove acentos e diferenças de maiúsc./minúsc. de um texto, para poder
+// comparar o "nome_area" que vem do banco com os nomes da lista acima sem falhar
+// por causa de acento ou caixa (mesma técnica já usada em /criarExercicio).
+function normalizarTexto(texto) {
+  if (texto == null) return '';
+  return String(texto)
+    .normalize('NFD')                 // separa a letra do acento (ex: "á" -> "a" + acento)
+    .replace(/[\u0300-\u036f]/g, '')  // remove os acentos já separados
+    .trim()
+    .toLowerCase();                   // ignora diferença de maiúscula/minúscula
+}
+
+// NOVO: recebe uma lista de tentativas (linhas com a coluna "correto") e devolve
+// a taxa de acerto (%), a quantidade de questões respondidas e a classificação
+// (Excelente/Bom/Regular/Ruim/Sem dados). Reaproveita a mesma regra de classificação
+// que já existia para o diagnóstico.
+function calcularIndice(tentativas) {
+  const respondidas = tentativas.length;
+
+  if (respondidas === 0) {
+    return { taxa: 0, respondidas: 0, classificacao: 'Sem dados' };
+  }
+
+  const acertos = tentativas.filter(t => t.correto === true).length;
+  const taxa = Math.round((acertos / respondidas) * 100);
+
+  let classificacao = 'Ruim';
+  if (taxa >= 80) classificacao = 'Excelente';
+  else if (taxa >= 60) classificacao = 'Bom';
+  else if (taxa >= 40) classificacao = 'Regular';
+
+  return { taxa, respondidas, classificacao };
+}
+
+// NOVO: recebe as linhas retornadas do banco (cada uma com "correto" e "nome_area")
+// e devolve um objeto com as 4 disciplinas fixas, cada uma já com seu índice
+// calculado (mesmo que uma disciplina não tenha nenhuma tentativa, ela aparece
+// no resultado com "Sem dados", para o front-end sempre desenhar os 4 cards).
+function agruparPorDisciplina(linhas) {
+  // cria uma lista vazia de tentativas para cada uma das 4 disciplinas
+  const grupos = {};
+  DISCIPLINAS_PADRAO.forEach(d => { grupos[d.chave] = []; });
+
+  // distribui cada linha do banco na disciplina correspondente
+  linhas.forEach(linha => {
+    const nomeAreaNormalizado = normalizarTexto(linha.nome_area);
+    const disciplina = DISCIPLINAS_PADRAO.find(
+      d => normalizarTexto(d.nome) === nomeAreaNormalizado
+    );
+    if (disciplina) {
+      grupos[disciplina.chave].push(linha);
+    }
+    // linhas de áreas fora das 4 disciplinas padrão (se existirem) são ignoradas aqui
+  });
+
+  // calcula o índice de cada disciplina e monta o objeto final
+  const resultado = {};
+  DISCIPLINAS_PADRAO.forEach(d => {
+    resultado[d.chave] = Object.assign({ nome: d.nome }, calcularIndice(grupos[d.chave]));
+  });
+  return resultado;
+}
+
 app.get('/api/desempenho/:id_estudante', async (req, res) => {
   const { id_estudante } = req.params;
 
   try {
-    // Busca todas as tentativas do diagnóstico do aluno (usa o id do estudante logado)
-    const resultado = await pool.query(
-      `SELECT correto, id_exercicio
-       FROM classifica.tentativa_diagnostico
-       WHERE id_estudante = $1`,
+    // ===== NOVO: busca as tentativas de SIMULADO do aluno (aplicados na Sala de Aula) =====
+    // "t.id_simulado IS NOT NULL" identifica que aquela tentativa pertence a um simulado
+    // (ver INSERT em /api/simulado/respostas). O JOIN com exercicio/area_conhecimento
+    // traz a disciplina ("nome_area") de cada questão respondida.
+    const resultadoSimulado = await pool.query(
+      `SELECT t.correto, a.nome_area
+       FROM classifica.tentativa t
+       JOIN classifica.exercicio e ON e.id_exercicio = t.id_exercicio
+       JOIN classifica.area_conhecimento a ON a.id_area = e.id_area
+       WHERE t.id_estudante = $1 AND t.id_simulado IS NOT NULL`,
       [id_estudante]
     );
 
-    // ===== Calcula o índice da avaliação diagnóstica =====
-    let diagnostico = { taxa: 0, respondidas: 0, classificacao: "Sem dados" };
+    // ===== NOVO: busca as tentativas das QUESTÕES DE RECOMENDAÇÃO do aluno =====
+    // (respondidas na página Questões / 9QuestoesAluno). "t.id_simulado IS NULL"
+    // identifica que a tentativa NÃO veio de um simulado (ver INSERT em
+    // /api/respostasQuestoes, que não informa id_simulado).
+    const resultadoQuestoes = await pool.query(
+      `SELECT t.correto, a.nome_area
+       FROM classifica.tentativa t
+       JOIN classifica.exercicio e ON e.id_exercicio = t.id_exercicio
+       JOIN classifica.area_conhecimento a ON a.id_area = e.id_area
+       WHERE t.id_estudante = $1 AND t.id_simulado IS NULL`,
+      [id_estudante]
+    );
 
-    if (resultado.rows.length > 0) {
-      const tentativas = resultado.rows;
-      const totalGeral = tentativas.length;
-      const acertosGeral = tentativas.filter(t => t.correto === true).length;
-      const taxaGeral = Math.round((acertosGeral / totalGeral) * 100);
+    // ===== NOVO: agrupa cada bloco de tentativas nas 4 disciplinas fixas =====
+    const disciplinasSimulado = agruparPorDisciplina(resultadoSimulado.rows);
+    const disciplinasQuestoes = agruparPorDisciplina(resultadoQuestoes.rows);
 
-      let classificacao = 'Ruim';
-      if (taxaGeral >= 80) classificacao = 'Excelente';
-      else if (taxaGeral >= 60) classificacao = 'Bom';
-      else if (taxaGeral >= 40) classificacao = 'Regular';
+    // ===== NOVO: índice geral de cada bloco (todas as disciplinas somadas) =====
+    const geralSimulado = calcularIndice(resultadoSimulado.rows);
+    const geralQuestoes = calcularIndice(resultadoQuestoes.rows);
 
-      diagnostico = { taxa: taxaGeral, respondidas: totalGeral, classificacao };
-    }
+    // ===== NOVO: índice geral de desempenho = simulados + questões juntos =====
+    const geral = calcularIndice([...resultadoSimulado.rows, ...resultadoQuestoes.rows]);
 
-    // ===== Calcula o índice do simulado =====
-    // A funcionalidade de simulado (com correção de respostas) ainda não foi implementada,
-    // ou seja, ainda não existe uma tabela de tentativas de simulado no banco.
-    // Por enquanto retornamos "sem dados" para não travar a tela de desempenho.
-    // Quando a tabela existir (ex: classifica.tentativa_simulado), basta repetir aqui
-    // a mesma lógica usada acima para o diagnóstico, filtrando por id_estudante.
-    let simulado = { taxa: 0, respondidas: 0, classificacao: "Sem dados" };
-
-    // Mantém a estrutura "geral" (compatível com o que a tela já usava) e adiciona
-    // os dois índices pedidos: diagnostico e simulado.
-    const geral = diagnostico; // índice geral = índice do diagnóstico (única avaliação implementada até então)
-
+    // ALTERADO: a resposta não tem mais "diagnostico". Agora devolve "simulado" e
+    // "questoes", cada um com um "geral" (índice do bloco inteiro) e "disciplinas"
+    // (índice de cada uma das 4 matérias).
     res.json({
       geral,
-      diagnostico,
-      simulado
+      simulado: {
+        geral: geralSimulado,
+        disciplinas: disciplinasSimulado
+      },
+      questoes: {
+        geral: geralQuestoes,
+        disciplinas: disciplinasQuestoes
+      }
     });
 
   } catch (erro) {
@@ -1357,3 +1452,4 @@ app.get('/api/desempenho/:id_estudante', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar desempenho' });
   }
 });
+

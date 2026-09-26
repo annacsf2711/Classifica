@@ -156,6 +156,16 @@
   .enunciado-box p {
     margin-bottom: 12px;
   }
+  .enunciado-img {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin: 12px auto 0 auto;
+  border-radius: 8px;
+}
 
   .enunciado-box ul {
     list-style: none;
@@ -343,7 +353,8 @@ let idEstudante  = null; // ID do aluno logado
 let nomeEstudante = ''; // Nome do aluno
 
 // Configuração da API
-const API_URL = 'http://localhost:3000/api'; //Node JS - colocar caminho do node
+const BASE_URL = 'http://localhost:3000';
+const API_URL = `${BASE_URL}/api`;
 
 // ===================== Carregar dados do aluno =====================
 async function carregarDadosAluno() {
@@ -421,7 +432,9 @@ function renderizarQuestao() { // renderiza a questão
     document.getElementById('barraProgresso').style.width = `${progresso}%`; // define a largura da barra de progresso
 
     const enunciadoBox = document.getElementById('enunciadoBox'); // pega o conteúdo do h1 pelo id e define o que tem dentro 
-    enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>`; // coloca o enunciado da questão dentro do h1 
+    const imagemHtml = questao.imagem
+    ? `<img src="${BASE_URL}/Imagens/${questao.imagem}" alt="Imagem da questão" class="enunciado-img">` : '';
+    enunciadoBox.innerHTML = `<p>${questao.enunciado}</p>${imagemHtml}`;
 
     const alternativesContainer = document.getElementById('alternativesContainer'); // pega o conteúdo do h1 pelo id e define o que tem dentro
     const alternativas = ['a', 'b', 'c', 'd']; // define as alternativas

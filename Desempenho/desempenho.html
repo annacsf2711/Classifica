@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -372,19 +373,15 @@
             </div>
         </aside>
 
-        <!-- ===== Conteúdo principal ===== -->
         <main class="main">
             <h1>DESEMPENHO</h1>
             <div class="titulo-bar"></div>
-
-            <!-- ===== Cards de resumo: no lugar de XP total e sequência de dias,
-                 aqui ficam o índice de acerto da avaliação diagnóstica e o índice do simulado ===== -->
             <div class="resumo-cards">
-                <div class="resumo-card diagnostico">
-                    <div class="icone"><i class="fas fa-clipboard-check"></i></div>
+                <div class="resumo-card questoes">
+                    <div class="icone"><i class="fas fa-lightbulb"></i></div>
                     <div class="texto">
-                        <span>ÍNDICE DA AVALIAÇÃO DIAGNÓSTICA</span>
-                        <strong id="taxaDiagnostico">--%</strong>
+                        <span>ÍNDICE DAS QUESTÕES (RECOMENDAÇÃO)</span>
+                        <strong id="taxaQuestoes">--%</strong>
                     </div>
                 </div>
                 <div class="resumo-card simulado">
@@ -415,10 +412,14 @@
                 </div>
             </div>
 
-            <div class="grid-areas" id="gridAreas">
-                <div class="loading" style="grid-column: 1/-1;">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    Carregando dados...
+            <section class="secao-desempenho">
+                <h2>Simulados por Disciplina</h2>
+                <span class="subtitulo">Desempenho nos simulados aplicados na Sala de Aula</span>
+                <div class="grid-areas" id="gridSimulado">
+                    <div class="loading" style="grid-column: 1/-1;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Carregando dados...
+                    </div>
                 </div>
             </div>
             <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
@@ -428,6 +429,29 @@
     <script>
         // ===== CONFIGURAÇÃO =====
         const API_URL = 'http://localhost:3000';
+
+        const DISCIPLINAS_UI = {
+            matematica: {
+                nome: 'Matemática', // nome exibido no card
+                classeIcone: 'icon-matematica', // classe CSS que define a cor de fundo do ícone
+                svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2f9ce0" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h4M8 17h6"/></svg>'
+            },
+            portugues: {
+                nome: 'Português',
+                classeIcone: 'icon-portugues',
+                svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3fbf7f" stroke-width="2"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>'
+            },
+            natureza: {
+                nome: 'Ciências da Natureza',
+                classeIcone: 'icon-natureza',
+                svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M9 3v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V3"/><path d="M9 3h6"/><path d="M8 14h8"/></svg>'
+            },
+            humanas: {
+                nome: 'Ciências Humanas',
+                classeIcone: 'icon-humanas',
+                svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f27128" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>'
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página de desempenho carregada');
@@ -479,76 +503,75 @@
                 });
         });
 
+        // ALTERADO: a função agora lê "data.simulado" e "data.questoes" (cada um já vem do
+        // backend com um "geral" e um "disciplinas" com as 4 matérias). O bloco do
+        // "diagnostico" foi totalmente removido, pois essa avaliação não é mais exibida aqui.
         function preencherDados(data) {
-            var geral = data.geral;
-            var diagnostico = data.diagnostico;
-            var simulado = data.simulado;
+            var geral = data.geral;         // índice geral = simulados + questões somados
+            var simulado = data.simulado;   // { geral: {...}, disciplinas: { matematica: {...}, ... } }
+            var questoes = data.questoes;   // { geral: {...}, disciplinas: { matematica: {...}, ... } }
 
-            // ===== Preenche o índice geral =====
+            // ===== Preenche o índice geral (anel) =====
             document.getElementById('taxaGeral').textContent = geral.taxa + '%';
             document.getElementById('classificacaoGeral').textContent = geral.classificacao;
             atualizarAnelProgresso(geral.taxa);
 
+            // ALTERADO: mensagem de incentivo não cita mais "avaliação diagnóstica";
+            // agora orienta o aluno a fazer simulados ou responder questões recomendadas.
             var mensagem = 'Que tal revisar os conteúdos? Você pode melhorar!';
             if (geral.taxa >= 80) {
                 mensagem = 'Parabéns! Você está acima da média e mantendo seu desempenho.';
             } else if (geral.taxa >= 60) {
                 mensagem = 'Bom desempenho! Continue praticando para melhorar.';
             } else if (geral.taxa === 0 && geral.classificacao === 'Sem dados') {
-                mensagem = 'Você ainda não respondeu nenhuma questão. Faça a avaliação diagnóstica para ver seu desempenho.';
+                mensagem = 'Você ainda não respondeu nenhum simulado nem questão de recomendação. Acesse a Sala de Aula ou a página Questões para começar!';
             }
             document.getElementById('mensagemParabens').textContent = mensagem;
 
-            // ===== Preenche os dois cards de resumo (diagnóstico e simulado) =====
-            document.getElementById('taxaDiagnostico').textContent =
-                diagnostico.classificacao === 'Sem dados' ? '--%' : diagnostico.taxa + '%';
+            // ===== Preenche os dois cards de resumo do topo (questões e simulado) =====
+            document.getElementById('taxaQuestoes').textContent =
+                questoes.geral.classificacao === 'Sem dados' ? '--%' : questoes.geral.taxa + '%';
 
             document.getElementById('taxaSimulado').textContent =
-                simulado.classificacao === 'Sem dados' ? '--%' : simulado.taxa + '%';
+                simulado.geral.classificacao === 'Sem dados' ? '--%' : simulado.geral.taxa + '%';
 
-            // ===== Monta o grid de matérias/áreas =====
-            var grid = document.getElementById('gridAreas');
-            grid.innerHTML = '';
+            // NOVO: monta as duas grades de disciplina, uma para simulados e outra para questões
+            montarGridDisciplinas('gridSimulado', simulado.disciplinas);
+            montarGridDisciplinas('gridQuestoes', questoes.disciplinas);
+        }
 
-            var areas = [];
-            if (diagnostico.respondidas > 0) {
-                areas.push({
-                    nome: 'Avaliação Diagnóstica',
-                    taxa: diagnostico.taxa,
-                    respondidas: diagnostico.respondidas
-                });
-            }
-            if (simulado.respondidas > 0) {
-                areas.push({
-                    nome: 'Simulado',
-                    taxa: simulado.taxa,
-                    respondidas: simulado.respondidas
-                });
-            }
+        // NOVO: recebe o id do container (gridSimulado ou gridQuestoes) e o objeto de
+        // disciplinas devolvido pelo backend, e desenha os 4 cards fixos (Matemática,
+        // Português, Ciências da Natureza, Ciências Humanas) dentro dele.
+        function montarGridDisciplinas(idContainer, disciplinas) {
+            var grid = document.getElementById(idContainer); // pega o <div> da grade certa
+            grid.innerHTML = ''; // limpa o "carregando..." antes de desenhar os cards
 
-            if (areas.length === 0) {
-                grid.innerHTML =
-                    '<p style="grid-column: 1/-1; color: #6b7d90; text-align: center; padding: 40px;">' +
-                    'Nenhuma questão respondida ainda. Faça o diagnóstico para ver seu desempenho.</p>';
-                return;
-            }
+            // percorre sempre as 4 chaves fixas, na mesma ordem, para o layout não pular
+            ['matematica', 'portugues', 'natureza', 'humanas'].forEach(function(chave) {
+                // dado numérico vindo do backend para essa disciplina (ou "sem dados" se não veio)
+                var info = (disciplinas && disciplinas[chave]) ||
+                    { taxa: 0, respondidas: 0, classificacao: 'Sem dados' };
+                var ui = DISCIPLINAS_UI[chave]; // nome, ícone e cor dessa disciplina
 
-            areas.forEach(function(area) {
+                var textoTaxa = info.classificacao === 'Sem dados' ? '--%' : info.taxa + '%';
+
                 var card = document.createElement('div');
                 card.className = 'card-area';
                 card.innerHTML = `
-                    <h3>${area.nome}</h3>
-                    <div class="taxa-destaque">${area.taxa}%</div>
+                    <div class="disciplina-icone ${ui.classeIcone}">${ui.svg}</div>
+                    <h3>${ui.nome}</h3>
+                    <div class="taxa-destaque">${textoTaxa}</div>
                     <div class="item">
                         <span class="label">TAXA DE ACERTO</span>
-                        <span class="valor">${area.taxa}%</span>
+                        <span class="valor">${textoTaxa}</span>
                     </div>
                     <div class="item">
                         <span class="label">QUESTÕES RESPONDIDAS</span>
-                        <span class="valor">${area.respondidas}</span>
+                        <span class="valor">${info.respondidas}</span>
                     </div>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(card); // adiciona o card pronto dentro da grade
             });
         }
 
@@ -560,15 +583,20 @@
             circulo.style.strokeDashoffset = offset;
         }
 
+        // ALTERADO: 'taxaDiagnostico' virou 'taxaQuestoes', e o único 'gridAreas' virou
+        // os dois grids novos ('gridSimulado' e 'gridQuestoes'), que agora recebem a
+        // mensagem de erro cada um.
         function mostrarErro(mensagem) {
             document.getElementById('taxaGeral').textContent = '--%';
             document.getElementById('mensagemParabens').textContent = mensagem;
             document.getElementById('classificacaoGeral').textContent = 'Erro';
-            document.getElementById('taxaDiagnostico').textContent = '--%';
+            document.getElementById('taxaQuestoes').textContent = '--%';
             document.getElementById('taxaSimulado').textContent = '--%';
-            document.getElementById('gridAreas').innerHTML =
-                '<p style="grid-column: 1/-1; color: #d32f2f; text-align: center; padding: 40px;">' +
+
+            var htmlErro = '<p style="grid-column: 1/-1; color: #d32f2f; text-align: center; padding: 40px;">' +
                 mensagem + '</p>';
+            document.getElementById('gridSimulado').innerHTML = htmlErro;
+            document.getElementById('gridQuestoes').innerHTML = htmlErro;
         }
 
 // ===================================== Abrir Sala De Aula ===================================================
@@ -598,3 +626,4 @@
     </script>
 </body>
 </html>
+
