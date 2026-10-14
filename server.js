@@ -179,7 +179,7 @@ app.put('/reativarAluno/:id_estudante', async (req, res) => {
         });
     }
 });
-// ===================== Deletar Aluno =====================
+// ===================== Deletar Aluno ===========================
 app.delete("/deletarAluno/:id_estudante", async (req, res) => {
   const { id_estudante } = req.params;
 
@@ -205,7 +205,7 @@ app.delete("/deletarAluno/:id_estudante", async (req, res) => {
     res.status(500).send("Erro ao excluir Aluno");
   }
 });
-// ===================== Código Turma Aluno =====================
+// ===================== Código Turma Aluno =======
 app.post('/turmaEstudante', async (req, res) => {
   const { codigo, idEstudante } = req.body;
 
@@ -243,7 +243,7 @@ app.post('/turmaEstudante', async (req, res) => {
     res.status(500).send("Erro ao entrar na turma");
   }
 });
-// ===================== QUESTÕES POR MATÉRIA ALUNO ===============
+// ===================== QUESTÕES POR MATÉRIA ALUNO =====
 app.get('/api/questoes/:materia', async (req, res) => {
     const { materia } = req.params;
 
@@ -274,7 +274,7 @@ app.get('/api/questoes/:materia', async (req, res) => {
     }
 });
 app.use(express.static('9QuestoesAlunos'));
-// ===================== SALVAR RESPOSTAS DAS QUESTÕES ALUNO ======
+// ============ SALVAR RESPOSTAS DAS QUESTÕES ALUNO ======
 app.post('/api/respostasQuestoes', async (req, res) => {
     try { const { id_estudante, respostas } = req.body;
       if (!id_estudante || !respostas || !Array.isArray(respostas)) {
@@ -305,6 +305,29 @@ app.post('/api/respostasQuestoes', async (req, res) => {
       res.status(500).send("Erro ao salvar respostas no banco");
     }
 });
+
+// ====================== PROFESSORES DA TURMA DO ALUNO ========
+app.get('/disciplinasTurma/:idEstudante', async (req, res) => {
+  const { idEstudante } = req.params;
+
+  try {
+    const resultado = await pool.query(
+      `SELECT p.nome, p.especialidade AS disciplina
+      FROM classifica.estudante e
+      JOIN classifica.professor_turma pt ON pt.idturma = e.id_turma
+      JOIN classifica.professor p ON p.id_professor = pt.id_professor
+      WHERE e.id_estudante = $1 ORDER BY p.especialidade`,
+      [idEstudante]
+    );
+
+    res.json(resultado.rows);
+
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).send("Erro ao buscar disciplinas");
+  }
+});
+
 
 // ===================== CPF e E-mail conferir se existem =========
 app.post("/verificarCadastroAluno", async (req, res) => {

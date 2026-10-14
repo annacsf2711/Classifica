@@ -175,3 +175,49 @@ carregarDisciplinas();
 window.voltarLogin = function () {
     window.location.href = "../2LoginAluno/LoginAluno.html";
 };
+
+// ===================================== Tente Anna  ===================================================
+async function carregarDisciplinasTurma() {
+  try {
+    const resposta = await fetch(`${API_URL}/disciplinasTurma/${idEstudante}`);
+
+    const disciplinas = await resposta.json();
+
+    const grid = document.getElementById("disciplinasGrid");
+
+    grid.innerHTML = "";
+
+    disciplinas.forEach(item => {
+
+      const card = document.createElement("div");
+      card.classList.add("disciplina-card");
+      card.dataset.disciplina = item.disciplina;
+
+      card.innerHTML = `
+        <div class="disciplina-icon icon-matematica">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2f9ce0" stroke-width="2">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <path d="M8 9h8M8 13h4M8 17h6"/>
+          </svg>
+        </div>
+
+        <h3>${item.disciplina}</h3>
+
+        <span class="prof">
+          Prof(a): ${item.nome}
+        </span>
+      `;
+
+      card.addEventListener("click", () => {
+        abrirSimulados(item.disciplina);
+      });
+
+      grid.appendChild(card);
+    });
+
+  } catch (erro) {
+    console.error("Erro ao carregar disciplinas:", erro);
+  }
+}
+
+carregarDisciplinasTurma();
