@@ -24,7 +24,7 @@
   "homepage": "https://github.com/lucasbarrosregodev/TCC---Classifica#readme",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "pg": "^8.23.0"
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
   }
 }

@@ -15,7 +15,7 @@ app.use('/Imagens', express.static('Imagens'));
 // conexão com PostgreSQL
 const pool = new Pool({
   user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+  host: '10.90.24.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
   database: 'ra0081817',
   password: 'Filhos03*',         // sua senha do pgAdmin
   port: 5432
@@ -423,14 +423,14 @@ app.post('/loginProf', async (req, res) => {
       `SELECT id_professor, ativo FROM classifica.professor WHERE email = $1 AND senha = $2`,
       [email, senha]
     );
-    console.log(resultado.rows[0]);
-    console.log("Valor de ativo:", resultado.rows[0].ativo);
 
     const usuarioExiste = resultado.rows.length > 0; // Verifica se retornou algo
     if (usuarioExiste) {
 
       console.log("ativo:", resultado.rows[0].ativo);
-
+      console.log(resultado.rows[0]);
+      console.log("Valor de ativo:", resultado.rows[0].ativo);
+      
       if (resultado.rows[0].ativo == false) {
         console.log("Conta Desativada");
 

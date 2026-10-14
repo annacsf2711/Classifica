@@ -7,9 +7,11 @@
     // no localStorage no momento do loginProf, e isso continua funcionando sozinho
     // (a URL tem prioridade sobre o localStorage, pra facilitar testes).
     const parametrosUrl = new URLSearchParams(window.location.search);
-
+        
     const professorId = parametrosUrl.get('id_professor') || localStorage.getItem('idProfessor');
     const nomeProfessorSalvo = parametrosUrl.get('nome') || localStorage.getItem('nomeProfessor');
+    
+    console.log("Professor id: ", professorId, nomeProfessorSalvo)
     let turmaSelecionada = null;
     let exerciciosDisponiveis = [];
     let selecionadas = new Set();

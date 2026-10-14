@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Classifica - Banco de Questões</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -222,6 +223,21 @@
     .sidebar { width: 100%; }
     .main { padding: 30px; }
   }
+    .btn-fechar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+  }
+  .btn-fechar:hover { color: #dc2626; }
+  .btn-fechar .material-symbols-outlined { font-size: 34px; }
 </style>
 </head>
 <body>
@@ -305,6 +321,7 @@
         </div>
       </div>
     </main>
+    <button class="btn-fechar" type="button" onclick="voltarLogin()"><span class="material-symbols-outlined">close</span></button>
   </div>
 
   <script src="Banco_Questoes.js"></script>
