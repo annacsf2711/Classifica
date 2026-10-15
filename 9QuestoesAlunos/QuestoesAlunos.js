@@ -39,7 +39,7 @@ async function carregarQuestoes() {
 
     const paramentro = new URLSearchParams(window.location.search); // Obtém os parâmetros da URL
     const materia = paramentro.get('materia'); // Pega o valor do parâmetro "materia"
-
+       
     document.getElementById('loading').style.display = 'block'; // Mostra o indicador de carregamento
 
     document.getElementById('questionCard').style.display = 'none'; // Esconde o cartão das questões enquanto carrega
@@ -47,7 +47,9 @@ async function carregarQuestoes() {
     try {
         // Faz a requisição ao servidor buscando as questões da matéria
         const response = await fetch(`http://localhost:3000/api/questoes/${materia}`);
+
         questoes = await response.json();
+        
 
         document.getElementById('loading').style.display = 'none';// Esconde o indicador de carregamento
 
