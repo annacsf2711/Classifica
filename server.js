@@ -1,7 +1,16 @@
 const express = require('express'); // usada para cirar o servidor
 const { Pool } = require('pg'); // para conectar no PosrtgreSQL
+
+const pool = new Pool({
+  connectionString: 'postgresql://neondb_owner:npg_Emx3AqgfX4Wa@ep-wild-cherry-b613jcxn-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+
 const cors = require('cors'); // permite que o front-end se conecte ao back-end
-// const path = require('path'); // 
+const path = require('path'); // 
 const app = express(); // cria o servidor 
 
 // permitir comunicação com o navegador
@@ -13,13 +22,13 @@ app.use('/Imagens', express.static('Imagens'));
 
 
 // conexão com PostgreSQL
-const pool = new Pool({
-  user: 'ra0081817',              // seu usuário
-  host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
-  database: 'ra0081817',
-  password: 'Filhos03*',         // sua senha do pgAdmin
-  port: 5432
-});
+//const pool = new Pool({
+//  user: 'ra0081817',              // seu usuário
+ // host: '200.18.128.54',             // ou IP do servidor casa: 200.18.128.54    escola: 10.90.24.54
+ // database: 'ra0081817',
+ // password: 'Filhos03*',         // sua senha do pgAdmin
+ // port: 5432
+//});
 
 
 // iniciar servidor
