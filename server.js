@@ -1,5 +1,9 @@
-const express = require('express'); // usada para cirar o servidor
-const { Pool } = require('pg'); // para conectar no PosrtgreSQL
+const express = require('express');
+const { Pool } = require('pg');
+const cors = require('cors');
+const path = require('path');
+
+const app = express();
 
 const pool = new Pool({
   connectionString: 'postgresql://neondb_owner:npg_Emx3AqgfX4Wa@ep-wild-cherry-b613jcxn-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
@@ -8,17 +12,26 @@ const pool = new Pool({
   }
 });
 
-
-const cors = require('cors'); // permite que o front-end se conecte ao back-end
-const path = require('path'); // 
-const app = express(); // cria o servidor 
-
 // permitir comunicação com o navegador
 app.use(cors());
 app.use(express.json());
-// para adicionar imagem nas questões 
+
+// arquivos estáticos
+app.use(express.static(__dirname));
+
+// imagens
 app.use('/Imagens', express.static('Imagens'));
 
+// página inicial
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '1CadastroAluno', 'CadastroAluno.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+   console.log(`Servidor rodando na porta ${PORT}`);
+});
 
 
 // conexão com PostgreSQL
@@ -35,11 +48,6 @@ app.use('/Imagens', express.static('Imagens'));
 //app.listen(3000, () => {
   //console.log("Servidor rodando em http://localhost:3000");
 //});
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-   console.log(`Servidor rodando na porta ${PORT}`);
-});
 
 // ===================== CADASTRAR ALUNO =====================
 app.post('/cadastrarAluno', async (req, res) => {
