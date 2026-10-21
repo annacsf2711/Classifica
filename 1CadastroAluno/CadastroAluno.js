@@ -70,7 +70,7 @@ document.getElementById("formCadastroAluno").addEventListener("submit", async (e
         senha: document.getElementById("senha").value
     };
     try{
-        const resposta = await fetch("http://localhost:3000/cadastrarAluno", { // envie os dados para o servidor backend
+        const resposta = await fetch('/api/cadastrarAluno', { // envie os dados para o servidor backend
             method: "POST", // tipo de requisiçã HTTP usada para enviar dados
             headers: { // informações extras da requisição, como os dados estão sendo enviados
                 "Content-Type": "application/json", // estou enviando os dados em formato JSON
@@ -91,7 +91,7 @@ document.getElementById("formCadastroAluno").addEventListener("submit", async (e
 
 // ===================== Calcelar ================================================================================
 function cancelar() {
-    window.location.href = "../2LoginAluno/LoginAluno.html"; //window.location.href é uma forma de dizer ao navegador para abrir outra página
+    window.location.href = "/2LoginAluno/LoginAluno.html"; //window.location.href é uma forma de dizer ao navegador para abrir outra página
 }
 
 document.getElementById("btnCancelarAlu")

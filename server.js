@@ -24,7 +24,7 @@ app.use('/Imagens', express.static('Imagens'));
 
 // página inicial
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '1CadastroAluno', 'CadastroAluno.html'));
+  res.redirect('/2LoginAluno/LoginAluno.html');
 });
 
 const PORT = process.env.PORT || 3000;
@@ -50,7 +50,7 @@ app.listen(PORT, () => {
 //});
 
 // ===================== CADASTRAR ALUNO =====================
-app.post('/cadastrarAluno', async (req, res) => {
+app.post('/api/cadastrarAluno', async (req, res) => {
   console.log("Dados recebidos no servidor:", req.body);
   const { nome, cpf, dataNascimento, email, senha, cep } = req.body; // pega os dados
 
@@ -69,7 +69,7 @@ app.post('/cadastrarAluno', async (req, res) => {
   }
 });
 // ===================== LOGIN ALUNO =========================
-app.post('/loginAluno', async (req, res) => {
+app.post('/api/loginAluno', async (req, res) => {
 
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
