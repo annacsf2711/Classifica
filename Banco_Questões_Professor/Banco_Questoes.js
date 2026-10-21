@@ -1,12 +1,12 @@
 // ===================== CONFIGURAÇÃO =====================
-const API_URL = 'http://localhost:3000';
+const API_URL = '/api';
 
 // ID do professor logado.
 // Por enquanto fixo pra teste — depois troque pelo valor real
 // (ex: salvo no localStorage no momento do login).
 const idProfessor = localStorage.getItem('idProfessor') ;
 
-fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
+fetch('/api/professor/${idProfessor}') // requisição para o servidor passando o id do professor na URL
 .then(async resposta => {
    
   if (!resposta.ok) {
@@ -52,7 +52,7 @@ async function carregarBancos() {
   listaBancos.innerHTML = '<p class="estado-vazio">Carregando bancos...</p>';
 
   try {
-    const resposta = await fetch(`${API_URL}/listarBancos/${idProfessor}`);
+    const resposta = await fetch('${API_URL}/listarBancos/${idProfessor}');
 
     if (!resposta.ok) {
       throw new Error(`Erro HTTP ${resposta.status}`);
@@ -116,7 +116,7 @@ async function criarBanco() {
   btnSalvarBanco.textContent = 'Salvando...';
 
   try {
-    const resposta = await fetch(`${API_URL}/criarBanco`, {
+    const resposta = await fetch('${API_URL}/criarBanco', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, disciplina, idProfessor })

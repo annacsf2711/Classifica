@@ -119,7 +119,7 @@ app.post('/api/loginAluno', async (req, res) => {
   }
 });
 // ===================== CONFIG ALUNO ========================
-app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os dados de um professor pelo id
+app.get('/api/estudante/:id_estudante', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_estudante} = req.params;   // pega o id 
 
   try {
@@ -141,7 +141,7 @@ app.get('/estudante/:id_estudante', async (req, res) => { // rota para buscar os
     res.status(500).send("Erro ao buscar aluno");
   }
 });
-app.put("/estudante/:id_estudante", async (req, res) => {
+app.put("/api/estudante/:id_estudante", async (req, res) => {
   
     console.log(req.params);
     console.log(req.body);
@@ -162,7 +162,7 @@ app.put("/estudante/:id_estudante", async (req, res) => {
     }
 });
 // ===================== Desativar Aluno =====================
-app.put("/desativarAluno/:id_estudante", async (req, res) => {
+app.put("/api/desativarAluno/:id_estudante", async (req, res) => {
   
   console.log("Rota desativar aluno chamada");
 
@@ -179,7 +179,7 @@ app.put("/desativarAluno/:id_estudante", async (req, res) => {
   }
 });
 // ===================== Reativar Aluno =====================
-app.put('/reativarAluno/:id_estudante', async (req, res) => {
+app.put('/api/reativarAluno/:id_estudante', async (req, res) => {
     const { id_estudante } = req.params;
     try {
         const resultado = await pool.query(
@@ -202,7 +202,7 @@ app.put('/reativarAluno/:id_estudante', async (req, res) => {
     }
 });
 // ===================== Deletar Aluno ===========================
-app.delete("/deletarAluno/:id_estudante", async (req, res) => {
+app.delete("/api/deletarAluno/:id_estudante", async (req, res) => {
   const { id_estudante } = req.params;
 
   try {
@@ -228,7 +228,7 @@ app.delete("/deletarAluno/:id_estudante", async (req, res) => {
   }
 });
 // ===================== Código Turma Aluno =======
-app.post('/turmaEstudante', async (req, res) => {
+app.post('/api/turmaEstudante', async (req, res) => {
   const { codigo, idEstudante } = req.body;
 
   try {
@@ -266,7 +266,7 @@ app.post('/turmaEstudante', async (req, res) => {
   }
 });
 // ===================== QUESTÕES POR MATÉRIA ALUNO =====
-app.get('/api/questoes/:materia', async (req, res) => {
+app.get('/api/api/questoes/:materia', async (req, res) => {
     const { materia } = req.params;
 
     try {
@@ -297,7 +297,7 @@ app.get('/api/questoes/:materia', async (req, res) => {
 });
 app.use(express.static('9QuestoesAlunos'));
 // ============ SALVAR RESPOSTAS DAS QUESTÕES ALUNO ======
-app.post('/api/respostasQuestoes', async (req, res) => {
+app.post('/api/api/respostasQuestoes', async (req, res) => {
     try { const { id_estudante, respostas } = req.body;
       if (!id_estudante || !respostas || !Array.isArray(respostas)) {
           return res.status(400).send("Dados inválidos");
@@ -329,7 +329,7 @@ app.post('/api/respostasQuestoes', async (req, res) => {
 });
 
 // ====================== PROFESSORES DA TURMA DO ALUNO ========
-app.get('/disciplinasTurma/:idEstudante', async (req, res) => {
+app.get('/api/disciplinasTurma/:idEstudante', async (req, res) => {
   const { idEstudante } = req.params;
 
   try {
@@ -352,7 +352,7 @@ app.get('/disciplinasTurma/:idEstudante', async (req, res) => {
 
 
 // ===================== CPF e E-mail conferir se existem =========
-app.post("/verificarCadastroAluno", async (req, res) => {
+app.post("/api/verificarCadastroAluno", async (req, res) => {
     // Recebe CPF e e-mail enviados pelo frontend
     const { cpf, email } = req.body;
     try {
@@ -384,7 +384,7 @@ app.post("/verificarCadastroAluno", async (req, res) => {
         });
     }
 });
-app.post("/verificarCadastroProf", async (req, res) => {
+app.post("/api/verificarCadastroProf", async (req, res) => {
     // Recebe CPF e e-mail enviados pelo frontend
     const { cpf, email } = req.body;
     try {
@@ -418,7 +418,7 @@ app.post("/verificarCadastroProf", async (req, res) => {
 });
 
 // ===================== CADASTRAR PROF ===========================
-app.post('/cadastrarProf', async (req, res) => {
+app.post('/api/cadastrarProf', async (req, res) => {
   console.log("Dados recebidos no servidor:", req.body);
   const { nome, cep, cpf, disciplina, dataNascimento, email, senha } = req.body;
   try { // tentando executar o código
@@ -436,7 +436,7 @@ app.post('/cadastrarProf', async (req, res) => {
   }
 });
 // ===================== LOGIN PROF ==============================
-app.post('/loginProf', async (req, res) => {
+app.post('/api/loginProf', async (req, res) => {
   console.log("Dados recebidos no login", req.body);
   const {email, senha} = req.body;
   try {
@@ -486,7 +486,7 @@ app.post('/loginProf', async (req, res) => {
   }
 });
 // ===================== CONFIG PROF ==============================
-app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
+app.get('/api/professor/:id_professor', async (req, res) => { // rota para buscar os dados de um professor pelo id
   const {id_professor} = req.params;   // pega o id 
 
   try {
@@ -508,7 +508,7 @@ app.get('/professor/:id_professor', async (req, res) => { // rota para buscar os
   }
 });
 // ======='============== Desativar PROF ===========================
-app.put("/desativarProfessor/:id_professor", async (req, res) => {
+app.put("/api/desativarProfessor/:id_professor", async (req, res) => {
   
   const {id_professor} = req.params;
   try {
@@ -523,7 +523,7 @@ app.put("/desativarProfessor/:id_professor", async (req, res) => {
   }
 });
 // ===================== Deletar PROF ==============================
-app.delete("/deletarProfessor/:id_professor", async (req, res) => {
+app.delete("/api/deletarProfessor/:id_professor", async (req, res) => {
   const { id_professor } = req.params;
 
   try {
@@ -548,7 +548,7 @@ app.delete("/deletarProfessor/:id_professor", async (req, res) => {
   }
 });
 // ===================== Reativar Professor ========================
-app.put('/reativarProfessor/:id_professor', async (req, res) => {
+app.put('/api/reativarProfessor/:id_professor', async (req, res) => {
     const { id_professor } = req.params;
     try {
         await pool.query(
@@ -570,7 +570,7 @@ app.put('/reativarProfessor/:id_professor', async (req, res) => {
     }
 });
 // ===================== Código Turma Professor =====================
-app.post('/turmaProf', async (req, res) => {
+app.post('/api/turmaProf', async (req, res) => {
   const { codigo, idProfessor } = req.body;
 
   try {
@@ -611,7 +611,7 @@ app.post('/turmaProf', async (req, res) => {
   }
 });
 // ===================== ENTRAR TURMA PROFESSOR =====================
-app.get('/professor/:id/turma', async (req, res) => {
+app.get('/api/professor/:id/turma', async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -641,7 +641,7 @@ app.get('/professor/:id/turma', async (req, res) => {
   }
 });
 // ============ TURMA PROFESSORES ===================================
-app.get('/turmasProfessor/:idProfessor', async (req, res) => {
+app.get('/api/turmasProfessor/:idProfessor', async (req, res) => {
   const idProfessor = Number(req.params.idProfessor);
   if (!idProfessor) return res.status(400).send('ID inválido');
 
@@ -661,7 +661,7 @@ app.get('/turmasProfessor/:idProfessor', async (req, res) => {
   }
 });
 // ================= BUSCANDO TURMAS ================================
-app.get('/turma/:idTurma', async (req, res) => {
+app.get('/api/turma/:idTurma', async (req, res) => {
   const idTurma = Number(req.params.idTurma);
   const idProfessor = Number(req.query.idProfessor);
   if (!idTurma || !idProfessor) return res.status(400).send('ID inválido');
@@ -683,7 +683,7 @@ app.get('/turma/:idTurma', async (req, res) => {
   }
 });
 // ============== PEGANDO ALUNOS DA TURMA ===========================
-app.get('/alunosTurma/:idTurma', async (req, res) => {
+app.get('/api/alunosTurma/:idTurma', async (req, res) => {
   const idTurma = Number(req.params.idTurma);
   if (!idTurma) return res.status(400).send('ID inválido');
 
@@ -786,7 +786,7 @@ app.post('/api/respostas', async (req, res) => {
         res.status(500).send("Erro ao salvar respostas no banco");
     }
 });
-app.put("/professor/:id_professor", async (req, res) => { // mudando dados
+app.put("/api/professor/:id_professor", async (req, res) => { // mudando dados
   
     console.log(req.params);
     console.log(req.body);
@@ -807,7 +807,7 @@ app.put("/professor/:id_professor", async (req, res) => { // mudando dados
     }
 });
 // ===================== LISTAR BANCOS DE QUESTÕES DE UM PROFESSOR =====================
-app.get('/listarBancos/:idProfessor', async (req, res) => {
+app.get('/api/listarBancos/:idProfessor', async (req, res) => {
   const { idProfessor } = req.params;
   try {
     const resultado = await pool.query(
@@ -827,7 +827,7 @@ app.get('/listarBancos/:idProfessor', async (req, res) => {
   }
 });
 // ===================== CRIAR NOVO BANCO DE QUESTÕES =====================
-app.post('/criarBanco', async (req, res) => {
+app.post('/api/criarBanco', async (req, res) => {
   const { nome, disciplina, idProfessor } = req.body;
   try {
     const resultado = await pool.query(
@@ -843,7 +843,7 @@ app.post('/criarBanco', async (req, res) => {
   }
 });
 // ===================== LISTAR QUESTÕES DE UM BANCO =====================
-app.get('/listarQuestoesBanco/:bancoId', async (req, res) => {
+app.get('/api/listarQuestoesBanco/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
   try {
     const resultado = await pool.query(
@@ -861,7 +861,7 @@ app.get('/listarQuestoesBanco/:bancoId', async (req, res) => {
   }
 });
 // ===================== BUSCAR DADOS DE UM BANCO =====================
-app.get('/buscarBanco/:bancoId', async (req, res) => {
+app.get('/api/buscarBanco/:bancoId', async (req, res) => {
 
   const { bancoId } = req.params;
 
@@ -895,7 +895,7 @@ app.get('/buscarBanco/:bancoId', async (req, res) => {
   }
 });
 // ===================== LISTAR EXERCÍCIOS DISPONÍVEIS PARA ADICIONAR =====================
-app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
+app.get('/api/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
   const { bancoId } = req.params;
   try {
     // 1. descobre a disciplina do banco
@@ -931,7 +931,7 @@ app.get('/listarExerciciosDisponiveis/:bancoId', async (req, res) => {
   }
 });
 // ===================== ADICIONAR QUESTÃO AO BANCO =====================
-app.post('/adicionarQuestaoBanco', async (req, res) => {
+app.post('/api/adicionarQuestaoBanco', async (req, res) => {
   const { bancoId, exercicioId } = req.body;
   try {
     // calcula a próxima posição (ordem) dentro do banco
@@ -955,7 +955,7 @@ app.post('/adicionarQuestaoBanco', async (req, res) => {
   }
 });
 // ===================== CRIAR NOVO EXERCÍCIO =====================
-app.post('/criarExercicio', async (req, res) => {
+app.post('/api/criarExercicio', async (req, res) => {
   const {
     enunciado, alternativaA, alternativaB, alternativaC, alternativaD,
     alternativaCorreta, nivelDificuldade, criadoPor, bancoId
@@ -1042,7 +1042,7 @@ app.post('/criarExercicio', async (req, res) => {
   }
 });
 // ===================== LISTAR SIMULADOS DE UM PROFESSOR =====================
-app.get('/listarSimulados/:professorId', async (req, res) => {
+app.get('/api/listarSimulados/:professorId', async (req, res) => {
   const { professorId } = req.params;
   try {
     const resultado = await pool.query(
@@ -1063,7 +1063,7 @@ app.get('/listarSimulados/:professorId', async (req, res) => {
   }
 });
 // ===================== CRIAR SIMULADO =====================
-app.post('/criarSimulado', async (req, res) => {
+app.post('/api/criarSimulado', async (req, res) => {
   const { nome, turmaId, professorId } = req.body;
   try {
     const resultado = await pool.query(
@@ -1079,7 +1079,7 @@ app.post('/criarSimulado', async (req, res) => {
   }
 });
 // ===================== ADICIONAR QUESTÃO AO SIMULADO =====================
-app.post('/adicionarQuestaoSimulado', async (req, res) => {
+app.post('/api/adicionarQuestaoSimulado', async (req, res) => {
   const { simuladoId, exercicioId } = req.body;
   try {
     const ordemResultado = await pool.query(
@@ -1103,7 +1103,7 @@ app.post('/adicionarQuestaoSimulado', async (req, res) => {
   }
 });
 // ===================== REMOVER QUESTÃO DO SIMULADO =====================
-app.delete('/removerQuestaoSimulado/:simuladoId/:exercicioId', async (req, res) => {
+app.delete('/api/removerQuestaoSimulado/:simuladoId/:exercicioId', async (req, res) => {
   const { simuladoId, exercicioId } = req.params;
   try {
     await pool.query(
@@ -1117,7 +1117,7 @@ app.delete('/removerQuestaoSimulado/:simuladoId/:exercicioId', async (req, res) 
   }
 });
 // ===================== LISTAR QUESTÕES DE UM SIMULADO (para o aluno abrir/responder) =====================
-app.get('/listarQuestoesSimulado/:simuladoId', async (req, res) => {
+app.get('/api/listarQuestoesSimulado/:simuladoId', async (req, res) => {
   const { simuladoId } = req.params;
   try {
     const resultado = await pool.query(
@@ -1137,7 +1137,7 @@ app.get('/listarQuestoesSimulado/:simuladoId', async (req, res) => {
   }
 });
 // ===================== LISTAR QUESTÕES DA MATÉRIA DO PROFESSOR (para escolher no modal "Adicionar Simulado") =====================
-app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
+app.get('/api/listarExerciciosProfessor/:professorId', async (req, res) => {
   const { professorId } = req.params;
   try {
     // 1. descobre a especialidade (disciplina) do professor
@@ -1170,7 +1170,7 @@ app.get('/listarExerciciosProfessor/:professorId', async (req, res) => {
     }
 });
 // ===================== LISTAR ALUNOS DA TURMA =====================
-app.get('/colegasTurma/:idEstudante', async (req, res) => {
+app.get('/api/colegasTurma/:idEstudante', async (req, res) => {
   const { idEstudante } = req.params;
 
   try {
@@ -1214,7 +1214,7 @@ app.get('/colegasTurma/:idEstudante', async (req, res) => {
   }
 });
 // ===================== LISTAR TURMAS DE UM PROFESSOR =====================
-app.get('/listarTurmasProfessor/:professorId', async (req, res) => {
+app.get('/api/listarTurmasProfessor/:professorId', async (req, res) => {
   const { professorId } = req.params;
   try {
     const resultado = await pool.query(
@@ -1232,7 +1232,7 @@ app.get('/listarTurmasProfessor/:professorId', async (req, res) => {
   }
 });
 // ===================== SIMULADOS DE UMA DISCIPLINA PARA O ALUNO =====================
-app.get('/simuladosParaAluno/:idEstudante/:disciplina', async (req, res) => {
+app.get('/api/simuladosParaAluno/:idEstudante/:disciplina', async (req, res) => {
   const { idEstudante, disciplina } = req.params;
 
   try {

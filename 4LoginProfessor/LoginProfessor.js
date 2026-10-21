@@ -10,7 +10,7 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
     console.log("dados", dadosLoginProf);
 
     try{
-        const resposta = await fetch("http://localhost:3000/loginProf", { // envie os dados para o servidor backend
+        const resposta = await fetch('/api/loginProf', { // envie os dados para o servidor backend
             method: "POST", // tipo de requisiçã HTTP usada para enviar dados
             headers: { // informações extras da requisição, como os dados estão sendo enviados
                 "Content-Type": "application/json", // estou enviando os dados em formato JSON
@@ -25,7 +25,7 @@ document.getElementById("formLoginProf").addEventListener("submit", async (event
             const reativar = confirm("Sua conta está desativada. Deseja reativá-la?");
 
             if (reativar) {
-                await fetch(`http://localhost:3000/reativarProfessor/${dados.idProfessor}`, {
+                await fetch('/api/reativarProfessor/${dados.idProfessor}', {
                     method: "PUT"
                 });
                 alert("Conta reativada com sucesso! Faça o login novamente.");

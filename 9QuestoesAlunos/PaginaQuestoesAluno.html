@@ -326,7 +326,7 @@
 
         console.log("ID:", idEstudante);
 
-        fetch(`http://localhost:3000/estudante/${idEstudante}`)
+        fetch('/api/estudante/${idEstudante}')
         .then(async resposta => {
 
             if (!resposta.ok) {

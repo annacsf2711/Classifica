@@ -1,7 +1,7 @@
 // ===================================== Passar ID ===================================================
 const idEstudante = localStorage.getItem("idEstudante");
 
-fetch(`http://localhost:3000/estudante/${idEstudante}`)
+fetch('/api/estudante/${idEstudante}')
 .then(async resposta => {
     if (!resposta.ok) {
         const mensagem = await resposta.text();
@@ -46,7 +46,7 @@ async function carregarQuestoes() {
 
     try {
         // Faz a requisição ao servidor buscando as questões da matéria
-        const response = await fetch(`http://localhost:3000/api/questoes/${materia}`);
+        const response = await fetch('/api/questoes/${materia}');
 
         questoes = await response.json();
         
@@ -210,7 +210,7 @@ async function enviarRespostas() {
     }));
 
     try { // Tenta fazer a requisição
-        const response = await fetch('http://localhost:3000/api/respostasQuestoes', {
+        const response = await fetch('/api/respostasQuestoes', {
             method: 'POST', // define o método como POST
             headers: {
                 'Content-Type': 'application/json', // define o tipo de conteúdo
@@ -272,7 +272,7 @@ window.abrirSalaDeAula = async function(event) {
 
   const idEstudante = localStorage.getItem("idEstudante");
   try {
-    const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+    const resposta = await fetch('/api/estudante/${idEstudante}');
     const dados = await resposta.json();
 
     console.log("Dados Recebidos", dados);

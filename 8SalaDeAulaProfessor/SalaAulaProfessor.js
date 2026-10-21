@@ -16,7 +16,7 @@ async function carregarProfessor() {
   if (!idProfessor) return;
 
   try {
-    const professor = await buscarJSON(`http://localhost:3000/professor/${idProfessor}`);
+    const professor = await buscarJSON('/api/professor/${idProfessor}');
 
     document.getElementById('nomeProfessor').textContent = professor.nome; // Exibe o nome do professor na tela
     document.getElementById('avatarInicial').textContent = professor.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
@@ -31,7 +31,7 @@ async function carregarTurma() {
 
   try {
     // Busca as informações da turma
-    const turma = await buscarJSON(`http://localhost:3000/turma/${idTurma}?idProfessor=${encodeURIComponent(idProfessor)}`);
+    const turma = await buscarJSON('/api/turma/${idTurma}?idProfessor=${encodeURIComponent(idProfessor)}');
 
     document.getElementById('nomeTurmaTitulo').textContent = turma.nome; // Exibe o título com o nome da turma
     document.getElementById('codigoTurma').textContent = `Código: ${turma.codigo}`;// Exibe o código da turma
@@ -62,7 +62,7 @@ async function carregarAlunosDaTurma() {
   const grade = document.getElementById('alunosGrade'); // Obtém o container dos alunos
 
   try {
-    const alunos = await buscarJSON(`http://localhost:3000/alunosTurma/${idTurma}`); // Busca os alunos vinculados à turma
+    const alunos = await buscarJSON('/api/alunosTurma/${idTurma}'); // Busca os alunos vinculados à turma
 
     // Atualiza a quantidade de alunos
     document.getElementById('quantidadeAlunos').textContent = `${alunos.length} aluno${alunos.length === 1 ? '' : 's'}`;

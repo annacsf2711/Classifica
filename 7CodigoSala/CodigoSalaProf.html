@@ -305,7 +305,7 @@
 
     try {
       // Busca os dados do professor no servidor
-      const professor = await buscarJSON(`http://localhost:3000/professor/${idProfessor}`);
+      const professor = await buscarJSON('/api/professor/${idProfessor}');
       document.getElementById("nomeProfessor").textContent = professor.nome;
       document.getElementById("avatarInicial").textContent = professor.nome.charAt(0).toUpperCase();
     } catch (erro) {
@@ -323,7 +323,7 @@
     });
 
     try {
-        const resposta = await fetch("http://localhost:3000/turmaProf", { // 
+        const resposta = await fetch('/api/turmaProf', { // 
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({ codigo, idProfessor })

@@ -72,7 +72,7 @@ document.getElementById("formCadastroProf").addEventListener("submit", async (ev
         senha: document.getElementById("senha").value
     };
     try{
-        const resposta = await fetch("http://localhost:3000/cadastrarProf", { // envie os dados para o servidor backend
+        const resposta = await fetch('/api/cadastrarProf', { // envie os dados para o servidor backend
             method: "POST", // tipo de requisiçã HTTP usada para enviar dados
             headers: { // informações extras da requisição, como os dados estão sendo enviados
                 "Content-Type": "application/json", // estou enviando os dados em formato JSON

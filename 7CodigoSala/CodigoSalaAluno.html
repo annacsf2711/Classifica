@@ -324,7 +324,7 @@
   console.log("Sala:", idTurma);
 
   
-  fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
+  fetch('/api/estudante/${idEstudante}') // requisição para o servidor passando o id do professor na URL
 
     .then(async resposta => {
       if (!resposta.ok) {
@@ -355,7 +355,7 @@
     });
 
     try {
-        const resposta = await fetch("http://localhost:3000/turmaEstudante", { // 
+        const resposta = await fetch('/api/turmaEstudante', { // 
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ codigo, idEstudante })

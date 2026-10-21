@@ -4,7 +4,7 @@ const idEstudante = localStorage.getItem("idEstudante");
 
 console.log("ID:", idEstudante);
 
-fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
+fetch('/api/estudante/${idEstudante}') // requisição para o servidor passando o id do professor na URL
 .then(async resposta => {
    
   if (!resposta.ok) {
@@ -66,7 +66,7 @@ document.getElementById("modificar").addEventListener("click", async () => {
   };
 
   try {
-      const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`,{
+      const resposta = await fetch('/api/estudante/${idEstudante}',{
           method: "PUT", // ou PATCH
           headers: {
               "Content-Type": "application/json"
@@ -113,7 +113,7 @@ document.getElementById("desativar").addEventListener("click", async () => {
     const idEstudante = localStorage.getItem("idEstudante");
     
     try {
-      const resposta = await fetch(`http://localhost:3000/desativarAluno/${idEstudante}`, {
+      const resposta = await fetch('/api/desativarAluno/${idEstudante}', {
         method: "PUT"
       });
 
@@ -137,7 +137,7 @@ document.getElementById("deletar").addEventListener("click", async () => {
     const idEstudante = localStorage.getItem("idEstudante");
     
     try {
-      const resposta = await fetch(`http://localhost:3000/deletarAluno/${idEstudante}`, {
+      const resposta = await fetch('/api/deletarAluno/${idEstudante}', {
         method: "DELETE"
       });
 
@@ -159,7 +159,7 @@ window.abrirSalaDeAula = async function(event) {
 
   const idEstudante = localStorage.getItem("idEstudante");
   try {
-    const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+    const resposta = await fetch('/api/estudante/${idEstudante}');
     const dados = await resposta.json();
 
     console.log("Dados Recebidos", dados);

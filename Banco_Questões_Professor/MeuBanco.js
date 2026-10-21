@@ -1,5 +1,5 @@
 // ===================== CONFIGURAÇÃO =====================
-const API_URL = 'http://localhost:3000';
+const API_URL = '´/api';
 
 // pega o banco salvo no localStorage (definido em abrirBanco() na tela anterior)
 const bancoId = localStorage.getItem('bancoId');
@@ -7,7 +7,7 @@ const bancoId = localStorage.getItem('bancoId');
 
 // professor logado (salvo no localStorage no momento do login, veja observação abaixo)
 const idProfessor = localStorage.getItem('idProfessor');
-fetch(`http://localhost:3000/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
+fetch('/api/professor/${idProfessor}') // requisição para o servidor passando o id do professor na URL
 .then(async resposta => {
    
   if (!resposta.ok) {

@@ -9,7 +9,7 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
     };
 
     try {
-        const resposta = await fetch("/api/loginAluno", {
+        const resposta = await fetch('/api/loginAluno', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -25,7 +25,7 @@ document.getElementById("formLoginAluno").addEventListener("submit", async (even
             const reativar = confirm("Sua conta está desativada. Deseja reativá-la?");
 
             if (reativar) {
-                await fetch(`http://localhost:3000/reativarAluno/${dados.idEstudante}`, {
+                await fetch('/api/reativarAluno/${dados.idEstudante}', {
                     method: "PUT"
                 });
                 alert("Conta reativada com sucesso! Faça o login novamente.");
