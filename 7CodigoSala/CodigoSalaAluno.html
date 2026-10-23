@@ -324,7 +324,7 @@
   console.log("Sala:", idTurma);
 
   
-  fetch('/api/estudante/${idEstudante}') // requisição para o servidor passando o id do professor na URL
+  fetch(`/api/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
 
     .then(async resposta => {
       if (!resposta.ok) {

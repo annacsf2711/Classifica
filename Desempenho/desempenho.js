@@ -1,5 +1,5 @@
 // ===== CONFIGURAÇÃO DA URL DO BACKEND =====
-const API_URL = 'http://localhost:3000';
+const API_URL = '/api';
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Página de desempenho carregada');
@@ -94,7 +94,7 @@ window.abrirSalaDeAula = async function(event) {
 
     const idEstudante = localStorage.getItem("idEstudante");
     try {
-      const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+      const resposta = await fetch(`/api/estudante/${idEstudante}`);
       const dados = await resposta.json();
 
       console.log("Dados Recebidos", dados);

@@ -1,7 +1,7 @@
 // ===================================== Passar ID ===================================================
 const idEstudante = localStorage.getItem("idEstudante");
 
-fetch('/api/estudante/${idEstudante}')
+fetch(`/api/estudante/${idEstudante}`)
 .then(async resposta => {
     if (!resposta.ok) {
         const mensagem = await resposta.text();
@@ -46,7 +46,7 @@ async function carregarQuestoes() {
 
     try {
         // Faz a requisição ao servidor buscando as questões da matéria
-        const response = await fetch('/api/questoes/${materia}');
+        const response = await fetch(`/api/questoes/${materia}`);
 
         questoes = await response.json();
         
@@ -272,7 +272,7 @@ window.abrirSalaDeAula = async function(event) {
 
   const idEstudante = localStorage.getItem("idEstudante");
   try {
-    const resposta = await fetch('/api/estudante/${idEstudante}');
+    const resposta = await fetch(`/api/estudante/${idEstudante}`);
     const dados = await resposta.json();
 
     console.log("Dados Recebidos", dados);
@@ -280,9 +280,9 @@ window.abrirSalaDeAula = async function(event) {
 
     if (dados.id_turma != null) {
         localStorage.setItem("idTurma", dados.id_turma);
-        window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
+        window.location.href = "/Sala_de_Aula_Aluno/Sala_De_Aula.html";
     } else {
-        window.location.href = "../7CodigoSala/CodigoSalaAluno.html";
+        window.location.href = "/7CodigoSala/CodigoSalaAluno.html";
     }
 
   } catch (erro) {

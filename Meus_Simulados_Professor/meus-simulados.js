@@ -1,5 +1,5 @@
 // ATENÇÃO: ajuste a porta/host se o seu backend rodar em outro endereço
-    const API_URL = 'http://localhost:3000';
+    const API_URL = '/api';
 
     // Enquanto não há login integrado, o professor pode ser passado direto na URL:
     // Tela_Meus_Simulados.html?id_professor=1&nome=Leticia%20Pinho

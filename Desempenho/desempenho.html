@@ -607,7 +607,7 @@
 
     const idEstudante = localStorage.getItem("idEstudante");
     try {
-        const resposta = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+        const resposta = await fetch(`/api/estudante/${idEstudante}`);
         const dados = await resposta.json();
 
         console.log("Dados Recebidos", dados);

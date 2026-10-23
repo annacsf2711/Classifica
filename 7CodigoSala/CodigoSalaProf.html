@@ -305,7 +305,7 @@
 
     try {
       // Busca os dados do professor no servidor
-      const professor = await buscarJSON('/api/professor/${idProfessor}');
+      const professor = await buscarJSON(`/api/professor/${idProfessor}`);
       document.getElementById("nomeProfessor").textContent = professor.nome;
       document.getElementById("avatarInicial").textContent = professor.nome.charAt(0).toUpperCase();
     } catch (erro) {

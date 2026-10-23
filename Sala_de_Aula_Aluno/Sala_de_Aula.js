@@ -1,11 +1,11 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = '/api';
 
  
 const idEstudante = localStorage.getItem("idEstudante"); // busca o id do professor que foi salvo no navegador após o login
 
 console.log("ID:", idEstudante);
 
-fetch(`http://localhost:3000/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
+fetch(`/api/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
 .then(async resposta => {
    
   if (!resposta.ok) {

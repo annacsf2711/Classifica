@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudante}`);
+        const response = await fetch(`/api/diagnostico/status/${idEstudante}`);
         console.log("ID do estudante:", idEstudante);
         if (!response.ok) {
             const erro = await response.json();

@@ -305,7 +305,7 @@
   async function carregarProfessor() {
     if (!idProfessor) return;
     try {
-      const professor = await buscarJSON('/api/professor/${idProfessor}');
+      const professor = await buscarJSON(`/api/professor/${idProfessor}`);
       document.getElementById("nomeProfessor").textContent = professor.nome;
       document.getElementById("avatarInicial").textContent = professor.nome.charAt(0).toUpperCase();
     } catch (erro) {
@@ -316,7 +316,7 @@
   async function carregarTurmas() {
     const lista = document.getElementById("listaTurmas");
     try {
-      const turmas = await buscarJSON('/api/turmasProfessor/${idProfessor}');
+      const turmas = await buscarJSON(`/api/turmasProfessor/${idProfessor}`);
 
       if (turmas.length === 0) {
         lista.innerHTML = `

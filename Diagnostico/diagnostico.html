@@ -353,7 +353,7 @@ let idEstudante  = null; // ID do aluno logado
 let nomeEstudante = ''; // Nome do aluno
 
 // Configuração da API
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = '/api';
 const API_URL = `${BASE_URL}/api`;
 
 // ===================== Carregar dados do aluno =====================
@@ -368,7 +368,7 @@ async function carregarDadosAluno() {
 
     try {
         // busca o nome do aluno no banco
-        const response = await fetch(`http://localhost:3000/estudante/${idEstudante}`);
+        const response = await fetch(`/api/estudante/${idEstudante}`);
         if (!response.ok) throw new Error('Erro ao buscar dados do aluno');
         const dados = await response.json();
         nomeEstudante = dados.nome || 'Aluno';
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/api/diagnostico/status/${idEstudanteLocal}`);
+    const response = await fetch(`/api/diagnostico/status/${idEstudanteLocal}`);
     if (!response.ok) throw new Error('Erro ao verificar');
     const data = await response.json();
     if (data.jaFez) {

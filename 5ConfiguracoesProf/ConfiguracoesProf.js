@@ -4,7 +4,7 @@ const idProfessor = localStorage.getItem("idProfessor"); // busca o id do profes
 
 console.log("ID:", idProfessor);
 
-fetch('/api/professor/${idProfessor}') // requisição para o servidor passando o id do professor na URL
+fetch(`/api/professor/${idProfessor}`) // requisição para o servidor passando o id do professor na URL
 .then(async resposta => {
    
   if (!resposta.ok) {
@@ -29,7 +29,7 @@ fetch('/api/professor/${idProfessor}') // requisição para o servidor passando 
   document.getElementById("senha").value = professor.senha;
   
   document.getElementById("nomeUsuario").textContent = professor.nome;
-  document.getElementById('avatarInicial').textContent = professor.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
+  document.getElementById("avatarInicial").textContent = professor.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
   
 })
 .catch(erro => {
@@ -67,7 +67,7 @@ document.getElementById("modificar").addEventListener("click", async () => {
   };
 
   try {
-      const resposta = await fetch('/api/professor/${idProfessor}',{
+      const resposta = await fetch(`/api/professor/${idProfessor}`,{
           method: "PUT", // ou PATCH
           headers: {
               "Content-Type": "application/json"
@@ -114,7 +114,7 @@ document.getElementById("desativar").addEventListener("click", async () => {
     const idProfessor = localStorage.getItem("idProfessor");
     
     try {
-      const resposta = await fetch('/api/desativarProfessor/${idProfessor}', {
+      const resposta = await fetch(`/api/desativarProfessor/${idProfessor}`, {
         method: "PUT"
       });
 
@@ -138,7 +138,7 @@ document.getElementById("deletar").addEventListener("click", async () => {
     const idProfessor = localStorage.getItem("idProfessor");
     
     try {
-      const resposta = await fetch('/api/deletarProfessor/${idProfessor}', {
+      const resposta = await fetch(`/api/deletarProfessor/${idProfessor}`, {
         method: "DELETE"
       });
 
@@ -160,7 +160,7 @@ window.abrirSalaDeAula = async function(event) {
     const idProfessor = localStorage.getItem("idProfessor");
 
     try {
-      const resposta = await fetch('/api/professor/${idProfessor}/turma');
+      const resposta = await fetch(`/api/professor/${idProfessor}/turma`);
       const dados = await resposta.json();
       console.log("Dados recebidos:", dados);
 

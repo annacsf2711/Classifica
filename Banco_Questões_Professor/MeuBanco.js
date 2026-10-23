@@ -1,5 +1,5 @@
 // ===================== CONFIGURAÇÃO =====================
-const API_URL = '´/api';
+const API_URL = '/api';
 
 // pega o banco salvo no localStorage (definido em abrirBanco() na tela anterior)
 const bancoId = localStorage.getItem('bancoId');

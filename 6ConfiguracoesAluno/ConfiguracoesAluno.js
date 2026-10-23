@@ -4,7 +4,7 @@ const idEstudante = localStorage.getItem("idEstudante");
 
 console.log("ID:", idEstudante);
 
-fetch('/api/estudante/${idEstudante}') // requisição para o servidor passando o id do professor na URL
+fetch(`/api/estudante/${idEstudante}`) // requisição para o servidor passando o id do professor na URL
 .then(async resposta => {
    
   if (!resposta.ok) {
@@ -28,7 +28,7 @@ fetch('/api/estudante/${idEstudante}') // requisição para o servidor passando 
   document.getElementById("senha").value = estudante.senha;
   
   document.getElementById("nomeUsuario").textContent = estudante.nome;
-  document.getElementById('avatarInicial').textContent = estudante.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
+  document.getElementById("avatarInicial").textContent = estudante.nome.charAt(0).toUpperCase(); // Exibe a primeira letra do nome como avatar
 
   
 })
@@ -66,7 +66,7 @@ document.getElementById("modificar").addEventListener("click", async () => {
   };
 
   try {
-      const resposta = await fetch('/api/estudante/${idEstudante}',{
+      const resposta = await fetch(`/api/estudante/${idEstudante}`,{
           method: "PUT", // ou PATCH
           headers: {
               "Content-Type": "application/json"
@@ -113,7 +113,7 @@ document.getElementById("desativar").addEventListener("click", async () => {
     const idEstudante = localStorage.getItem("idEstudante");
     
     try {
-      const resposta = await fetch('/api/desativarAluno/${idEstudante}', {
+      const resposta = await fetch(`/api/desativarAluno/${idEstudante}`, {
         method: "PUT"
       });
 
@@ -137,7 +137,7 @@ document.getElementById("deletar").addEventListener("click", async () => {
     const idEstudante = localStorage.getItem("idEstudante");
     
     try {
-      const resposta = await fetch('/api/deletarAluno/${idEstudante}', {
+      const resposta = await fetch(`/api/deletarAluno/${idEstudante}`, {
         method: "DELETE"
       });
 
@@ -159,7 +159,7 @@ window.abrirSalaDeAula = async function(event) {
 
   const idEstudante = localStorage.getItem("idEstudante");
   try {
-    const resposta = await fetch('/api/estudante/${idEstudante}');
+    const resposta = await fetch(`/api/estudante/${idEstudante}`);
     const dados = await resposta.json();
 
     console.log("Dados Recebidos", dados);
@@ -167,9 +167,9 @@ window.abrirSalaDeAula = async function(event) {
 
     if (dados.id_turma != null) {
         localStorage.setItem("idTurma", dados.id_turma);
-        window.location.href = "../Sala_de_Aula_Aluno/Sala_De_Aula.html";
+        window.location.href = "/Sala_de_Aula_Aluno/Sala_De_Aula.html";
     } else {
-        window.location.href = "../7CodigoSala/CodigoSalaAluno.html";
+        window.location.href = "/7CodigoSala/CodigoSalaAluno.html";
     }
 
   } catch (erro) {
